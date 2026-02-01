@@ -17,7 +17,7 @@ debugLog.style.cssText = `
     border-bottom: 2px solid lime;
 `;
 
-document.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('load', () => {
     document.body.appendChild(debugLog);
 });
 
@@ -30,9 +30,10 @@ function log(msg, isError = false) {
     console.log(msg);
 }
 
+// Override console
 const originalError = console.error;
 console.error = function(...args) {
-    log('❌ ' + args.join(' '), true);
+    log('❌ ERROR: ' + args.join(' '), true);
     originalError.apply(console, args);
 };
 
@@ -42,12 +43,14 @@ console.log = function(...args) {
     originalLog.apply(console, args);
 };
 
+// Track script loading
 log('🚀 Debug logger started');
 
 window.addEventListener('error', (e) => {
     log(`❌ Error: ${e.message} at ${e.filename}:${e.lineno}`, true);
 });
 
+// Cordova events
 document.addEventListener('deviceready', () => {
     log('✅ Cordova deviceready');
 });

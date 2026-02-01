@@ -1,12 +1,16 @@
-const CACHE_NAME = 'feedback-app-v2';
+const CACHE_NAME = 'feedback-app-v2.9';
 const urlsToCache = [
   '/',
   '/index.html',
+  '/manifest.json',
   '/css/styles.css',
+  '/FileSaver.min.js',
   '/js/app.js',
   '/js/storage.js',
   '/js/export.js',
   '/js/router.js',
+  '/js/permissions.js',
+  '/js/version-display.js',
   '/js/pages/landing.js',
   '/js/pages/admin.js',
   '/js/pages/evaluator.js',
@@ -20,6 +24,7 @@ const urlsToCache = [
   '/js/exercises/michtav.js',
   '/js/exercises/yominet.js',
   '/logo.png',
+  '/letter.jpg',
   '/letter.pdf',
   '/icon-192.png',
   '/icon-512.png'

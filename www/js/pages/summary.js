@@ -20,7 +20,7 @@ export class SummaryPage {
                 
                 <div class="export-buttons">
                     <button class="btn btn-excel" onclick="exportToExcel()">📊 Excel</button>
-                    <button class="btn btn-whatsapp" onclick="printExcel()">📱 WhatsApp</button>
+                    <button class="btn btn-print" onclick="printExcel()">🖨️ הדפס Excel</button>
                 </div>
                 
                 <button class="btn btn-back" onclick="goToPage('assessment')" style="width: 100%;">

@@ -583,12 +583,12 @@ textarea {
     background: #b91c1c;
 }
 
-.btn-whatsapp {
+.btn-print {
     background: #10b981;
     color: white;
 }
 
-.btn-whatsapp:hover {
+.btn-print:hover {
     background: #059669;
 }
 

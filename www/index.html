@@ -11,6 +11,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Feedback">
+    <meta http-equiv="Content-Security-Policy" content="default-src * 'self' 'unsafe-inline' 'unsafe-eval' data: gap: content:">
     <title>Feedback System</title>
     <link rel="stylesheet" href="css/styles.css">
 </head>
@@ -21,7 +22,20 @@
             <p>Loading...</p>
         </div>
     </div>
+    
+    <!-- Cordova MUST be first -->
+    <script src="cordova.js"></script>
+    
+    <!-- Permissions Manager -->
+    <script src="js/permissions.js"></script>
+    
+    <!-- Version Display -->
+    <script src="js/version-display.js"></script>
+    
+    <!-- FileSaver -->
     <script src="FileSaver.min.js"></script>
+    
+    <!-- Main App -->
     <script type="module" src="js/app.js"></script>
 </body>
 </html>

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ייצוא קובץ</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+        p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 10px;
+            transition: transform 0.2s;
+        }
+        .btn:active {
+            transform: scale(0.98);
+        }
+        .btn-excel {
+            background: #10b981;
+            color: white;
+        }
+        .btn-json {
+            background: #3b82f6;
+            color: white;
+        }
+        .btn-close {
+            background: #ef4444;
+            color: white;
+        }
+        .status {
+            background: #f3f4f6;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #374151;
+            display: none;
+        }
+        .status.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 ייצוא נתונים</h1>
+        <p>בחר את סוג הקובץ לשמירה</p>
+        
+        <button class="btn btn-excel" onclick="exportExcel()">
+            📊 ייצוא Excel (CSV)
+        </button>
+        
+        <button class="btn btn-json" onclick="exportJSON()">
+            📄 ייצוא JSON
+        </button>
+        
+        <button class="btn btn-close" onclick="closeWindow()">
+            ✖️ סגור
+        </button>
+        
+        <div id="status" class="status"></div>
+    </div>
+
+    <script src="FileSaver.min.js"></script>
+    <script>
+        // קבל נתונים מהחלון הראשי
+        let appData = null;
+        
+        // בדוק אם יש נתונים ב-localStorage
+        try {
+            const stored = localStorage.getItem('feedbackAppData');
+            if (stored) {
+                appData = JSON.parse(stored);
+                console.log('✅ Data loaded:', appData);
+            }
+        } catch (e) {
+            console.error('Failed to load data:', e);
+        }
+
+        function showStatus(message, isError = false) {
+            const status = document.getElementById('status');
+            status.textContent = message;
+            status.className = 'status show';
+            status.style.background = isError ? '#fee2e2' : '#d1fae5';
+            status.style.color = isError ? '#991b1b' : '#065f46';
+        }
+
+        function exportExcel() {
+            if (!appData) {
+                showStatus('❌ אין נתונים לייצוא', true);
+                return;
+            }
+
+            try {
+                let csv = '\uFEFF'; // UTF-8 BOM
+                csv += 'שם ההערכה,' + (appData.assessmentName || 'לא מולא') + '\n';
+                csv += 'מעריך,' + (appData.evaluatorName || 'לא מולא') + '\n';
+                csv += 'תאריך,' + new Date().toLocaleDateString('he-IL') + '\n\n';
+
+                csv += 'חניכים,';
+                for (let i = 1; i <= 4; i++) {
+                    csv += (appData['trainee' + i] || 'לא מולא');
+                    if (i < 4) csv += ',';
+                }
+                csv += '\n';
+                csv += 'דגשים,' + (appData.highlights || 'לא מולא') + '\n\n';
+
+                // היסטוריית חנויות
+                csv += 'היסטוריית חנויות\n';
+                csv += 'שם,כתובת,תאריך,הערות\n';
+                if (appData.storeHistory && appData.storeHistory.length > 0) {
+                    appData.storeHistory.forEach(s => {
+                        csv += (s.name || '') + ',' + (s.address || '') + ',' + (s.date || '') + ',' + (s.notes || '') + '\n';
+                    });
+                } else {
+                    csv += 'אין נתונים\n';
+                }
+                csv += '\n';
+
+                const filename = 'משוב-סדנה_' + new Date().toISOString().slice(0, 10) + '.csv';
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                saveAs(blob, filename);
+                
+                showStatus('✅ קובץ Excel נשמר בהצלחה!');
+            } catch (error) {
+                showStatus('❌ שגיאה: ' + error.message, true);
+            }
+        }
+
+        function exportJSON() {
+            if (!appData) {
+                showStatus('❌ אין נתונים לייצוא', true);
+                return;
+            }
+
+            try {
+                const jsonStr = JSON.stringify(appData, null, 2);
+                const filename = 'הגדרות-מנהל_' + new Date().toISOString().slice(0, 10) + '.json';
+                const blob = new Blob([jsonStr], { type: 'application/json;charset=utf-8;' });
+                saveAs(blob, filename);
+                
+                showStatus('✅ קובץ JSON נשמר בהצלחה!');
+            } catch (error) {
+                showStatus('❌ שגיאה: ' + error.message, true);
+            }
+        }
+
+        function closeWindow() {
+            window.close();
+            // אם window.close לא עובד, נסה לחזור
+            if (window.history.length > 1) {
+                window.history.back();
+            }
+        }
+    </script>
+</body>
+</html>

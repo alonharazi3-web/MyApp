@@ -168,30 +168,10 @@ export class ExportManager {
             }
         }
 
-        // Fallback: Blob download
-        try {
-            const blob = new Blob([jsonStr], { type: 'application/json;charset=utf-8;' });
-            
-            if (typeof saveAs !== 'undefined') {
-                saveAs(blob, filename);
-            } else {
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.style.display = 'none';
-                a.href = url;
-                a.download = filename;
-                document.body.appendChild(a);
-                a.click();
-                setTimeout(() => {
-                    document.body.removeChild(a);
-                    URL.revokeObjectURL(url);
-                }, 100);
-            }
-            
-            alert('✅ קובץ JSON יוצא בהצלחה!\n\nשם ההערכה, חניכים, דגשים, היסטוריית חנויות ומלונות נשמרו.');
-        } catch (error) {
-            alert('❌ שגיאה בייצוא JSON:\n' + error.message);
-        }
+        // Fallback: Use FileSaver.js
+        const blob = new Blob([jsonStr], { type: 'application/json;charset=utf-8;' });
+        saveAs(blob, filename);
+        alert('✅ קובץ JSON יוצא בהצלחה!\n\nשם ההערכה, חניכים, דגשים, היסטוריית חנויות ומלונות נשמרו.');
     }
 
     /**
@@ -358,26 +338,10 @@ export class ExportManager {
             }
         }
 
-        // Fallback: Try iframe method (worked for CSV in tests)
-        try {
-            const dataUrl = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
-            const iframe = document.createElement('iframe');
-            iframe.style.display = 'none';
-            iframe.src = dataUrl;
-            document.body.appendChild(iframe);
-            
-            setTimeout(() => {
-                try {
-                    document.body.removeChild(iframe);
-                } catch (e) {
-                    // Ignore cleanup errors
-                }
-            }, 2000);
-            
-            alert('✅ קובץ Excel יוצא!\n\nאם הקובץ לא הורד, בדוק את תיקיית ההורדות.');
-        } catch (error) {
-            alert('❌ שגיאה בייצוא Excel:\n' + error.message);
-        }
+        // Fallback: Use FileSaver.js for CSV
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        saveAs(blob, filename);
+        alert('✅ קובץ Excel יוצא!\n\nהקובץ נשמר בתיקיית ההורדות.');
     }
 
     /**

@@ -149,8 +149,18 @@ window.shareToWhatsApp = function() {
 
 console.log('📦 App module loaded');
 
-// Print Excel function
+// Print Excel function - opens export popup
 window.printExcel = function() {
-    console.log('🖨️ Printing Excel...');
-    window.exportToExcel();
+    console.log('🖨️ Opening export popup...');
+    
+    // שמור נתונים ל-localStorage כדי שה-popup יוכל לגשת
+    try {
+        localStorage.setItem('feedbackAppData', JSON.stringify(window.app.data));
+        
+        // פתח popup
+        window.open('export-popup.html', '_blank', 'width=500,height=600');
+    } catch (error) {
+        console.error('Export popup error:', error);
+        alert('❌ שגיאה בפתיחת חלון ייצוא:\n' + error.message);
+    }
 };

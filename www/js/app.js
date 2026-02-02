@@ -164,3 +164,43 @@ window.printExcel = function() {
         alert('❌ שגיאה בפתיחת חלון ייצוא:\n' + error.message);
     }
 };
+
+// Open Excel preview with share button
+window.openExcelPreview = function() {
+    console.log('👁️ Opening Excel preview...');
+    
+    try {
+        localStorage.setItem('feedbackAppData', JSON.stringify(window.app.data));
+        
+        // פתח בחלון חדש (או טאב חדש)
+        const preview = window.open('excel-preview.html', '_blank');
+        
+        if (!preview) {
+            alert('⚠️ לא ניתן לפתוח חלון.\n\nאפשר פופאפים בדפדפן!');
+        }
+    } catch (error) {
+        console.error('Preview error:', error);
+        alert('❌ שגיאה: ' + error.message);
+    }
+};
+
+// Open export popup (for admin page)
+window.openExportPopup = function(type) {
+    console.log('📊 Opening export popup:', type);
+    
+    // שמור נתונים ל-localStorage
+    try {
+        localStorage.setItem('feedbackAppData', JSON.stringify(window.app.data));
+        localStorage.setItem('exportType', type); // excel or json
+        
+        // פתח popup
+        const popup = window.open('export-popup.html', '_blank', 'width=500,height=700');
+        
+        if (!popup) {
+            alert('⚠️ לא ניתן לפתוח חלון.\n\nאפשר פופאפים בדפדפן!');
+        }
+    } catch (error) {
+        console.error('Export popup error:', error);
+        alert('❌ שגיאה: ' + error.message);
+    }
+};

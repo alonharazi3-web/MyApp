@@ -51,64 +51,20 @@ export class AdminPage {
                 <button class="btn-add" onclick="addHotelToAdmin()">הוסף מלון</button>
                 
                 <h3 style="margin-top: 25px; padding-top: 25px; border-top: 2px solid #eee;">
-                    🧪 בדיקת שיטות שמירה (גיבוי)
+                    📊 ייצוא נתונים
                 </h3>
-                <div style="background: #f0f8ff; padding: 15px; border-radius: 8px; margin-bottom: 15px; font-size: 13px;">
-                    <strong>📋 הוראות:</strong> בדוק איזו שיטת שמירה עובדת הכי טוב במכשיר שלך.<br>
-                    כל כפתור מנסה שיטה שונה לשמירת הקובץ.
-                </div>
                 
-                <div style="margin-bottom: 20px;">
-                    <h4 style="color: #667eea; margin-bottom: 10px;">💾 ייצוא JSON (הגדרות מנהל)</h4>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">
-                        <button class="btn btn-save" onclick="testExportJSON(1)" style="font-size: 12px;">
-                            1️⃣ File System API<br><span style="font-size: 10px;">בחירת מיקום</span>
-                        </button>
-                        <button class="btn btn-save" onclick="testExportJSON(3)" style="font-size: 12px;">
-                            3️⃣ Blob Download<br><span style="font-size: 10px;">הורדה רגילה</span>
-                        </button>
-                        <button class="btn btn-save" onclick="testExportJSON(4)" style="font-size: 12px;">
-                            4️⃣ Data URI<br><span style="font-size: 10px;">Base64</span>
-                        </button>
-                        <button class="btn btn-save" onclick="testExportJSON(5)" style="font-size: 12px;">
-                            5️⃣ Window.open<br><span style="font-size: 10px;">חלון חדש</span>
-                        </button>
-                        <button class="btn btn-save" onclick="testExportJSON(8)" style="font-size: 12px;">
-                            8️⃣ Temp Link<br><span style="font-size: 10px;">קישור זמני</span>
-                        </button>
-                        <button class="btn btn-save" onclick="testExportJSON(10)" style="font-size: 12px; background: #4caf50;">
-                            🚀 מפל חכם<br><span style="font-size: 10px;">מומלץ!</span>
-                        </button>
-                    </div>
-                </div>
-                
-                <div style="margin-bottom: 20px;">
-                    <h4 style="color: #667eea; margin-bottom: 10px;">📊 ייצוא Excel/CSV (נתוני הערכה)</h4>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">
-                        <button class="btn btn-save" onclick="testExportCSV(1)" style="font-size: 12px;">
-                            1️⃣ File System API<br><span style="font-size: 10px;">בחירת מיקום</span>
-                        </button>
-                        <button class="btn btn-save" onclick="testExportCSV(3)" style="font-size: 12px;">
-                            3️⃣ Blob Download<br><span style="font-size: 10px;">הורדה רגילה</span>
-                        </button>
-                        <button class="btn btn-save" onclick="testExportCSV(4)" style="font-size: 12px;">
-                            4️⃣ Data URI<br><span style="font-size: 10px;">Base64</span>
-                        </button>
-                        <button class="btn btn-save" onclick="testExportCSV(6)" style="font-size: 12px;">
-                            6️⃣ Force Download<br><span style="font-size: 10px;">כפיית הורדה</span>
-                        </button>
-                        <button class="btn btn-save" onclick="testExportCSV(7)" style="font-size: 12px;">
-                            7️⃣ iframe<br><span style="font-size: 10px;">עבד בבדיקה</span>
-                        </button>
-                        <button class="btn btn-save" onclick="testExportCSV(10)" style="font-size: 12px; background: #4caf50;">
-                            🚀 מפל חכם<br><span style="font-size: 10px;">מומלץ!</span>
-                        </button>
-                    </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                    <button class="btn btn-save" onclick="openExportPopup('excel')" style="background: #10b981; font-size: 16px;">
+                        📊 ייצוא Excel
+                    </button>
+                    <button class="btn btn-save" onclick="openExportPopup('json')" style="background: #3b82f6; font-size: 16px;">
+                        📄 ייצוא JSON
+                    </button>
                 </div>
                 
                 <div class="nav-buttons">
                     <button class="btn btn-save" onclick="saveAdminAndBack()">💾 שמור וחזור</button>
-                    <button class="btn btn-save" onclick="exportAdminJSON()">📥 ייצא הגדרות (אוטומטי)</button>
                     <button class="btn btn-save" onclick="loadAdminJSON()">📤 טען הגדרות</button>
                 </div>
                 <input type="file" id="jsonFileInput" accept=".json" style="display: none;" onchange="handleJSONFile(event)">

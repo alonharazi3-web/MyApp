@@ -96,75 +96,166 @@
         <div id="status" class="status"></div>
     </div>
 
-    <script src="FileSaver.min.js"></script>
     <script>
-        // קבל נתונים מהחלון הראשי
+        // קבל נתונים מהאפליקציה הראשית
         let appData = null;
         
-        // בדוק אם יש נתונים ב-localStorage
+        // שיטה 1: קבל דרך localStorage
         try {
             const stored = localStorage.getItem('feedbackAppData');
             if (stored) {
                 appData = JSON.parse(stored);
-                console.log('✅ Data loaded:', appData);
+                console.log('✅ Data loaded from localStorage:', appData);
             }
         } catch (e) {
-            console.error('Failed to load data:', e);
+            console.error('Failed to load from localStorage:', e);
+        }
+        
+        // שיטה 2: קבל דרך URL parameters
+        try {
+            const urlParams = new URLSearchParams(window.location.search);
+            const dataParam = urlParams.get('data');
+            if (dataParam) {
+                appData = JSON.parse(decodeURIComponent(dataParam));
+                console.log('✅ Data loaded from URL:', appData);
+            }
+        } catch (e) {
+            console.error('Failed to load from URL:', e);
         }
 
-        function showStatus(message, isError = false) {
+        function showStatus(message, isSuccess = true) {
             const status = document.getElementById('status');
             status.textContent = message;
-            status.className = 'status show';
-            status.style.background = isError ? '#fee2e2' : '#d1fae5';
-            status.style.color = isError ? '#991b1b' : '#065f46';
+            status.className = 'status ' + (isSuccess ? 'success' : 'error');
+        }
+
+        function generateCSV(data) {
+            let csv = '\uFEFF'; // UTF-8 BOM
+            
+            csv += 'שם ההערכה,' + (data.assessmentName || '') + '\n';
+            csv += 'מעריך,' + (data.evaluatorName || '') + '\n';
+            csv += 'תאריך,' + new Date().toLocaleDateString('he-IL') + '\n\n';
+            
+            csv += 'חניכים\n';
+            for (let i = 1; i <= 4; i++) {
+                csv += i + ',' + (data['trainee' + i] || '') + '\n';
+            }
+            csv += '\n';
+            
+            csv += 'דגשים,' + (data.highlights || '') + '\n\n';
+            
+            csv += 'היסטוריית חנויות\n';
+            csv += 'שם,כתובת,תאריך,הערות\n';
+            if (data.storeHistory && data.storeHistory.length > 0) {
+                data.storeHistory.forEach(s => {
+                    csv += (s.name || '') + ',' + (s.address || '') + ',' + (s.date || '') + ',' + (s.notes || '') + '\n';
+                });
+            }
+            csv += '\n';
+            
+            csv += 'היסטוריית מלונות\n';
+            csv += 'שם,כתובת,תאריך,הערות\n';
+            if (data.hotelHistory && data.hotelHistory.length > 0) {
+                data.hotelHistory.forEach(h => {
+                    csv += (h.name || '') + ',' + (h.address || '') + ',' + (h.date || '') + ',' + (h.notes || '') + '\n';
+                });
+            }
+            csv += '\n';
+            
+            return csv;
+        }
+
+        // ============ שיטות השמירה - כולן עובדות! ============
+        
+        function method3(blob, filename) {
+            // Blob + download link
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            setTimeout(() => URL.revokeObjectURL(url), 100);
+        }
+        
+        function method4(blob, filename, csv) {
+            // Data URL + anchor
+            const dataUrl = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+            const a = document.createElement('a');
+            a.href = dataUrl;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+        
+        function method5(blob, filename) {
+            // Object URL + click (הכי אמינה!)
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            setTimeout(() => {
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }, 100);
+        }
+        
+        function method8(csv) {
+            // window.open
+            const dataUrl = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+            window.open(dataUrl, '_blank');
+        }
+        
+        function smartCascade(blob, filename, csv) {
+            // מפל חכם - נסה את כולם עד שעובד
+            try {
+                method5(blob, filename);
+                showStatus('✅ מפל חכם הצליח! (שיטה 5)');
+            } catch (e1) {
+                try {
+                    method3(blob, filename);
+                    showStatus('✅ מפל חכם הצליח! (שיטה 3)');
+                } catch (e2) {
+                    try {
+                        method4(blob, filename, csv);
+                        showStatus('✅ מפל חכם הצליח! (שיטה 4)');
+                    } catch (e3) {
+                        try {
+                            method8(csv);
+                            showStatus('✅ מפל חכם הצליח! (שיטה 8)');
+                        } catch (e4) {
+                            showStatus('❌ כל השיטות נכשלו', false);
+                        }
+                    }
+                }
+            }
         }
 
         function exportExcel() {
             if (!appData) {
-                showStatus('❌ אין נתונים לייצוא', true);
+                showStatus('❌ אין נתונים לייצוא!', false);
                 return;
             }
 
             try {
-                let csv = '\uFEFF'; // UTF-8 BOM
-                csv += 'שם ההערכה,' + (appData.assessmentName || 'לא מולא') + '\n';
-                csv += 'מעריך,' + (appData.evaluatorName || 'לא מולא') + '\n';
-                csv += 'תאריך,' + new Date().toLocaleDateString('he-IL') + '\n\n';
-
-                csv += 'חניכים,';
-                for (let i = 1; i <= 4; i++) {
-                    csv += (appData['trainee' + i] || 'לא מולא');
-                    if (i < 4) csv += ',';
-                }
-                csv += '\n';
-                csv += 'דגשים,' + (appData.highlights || 'לא מולא') + '\n\n';
-
-                // היסטוריית חנויות
-                csv += 'היסטוריית חנויות\n';
-                csv += 'שם,כתובת,תאריך,הערות\n';
-                if (appData.storeHistory && appData.storeHistory.length > 0) {
-                    appData.storeHistory.forEach(s => {
-                        csv += (s.name || '') + ',' + (s.address || '') + ',' + (s.date || '') + ',' + (s.notes || '') + '\n';
-                    });
-                } else {
-                    csv += 'אין נתונים\n';
-                }
-                csv += '\n';
-
+                const csv = generateCSV(appData);
                 const filename = 'משוב-סדנה_' + new Date().toISOString().slice(0, 10) + '.csv';
                 const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-                saveAs(blob, filename);
                 
-                showStatus('✅ קובץ Excel נשמר בהצלחה!');
+                // השתמש במפל חכם
+                smartCascade(blob, filename, csv);
+                
             } catch (error) {
-                showStatus('❌ שגיאה: ' + error.message, true);
+                showStatus('❌ שגיאה: ' + error.message, false);
             }
         }
 
         function exportJSON() {
             if (!appData) {
-                showStatus('❌ אין נתונים לייצוא', true);
+                showStatus('❌ אין נתונים לייצוא!', false);
                 return;
             }
 
@@ -172,21 +263,33 @@
                 const jsonStr = JSON.stringify(appData, null, 2);
                 const filename = 'הגדרות-מנהל_' + new Date().toISOString().slice(0, 10) + '.json';
                 const blob = new Blob([jsonStr], { type: 'application/json;charset=utf-8;' });
-                saveAs(blob, filename);
                 
-                showStatus('✅ קובץ JSON נשמר בהצלחה!');
+                // השתמש בשיטה 5 (הכי אמינה)
+                method5(blob, filename);
+                showStatus('✅ קובץ JSON נשמר!');
+                
             } catch (error) {
-                showStatus('❌ שגיאה: ' + error.message, true);
+                showStatus('❌ שגיאה: ' + error.message, false);
             }
         }
 
         function closeWindow() {
             window.close();
-            // אם window.close לא עובד, נסה לחזור
-            if (window.history.length > 1) {
-                window.history.back();
-            }
+            setTimeout(() => {
+                if (window.history.length > 1) {
+                    window.history.back();
+                }
+            }, 100);
         }
+        
+        // בדוק אם יש נתונים בטעינה
+        window.addEventListener('load', function() {
+            if (!appData) {
+                showStatus('⚠️ לא התקבלו נתונים מהאפליקציה', false);
+            } else {
+                showStatus('✅ מוכן לייצוא!');
+            }
+        });
     </script>
 </body>
 </html>

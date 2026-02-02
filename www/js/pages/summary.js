@@ -19,8 +19,8 @@ export class SummaryPage {
                 <div class="criteria-list" id="criteriaList"></div>
                 
                 <div class="export-buttons">
-                    <button class="btn btn-excel" onclick="exportToExcel()">📊 Excel</button>
-                    <button class="btn btn-print" onclick="printExcel()">🖨️ הדפס Excel</button>
+                    <button class="btn btn-excel" onclick="openExportPopup('excel')">📊 ייצוא Excel</button>
+                    <button class="btn btn-print" onclick="openExcelPreview()">👁️ תצוגה מקדימה + שיתוף</button>
                 </div>
                 
                 <button class="btn btn-back" onclick="goToPage('assessment')" style="width: 100%;">

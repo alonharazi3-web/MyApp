@@ -13,7 +13,7 @@ versionDiv.style.cssText = `
     z-index: 99998;
     pointer-events: none;
 `;
-versionDiv.textContent = 'v3.2 - Permissions + Popup';
+versionDiv.textContent = 'v3.4 - Preview + Share';
 
 window.addEventListener('load', () => {
     document.body.appendChild(versionDiv);

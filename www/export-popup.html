@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ייצוא קובץ</title>
+    <title>ייצוא קבצים</title>
     <style>
         * {
             margin: 0;
@@ -14,113 +14,236 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
+            padding: 15px;
         }
         .container {
             background: white;
             border-radius: 20px;
-            padding: 30px;
-            max-width: 500px;
-            width: 100%;
+            padding: 25px;
+            max-width: 650px;
+            margin: 0 auto;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
         h1 {
             color: #667eea;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             font-size: 24px;
+            text-align: center;
         }
-        p {
+        .subtitle {
+            text-align: center;
             color: #666;
             margin-bottom: 20px;
+            font-size: 13px;
         }
-        .btn {
-            width: 100%;
-            padding: 15px;
-            border: none;
+        .file-type {
+            background: #f3f4f6;
+            padding: 12px;
             border-radius: 10px;
-            font-size: 18px;
+            margin-bottom: 20px;
+            text-align: center;
             font-weight: bold;
+            color: #374151;
+        }
+        .methods {
+            display: grid;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .method-btn {
+            padding: 14px 18px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            background: white;
             cursor: pointer;
-            margin-bottom: 10px;
-            transition: transform 0.2s;
+            transition: all 0.2s;
+            text-align: right;
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
-        .btn:active {
-            transform: scale(0.98);
+        .method-btn:hover {
+            border-color: #667eea;
+            background: #f9fafb;
+            transform: translateY(-2px);
         }
-        .btn-excel {
-            background: #10b981;
+        .method-btn:active {
+            transform: translateY(0);
+        }
+        .method-num {
+            background: #667eea;
             color: white;
+            padding: 5px 11px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 13px;
+            min-width: 75px;
+            text-align: center;
         }
-        .btn-json {
-            background: #3b82f6;
-            color: white;
-        }
-        .btn-close {
-            background: #ef4444;
-            color: white;
+        .method-desc {
+            flex: 1;
+            color: #374151;
+            font-weight: 500;
+            font-size: 14px;
         }
         .status {
             background: #f3f4f6;
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 20px;
-            font-size: 14px;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 13px;
             color: #374151;
-            display: none;
+            min-height: 50px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        .status.show {
-            display: block;
+        .status.success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        .status.error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        .btn-close {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: #ef4444;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>📊 ייצוא נתונים</h1>
-        <p>בחר את סוג הקובץ לשמירה</p>
+        <h1>📊 ייצוא קבצים</h1>
+        <p class="subtitle">בחר שיטת שמירה מועדפת</p>
         
-        <button class="btn btn-excel" onclick="exportExcel()">
-            📊 ייצוא Excel (CSV)
-        </button>
+        <div class="file-type" id="fileType">טוען...</div>
         
-        <button class="btn btn-json" onclick="exportJSON()">
-            📄 ייצוא JSON
-        </button>
+        <div class="methods">
+            <button class="method-btn" onclick="testMethod(3)">
+                <span class="method-num">שיטה 3</span>
+                <span class="method-desc">Blob + Download Link</span>
+            </button>
+            
+            <button class="method-btn" onclick="testMethod(4)">
+                <span class="method-num">שיטה 4</span>
+                <span class="method-desc">Data URL + Anchor</span>
+            </button>
+            
+            <button class="method-btn" onclick="testMethod(5)">
+                <span class="method-num">שיטה 5</span>
+                <span class="method-desc">Object URL + Click (מומלץ)</span>
+            </button>
+            
+            <button class="method-btn" onclick="testMethod(8)">
+                <span class="method-num">שיטה 8</span>
+                <span class="method-desc">Window.open Data URL</span>
+            </button>
+            
+            <button class="method-btn" onclick="testMethod('cascade')">
+                <span class="method-num">מפל חכם</span>
+                <span class="method-desc">נסה את כולם עד שעובד</span>
+            </button>
+        </div>
         
-        <button class="btn btn-close" onclick="closeWindow()">
-            ✖️ סגור
-        </button>
+        <div id="status" class="status">
+            בחר שיטה לבדיקה...
+        </div>
         
-        <div id="status" class="status"></div>
+        <button class="btn-close" onclick="window.close()">✖️ סגור</button>
     </div>
 
     <script>
-        // קבל נתונים מהאפליקציה הראשית
         let appData = null;
-        
-        // שיטה 1: קבל דרך localStorage
-        try {
-            const stored = localStorage.getItem('feedbackAppData');
-            if (stored) {
-                appData = JSON.parse(stored);
-                console.log('✅ Data loaded from localStorage:', appData);
+        let exportType = 'excel'; // excel or json
+        let fileContent = '';
+        let filename = '';
+
+        // טען נתונים מ-localStorage
+        function loadData() {
+            try {
+                const stored = localStorage.getItem('feedbackAppData');
+                const type = localStorage.getItem('exportType') || 'excel';
+                exportType = type;
+                
+                if (stored) {
+                    appData = JSON.parse(stored);
+                    console.log('✅ Data loaded:', appData);
+                    generateFileContent();
+                    updateUI();
+                } else {
+                    showStatus('❌ לא נמצאו נתונים!', false);
+                }
+            } catch (e) {
+                console.error('Load error:', e);
+                showStatus('❌ שגיאה בטעינת נתונים', false);
             }
-        } catch (e) {
-            console.error('Failed to load from localStorage:', e);
         }
-        
-        // שיטה 2: קבל דרך URL parameters
-        try {
-            const urlParams = new URLSearchParams(window.location.search);
-            const dataParam = urlParams.get('data');
-            if (dataParam) {
-                appData = JSON.parse(decodeURIComponent(dataParam));
-                console.log('✅ Data loaded from URL:', appData);
+
+        function generateFileContent() {
+            if (!appData) return;
+            
+            if (exportType === 'excel') {
+                fileContent = generateCSV();
+                filename = 'משוב-סדנה_' + new Date().toISOString().slice(0, 10) + '.csv';
+            } else {
+                fileContent = JSON.stringify(appData, null, 2);
+                filename = 'הגדרות-מנהל_' + new Date().toISOString().slice(0, 10) + '.json';
             }
-        } catch (e) {
-            console.error('Failed to load from URL:', e);
+        }
+
+        function generateCSV() {
+            let csv = '\uFEFF'; // UTF-8 BOM
+            
+            csv += 'שם ההערכה,' + (appData.assessmentName || '') + '\n';
+            csv += 'מעריך,' + (appData.evaluatorName || '') + '\n';
+            csv += 'תאריך,' + new Date().toLocaleDateString('he-IL') + '\n\n';
+            
+            csv += 'חניכים\n';
+            for (let i = 1; i <= 4; i++) {
+                csv += i + ',' + (appData['trainee' + i] || '') + '\n';
+            }
+            csv += '\n';
+            
+            csv += 'דגשים,' + (appData.highlights || '') + '\n\n';
+            
+            csv += 'היסטוריית חנויות\n';
+            csv += 'שם,כתובת,תאריך,הערות\n';
+            if (appData.storeHistory && appData.storeHistory.length > 0) {
+                appData.storeHistory.forEach(s => {
+                    csv += (s.name || '') + ',' + (s.address || '') + ',' + (s.date || '') + ',' + (s.notes || '') + '\n';
+                });
+            }
+            csv += '\n';
+            
+            csv += 'היסטוריית מלונות\n';
+            csv += 'שם,כתובת,תאריך,הערות\n';
+            if (appData.hotelHistory && appData.hotelHistory.length > 0) {
+                appData.hotelHistory.forEach(h => {
+                    csv += (h.name || '') + ',' + (h.address || '') + ',' + (h.date || '') + ',' + (h.notes || '') + '\n';
+                });
+            }
+            
+            return csv;
+        }
+
+        function updateUI() {
+            const fileTypeDiv = document.getElementById('fileType');
+            if (exportType === 'excel') {
+                fileTypeDiv.textContent = '📊 ייצוא Excel (CSV)';
+                fileTypeDiv.style.background = 'linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%)';
+            } else {
+                fileTypeDiv.textContent = '📄 ייצוא JSON';
+                fileTypeDiv.style.background = 'linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%)';
+            }
         }
 
         function showStatus(message, isSuccess = true) {
@@ -129,167 +252,120 @@
             status.className = 'status ' + (isSuccess ? 'success' : 'error');
         }
 
-        function generateCSV(data) {
-            let csv = '\uFEFF'; // UTF-8 BOM
-            
-            csv += 'שם ההערכה,' + (data.assessmentName || '') + '\n';
-            csv += 'מעריך,' + (data.evaluatorName || '') + '\n';
-            csv += 'תאריך,' + new Date().toLocaleDateString('he-IL') + '\n\n';
-            
-            csv += 'חניכים\n';
-            for (let i = 1; i <= 4; i++) {
-                csv += i + ',' + (data['trainee' + i] || '') + '\n';
+        function testMethod(method) {
+            if (!fileContent) {
+                showStatus('❌ אין תוכן לייצוא', false);
+                return;
             }
-            csv += '\n';
-            
-            csv += 'דגשים,' + (data.highlights || '') + '\n\n';
-            
-            csv += 'היסטוריית חנויות\n';
-            csv += 'שם,כתובת,תאריך,הערות\n';
-            if (data.storeHistory && data.storeHistory.length > 0) {
-                data.storeHistory.forEach(s => {
-                    csv += (s.name || '') + ',' + (s.address || '') + ',' + (s.date || '') + ',' + (s.notes || '') + '\n';
-                });
-            }
-            csv += '\n';
-            
-            csv += 'היסטוריית מלונות\n';
-            csv += 'שם,כתובת,תאריך,הערות\n';
-            if (data.hotelHistory && data.hotelHistory.length > 0) {
-                data.hotelHistory.forEach(h => {
-                    csv += (h.name || '') + ',' + (h.address || '') + ',' + (h.date || '') + ',' + (h.notes || '') + '\n';
-                });
-            }
-            csv += '\n';
-            
-            return csv;
-        }
 
-        // ============ שיטות השמירה - כולן עובדות! ============
-        
-        function method3(blob, filename) {
-            // Blob + download link
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = filename;
-            a.click();
-            setTimeout(() => URL.revokeObjectURL(url), 100);
-        }
-        
-        function method4(blob, filename, csv) {
-            // Data URL + anchor
-            const dataUrl = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
-            const a = document.createElement('a');
-            a.href = dataUrl;
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-        }
-        
-        function method5(blob, filename) {
-            // Object URL + click (הכי אמינה!)
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.style.display = 'none';
-            a.href = url;
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            setTimeout(() => {
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-            }, 100);
-        }
-        
-        function method8(csv) {
-            // window.open
-            const dataUrl = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
-            window.open(dataUrl, '_blank');
-        }
-        
-        function smartCascade(blob, filename, csv) {
-            // מפל חכם - נסה את כולם עד שעובד
+            const mimeType = exportType === 'excel' ? 'text/csv;charset=utf-8;' : 'application/json;charset=utf-8;';
+            const blob = new Blob([fileContent], { type: mimeType });
+
             try {
-                method5(blob, filename);
-                showStatus('✅ מפל חכם הצליח! (שיטה 5)');
-            } catch (e1) {
-                try {
-                    method3(blob, filename);
-                    showStatus('✅ מפל חכם הצליח! (שיטה 3)');
-                } catch (e2) {
+                if (method === 3) {
+                    // Blob + download link
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = filename;
+                    a.click();
+                    setTimeout(() => URL.revokeObjectURL(url), 100);
+                    showStatus('✅ שיטה 3: ניסיון הורדה! בדוק Downloads');
+                    
+                } else if (method === 4) {
+                    // Data URL + anchor
+                    const dataUrl = 'data:' + mimeType + ',' + encodeURIComponent(fileContent);
+                    const a = document.createElement('a');
+                    a.href = dataUrl;
+                    a.download = filename;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    showStatus('✅ שיטה 4: ניסיון הורדה! בדוק Downloads');
+                    
+                } else if (method === 5) {
+                    // Object URL + click (הכי אמינה!)
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = url;
+                    a.download = filename;
+                    document.body.appendChild(a);
+                    a.click();
+                    setTimeout(() => {
+                        document.body.removeChild(a);
+                        URL.revokeObjectURL(url);
+                    }, 100);
+                    showStatus('✅ שיטה 5: הקובץ אמור להיות ב-Downloads!');
+                    
+                } else if (method === 8) {
+                    // window.open
+                    const dataUrl = 'data:' + mimeType + ',' + encodeURIComponent(fileContent);
+                    window.open(dataUrl, '_blank');
+                    showStatus('✅ שיטה 8: נפתח טאב חדש');
+                    
+                } else if (method === 'cascade') {
+                    // מפל חכם - נסה 5 → 3 → 4 → 8
+                    let success = false;
+                    
                     try {
-                        method4(blob, filename, csv);
-                        showStatus('✅ מפל חכם הצליח! (שיטה 4)');
-                    } catch (e3) {
+                        // נסה 5
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.style.display = 'none';
+                        a.href = url;
+                        a.download = filename;
+                        document.body.appendChild(a);
+                        a.click();
+                        setTimeout(() => {
+                            document.body.removeChild(a);
+                            URL.revokeObjectURL(url);
+                        }, 100);
+                        showStatus('✅ מפל חכם: הצליח בשיטה 5!');
+                        success = true;
+                    } catch (e1) {
                         try {
-                            method8(csv);
-                            showStatus('✅ מפל חכם הצליח! (שיטה 8)');
-                        } catch (e4) {
-                            showStatus('❌ כל השיטות נכשלו', false);
+                            // נסה 3
+                            const url = URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = url;
+                            a.download = filename;
+                            a.click();
+                            setTimeout(() => URL.revokeObjectURL(url), 100);
+                            showStatus('✅ מפל חכם: הצליח בשיטה 3!');
+                            success = true;
+                        } catch (e2) {
+                            try {
+                                // נסה 4
+                                const dataUrl = 'data:' + mimeType + ',' + encodeURIComponent(fileContent);
+                                const a = document.createElement('a');
+                                a.href = dataUrl;
+                                a.download = filename;
+                                a.click();
+                                showStatus('✅ מפל חכם: הצליח בשיטה 4!');
+                                success = true;
+                            } catch (e3) {
+                                try {
+                                    // נסה 8
+                                    const dataUrl = 'data:' + mimeType + ',' + encodeURIComponent(fileContent);
+                                    window.open(dataUrl, '_blank');
+                                    showStatus('✅ מפל חכם: הצליח בשיטה 8!');
+                                    success = true;
+                                } catch (e4) {
+                                    showStatus('❌ כל השיטות נכשלו!', false);
+                                }
+                            }
                         }
                     }
                 }
-            }
-        }
-
-        function exportExcel() {
-            if (!appData) {
-                showStatus('❌ אין נתונים לייצוא!', false);
-                return;
-            }
-
-            try {
-                const csv = generateCSV(appData);
-                const filename = 'משוב-סדנה_' + new Date().toISOString().slice(0, 10) + '.csv';
-                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-                
-                // השתמש במפל חכם
-                smartCascade(blob, filename, csv);
                 
             } catch (error) {
                 showStatus('❌ שגיאה: ' + error.message, false);
             }
         }
 
-        function exportJSON() {
-            if (!appData) {
-                showStatus('❌ אין נתונים לייצוא!', false);
-                return;
-            }
-
-            try {
-                const jsonStr = JSON.stringify(appData, null, 2);
-                const filename = 'הגדרות-מנהל_' + new Date().toISOString().slice(0, 10) + '.json';
-                const blob = new Blob([jsonStr], { type: 'application/json;charset=utf-8;' });
-                
-                // השתמש בשיטה 5 (הכי אמינה)
-                method5(blob, filename);
-                showStatus('✅ קובץ JSON נשמר!');
-                
-            } catch (error) {
-                showStatus('❌ שגיאה: ' + error.message, false);
-            }
-        }
-
-        function closeWindow() {
-            window.close();
-            setTimeout(() => {
-                if (window.history.length > 1) {
-                    window.history.back();
-                }
-            }, 100);
-        }
-        
-        // בדוק אם יש נתונים בטעינה
-        window.addEventListener('load', function() {
-            if (!appData) {
-                showStatus('⚠️ לא התקבלו נתונים מהאפליקציה', false);
-            } else {
-                showStatus('✅ מוכן לייצוא!');
-            }
-        });
+        // טען נתונים בטעינת הדף
+        window.addEventListener('load', loadData);
     </script>
 </body>
 </html>

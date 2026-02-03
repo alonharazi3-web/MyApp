@@ -165,42 +165,42 @@ window.printExcel = function() {
     }
 };
 
-// Open Excel preview with share button
+// Open export popup with working save methods
 window.openExcelPreview = function() {
-    console.log('👁️ Opening Excel preview...');
+    console.log('📊 Opening Excel export...');
     
     try {
         localStorage.setItem('feedbackAppData', JSON.stringify(window.app.data));
+        localStorage.setItem('exportType', 'excel');
         
-        // פתח בחלון חדש (או טאב חדש)
-        const preview = window.open('excel-preview.html', '_blank');
+        // פתח export-popup בדפדפן (HTML טהור - השיטות עובדות!)
+        const popup = window.open('export-popup.html', '_blank');
         
-        if (!preview) {
+        if (!popup) {
             alert('⚠️ לא ניתן לפתוח חלון.\n\nאפשר פופאפים בדפדפן!');
         }
     } catch (error) {
-        console.error('Preview error:', error);
+        console.error('Export error:', error);
         alert('❌ שגיאה: ' + error.message);
     }
 };
 
 // Open export popup (for admin page)
 window.openExportPopup = function(type) {
-    console.log('📊 Opening export popup:', type);
+    console.log('📊 Opening export:', type);
     
-    // שמור נתונים ל-localStorage
     try {
         localStorage.setItem('feedbackAppData', JSON.stringify(window.app.data));
         localStorage.setItem('exportType', type); // excel or json
         
-        // פתח popup
-        const popup = window.open('export-popup.html', '_blank', 'width=500,height=700');
+        // פתח export-popup בדפדפן (HTML טהור - השיטות עובדות!)
+        const popup = window.open('export-popup.html', '_blank');
         
         if (!popup) {
             alert('⚠️ לא ניתן לפתוח חלון.\n\nאפשר פופאפים בדפדפן!');
         }
     } catch (error) {
-        console.error('Export popup error:', error);
+        console.error('Export error:', error);
         alert('❌ שגיאה: ' + error.message);
     }
 };

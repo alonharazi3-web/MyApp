@@ -185,11 +185,12 @@ window.openExcelPreview = function() {
 };
 
 // Test Social Sharing Plugin with organized CSV by trainee
+// Test Social Sharing Plugin with XLSX tabular format
 window.testSocialSharing = function() {
     console.log('🧪 Testing Social Sharing Plugin...');
     
     if (!window.plugins || !window.plugins.socialsharing) {
-        alert('❌ Social Sharing Plugin לא זמין!\n\nייתכן שהאפליקציה לא נבנתה עם ה-plugin.');
+        alert('❌ Social Sharing Plugin לא זמין!');
         return;
     }
     
@@ -197,95 +198,25 @@ window.testSocialSharing = function() {
         const data = window.app.data;
         const evaluator = data.evaluatorName || 'מעריך';
         const dateStr = new Date().toLocaleDateString('he-IL').replace(/\//g, '-');
-        const filename = `${evaluator}_${dateStr}.csv`;
+        const filename = `${evaluator}_${dateStr}.xlsx`;
         
-        // צור CSV מסודר לפי חניכים
-        let csv = '\uFEFF'; // UTF-8 BOM
+        // יצירת Excel בפורמט טבלאי
+        const excelBuffer = window.generateTabularExcel(data);
         
-        // כותרת ראשית
-        csv += `הערכת סדנה,${data.assessmentName || 'לא מולא'}\n`;
-        csv += `מעריך,${evaluator}\n`;
-        csv += `תאריך,${dateStr}\n`;
-        csv += `דגשים כלליים,${data.highlights || 'לא מולא'}\n`;
-        csv += '\n\n';
-        
-        // לכל חניך - כל המידע שלו
-        for (let t = 0; t < 4; t++) {
-            const traineeName = data['trainee' + (t + 1)] || `חניך ${t + 1}`;
-            
-            csv += `========================================\n`;
-            csv += `חניך מס' ${t + 1}: ${traineeName}\n`;
-            csv += `========================================\n\n`;
-            
-            // תרגיל בלון
-            csv += `תרגיל: בלון\n`;
-            csv += `גמישות מחשבתית,${data[`${t}-גמישות`] || 'לא מולא'}\n`;
-            csv += `תכנון,${data[`${t}-תכנון`] || 'לא מולא'}\n`;
-            csv += `לחץ ועמימות,${data[`${t}-לחץ`] || 'לא מולא'}\n`;
-            csv += `הערות,${data[`balloon-${t}-notes`] || 'לא מולא'}\n\n`;
-            
-            // תרגיל טיח
-            csv += `תרגיל: טיח (חנות)\n`;
-            csv += `חנות,${data[`tiach-${t}-store`] || 'לא מולא'}\n`;
-            csv += `ציון,${data[`tiach-${t}-score`] || 'לא מולא'}\n`;
-            csv += `הערות,${data[`tiach-${t}-notes`] || 'לא מולא'}\n\n`;
-            
-            // תרגיל דולירה
-            csv += `תרגיל: דולירה\n`;
-            csv += `זמן,${data[`dolira-${t}-time`] || 'לא מולא'}\n`;
-            csv += `איכות,${data[`dolira-${t}-quality`] || 'לא מולא'}\n\n`;
-            
-            // תרגיל דוד
-            csv += `תרגיל: דוד\n`;
-            csv += `ציון,${data[`david-${t}-score`] || 'לא מולא'}\n`;
-            csv += `הערות,${data[`david-${t}-notes`] || 'לא מולא'}\n\n`;
-            
-            // תרגיל לילה
-            csv += `תרגיל: לילה (מלון)\n`;
-            csv += `מלון,${data[`laila-${t}-hotel`] || 'לא מולא'}\n`;
-            csv += `ציון,${data[`laila-${t}-score`] || 'לא מולא'}\n`;
-            csv += `הערות,${data[`laila-${t}-notes`] || 'לא מולא'}\n\n`;
-            
-            // תרגיל מכתב
-            csv += `תרגיל: מכתב\n`;
-            csv += `ציון,${data[`michtav-${t}-score`] || 'לא מולא'}\n`;
-            csv += `הערות,${data[`michtav-${t}-notes`] || 'לא מולא'}\n\n`;
-            
-            // תרגיל יומינט
-            csv += `תרגיל: יומינט (מלון)\n`;
-            csv += `מלון,${data[`yominet-${t}-hotel`] || 'לא מולא'}\n`;
-            csv += `ציון,${data[`yominet-${t}-score`] || 'לא מולא'}\n`;
-            csv += `הערות,${data[`yominet-${t}-notes`] || 'לא מולא'}\n\n\n`;
+        if (!excelBuffer) {
+            alert('❌ שגיאה ביצירת קובץ Excel');
+            return;
         }
         
-        // היסטוריות בסוף
-        csv += `========================================\n`;
-        csv += `היסטוריית חנויות (טיח)\n`;
-        csv += `========================================\n`;
-        csv += `שם,כתובת,תאריך,הערות\n`;
-        if (data.storeHistory && data.storeHistory.length > 0) {
-            data.storeHistory.forEach(s => {
-                csv += `${s.name || 'לא מולא'},${s.address || 'לא מולא'},${s.date || 'לא מולא'},${s.notes || 'לא מולא'}\n`;
-            });
-        } else {
-            csv += `אין נתונים,,,\n`;
+        // המרה ל-Base64
+        const bytes = new Uint8Array(excelBuffer);
+        let binary = '';
+        for (let i = 0; i < bytes.byteLength; i++) {
+            binary += String.fromCharCode(bytes[i]);
         }
-        csv += '\n';
+        const base64 = 'data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,' + btoa(binary);
         
-        csv += `========================================\n`;
-        csv += `היסטוריית מלונות (לילה/יומינט)\n`;
-        csv += `========================================\n`;
-        csv += `שם,כתובת,תאריך,הערות\n`;
-        if (data.hotelHistory && data.hotelHistory.length > 0) {
-            data.hotelHistory.forEach(h => {
-                csv += `${h.name || 'לא מולא'},${h.address || 'לא מולא'},${h.date || 'לא מולא'},${h.notes || 'לא מולא'}\n`;
-            });
-        } else {
-            csv += `אין נתונים,,,\n`;
-        }
-        
-        const base64 = 'data:text/csv;base64,' + btoa(unescape(encodeURIComponent(csv)));
-        
+        // שיתוף
         window.plugins.socialsharing.shareWithOptions({
             message: 'משוב סדנת אימפרוביזציה',
             subject: 'משוב סדנה - ' + evaluator,
@@ -304,7 +235,7 @@ window.testSocialSharing = function() {
     }
 };
 
-// Test File Plugin
+// Test File Plugin - Save XLSX to Downloads
 window.testFilePlugin = function() {
     console.log('🧪 Testing File Plugin...');
     
@@ -317,14 +248,17 @@ window.testFilePlugin = function() {
         const data = window.app.data;
         const evaluator = data.evaluatorName || 'מעריך';
         const dateStr = new Date().toLocaleDateString('he-IL').replace(/\//g, '-');
-        const filename = `${evaluator}_${dateStr}.csv`;
+        const filename = `${evaluator}_${dateStr}.xlsx`;
         
-        // צור CSV
-        let csv = '\uFEFF';
-        csv += `הערכת סדנה,${data.assessmentName || 'לא מולא'}\n`;
-        csv += `מעריך,${evaluator}\n`;
-        csv += `תאריך,${dateStr}\n\n`;
-        csv += 'בדיקת File Plugin - הקובץ נשמר!\n';
+        // יצירת Excel בפורמט טבלאי
+        const excelBuffer = window.generateTabularExcel(data);
+        
+        if (!excelBuffer) {
+            alert('❌ שגיאה ביצירת קובץ Excel');
+            return;
+        }
+        
+        const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
         
         // שמור לתיקיית Downloads
         window.resolveLocalFileSystemURL(cordova.file.externalRootDirectory + 'Download/', function(dir) {
@@ -337,7 +271,6 @@ window.testFilePlugin = function() {
                         alert('❌ שגיאת כתיבה:\n' + e.toString());
                     };
                     
-                    const blob = new Blob([csv], { type: 'text/csv' });
                     fileWriter.write(blob);
                 }, function(error) {
                     alert('❌ שגיאה ביצירת writer:\n' + error);

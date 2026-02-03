@@ -23,6 +23,13 @@ export class SummaryPage {
                     <button class="btn btn-print" onclick="openExcelPreview()">👁️ תצוגה מקדימה + שיתוף</button>
                 </div>
                 
+                <div style="margin-top: 10px; padding: 10px; background: #fff3cd; border-radius: 8px; border: 2px dashed #ffc107;">
+                    <p style="font-size: 12px; color: #856404; margin-bottom: 8px; font-weight: bold;">🧪 בדיקת Social Sharing Plugin:</p>
+                    <button class="btn" onclick="testSocialSharing()" style="width: 100%; background: #ffc107; color: #000;">
+                        📤 שיתוף עם Plugin (אנדרואיד מקורי)
+                    </button>
+                </div>
+                
                 <button class="btn btn-back" onclick="goToPage('assessment')" style="width: 100%;">
                     ⬅ חזור להערכה
                 </button>

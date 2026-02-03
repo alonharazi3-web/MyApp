@@ -13,7 +13,7 @@ versionDiv.style.cssText = `
     z-index: 99998;
     pointer-events: none;
 `;
-versionDiv.textContent = 'v3.7 - Complete Fix';
+versionDiv.textContent = 'v3.9 - Social Plugin';
 
 window.addEventListener('load', () => {
     document.body.appendChild(versionDiv);

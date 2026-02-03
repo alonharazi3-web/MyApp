@@ -18,20 +18,21 @@ jobs:
     - run: yes | sdkmanager --licenses || true
     - run: npm install -g cordova@latest
     - run: cordova platform add android@latest
-    - name: Remove whitelist plugin if exists
-      run: cordova plugin rm cordova-plugin-whitelist || true
     - name: Install plugins
       run: |
         cordova plugin add cordova-plugin-file
         cordova plugin add cordova-plugin-camera
         cordova plugin add cordova-plugin-android-permissions
         cordova plugin add cordova-plugin-device
+        cordova plugin add cordova-plugin-x-socialsharing
     - run: cordova build android --debug
     - name: Prepare outputs
       run: |
         mkdir -p outputs
         find platforms/android/app/build/outputs/apk/debug -name "*.apk" -exec cp {} outputs/MyApp-debug.apk \;
+        ls -lh outputs/
     - uses: actions/upload-artifact@v4
       with:
         name: MyApp-debug
         path: outputs/MyApp-debug.apk
+        if-no-files-found: error

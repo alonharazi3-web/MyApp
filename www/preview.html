@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>תצוגה מקדימה</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: #f5f5f5;
+            padding: 10px;
+        }
+        .header {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 10px;
+            z-index: 100;
+        }
+        h1 {
+            color: #667eea;
+            font-size: 20px;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+        .btn-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .btn {
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn:active {
+            transform: scale(0.95);
+        }
+        .btn-share {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+        .btn-close {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+        }
+        .preview {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 1.6;
+            overflow-x: auto;
+        }
+        .status {
+            background: #d1fae5;
+            color: #065f46;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+            text-align: center;
+            font-size: 13px;
+            display: none;
+        }
+        .status.show {
+            display: block;
+        }
+        .status.error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>👁️ תצוגה מקדימה - Excel</h1>
+        <div class="btn-row">
+            <button class="btn btn-share" onclick="shareFile()">
+                📤 שיתוף (Android)
+            </button>
+            <button class="btn btn-close" onclick="closeWindow()">
+                ✖️ סגור
+            </button>
+        </div>
+        <div id="status" class="status"></div>
+    </div>
+    
+    <div class="preview" id="preview">טוען נתונים...</div>
+
+    <script>
+        let csvContent = '';
+        let appData = null;
+
+        function showStatus(message, isError = false) {
+            const status = document.getElementById('status');
+            status.textContent = message;
+            status.className = 'status show' + (isError ? ' error' : '');
+            setTimeout(() => {
+                status.className = 'status';
+            }, 3000);
+        }
+
+        function generateFullCSV(data) {
+            let csv = '\uFEFF'; // UTF-8 BOM
+            
+            // כותרת
+            csv += '=== נתוני הערכה ===\n\n';
+            csv += 'שאלה: שם ההערכה\n';
+            csv += 'תשובה: ' + (data.assessmentName || 'לא מולא') + '\n\n';
+            
+            csv += 'שאלה: שם המעריך\n';
+            csv += 'תשובה: ' + (data.evaluatorName || 'לא מולא') + '\n\n';
+            
+            csv += 'תאריך: ' + new Date().toLocaleDateString('he-IL') + '\n\n';
+            
+            // חניכים
+            csv += '=== חניכים ===\n\n';
+            for (let i = 1; i <= 4; i++) {
+                csv += 'שאלה: חניך ' + i + '\n';
+                csv += 'תשובה: ' + (data['trainee' + i] || 'לא מולא') + '\n\n';
+            }
+            
+            // דגשים
+            csv += '=== דגשים ===\n\n';
+            csv += 'שאלה: דגשים כלליים\n';
+            csv += 'תשובה: ' + (data.highlights || 'לא מולא') + '\n\n';
+            
+            // תרגיל בלון - כל 4 חניכים
+            csv += '=== תרגיל בלון ===\n\n';
+            for (let t = 0; t < 4; t++) {
+                const traineeName = data['trainee' + (t + 1)] || 'חניך ' + (t + 1);
+                csv += 'חניך: ' + traineeName + '\n';
+                
+                csv += '  שאלה: גמישות מחשבתית\n';
+                csv += '  תשובה: ' + (data[`${t}-גמישות`] || 'לא מולא') + '\n';
+                
+                csv += '  שאלה: תכנון\n';
+                csv += '  תשובה: ' + (data[`${t}-תכנון`] || 'לא מולא') + '\n';
+                
+                csv += '  שאלה: לחץ ועמימות\n';
+                csv += '  תשובה: ' + (data[`${t}-לחץ`] || 'לא מולא') + '\n';
+                
+                csv += '  שאלה: הערות\n';
+                csv += '  תשובה: ' + (data[`balloon-${t}-notes`] || 'לא מולא') + '\n\n';
+            }
+            
+            // תרגיל טיח - כל 4 חניכים
+            csv += '=== תרגיל טיח ===\n\n';
+            for (let t = 0; t < 4; t++) {
+                const traineeName = data['trainee' + (t + 1)] || 'חניך ' + (t + 1);
+                csv += 'חניך: ' + traineeName + '\n';
+                
+                csv += '  שאלה: חנות\n';
+                csv += '  תשובה: ' + (data[`tiach-${t}-store`] || 'לא מולא') + '\n';
+                
+                csv += '  שאלה: ציון\n';
+                csv += '  תשובה: ' + (data[`tiach-${t}-score`] || 'לא מולא') + '\n';
+                
+                csv += '  שאלה: הערות\n';
+                csv += '  תשובה: ' + (data[`tiach-${t}-notes`] || 'לא מולא') + '\n\n';
+            }
+            
+            // תרגיל דולירה - כל 4 חניכים
+            csv += '=== תרגיל דולירה ===\n\n';
+            for (let t = 0; t < 4; t++) {
+                const traineeName = data['trainee' + (t + 1)] || 'חניך ' + (t + 1);
+                csv += 'חניך: ' + traineeName + '\n';
+                
+                csv += '  שאלה: זמן\n';
+                csv += '  תשובה: ' + (data[`dolira-${t}-time`] || 'לא מולא') + '\n';
+                
+                csv += '  שאלה: איכות\n';
+                csv += '  תשובה: ' + (data[`dolira-${t}-quality`] || 'לא מולא') + '\n\n';
+            }
+            
+            // תרגיל דוד - כל 4 חניכים
+            csv += '=== תרגיל דוד ===\n\n';
+            for (let t = 0; t < 4; t++) {
+                const traineeName = data['trainee' + (t + 1)] || 'חניך ' + (t + 1);
+                csv += 'חניך: ' + traineeName + '\n';
+                
+                csv += '  שאלה: ביצוע\n';
+                csv += '  תשובה: ' + (data[`david-${t}-score`] || 'לא מולא') + '\n';
+                
+                csv += '  שאלה: הערות\n';
+                csv += '  תשובה: ' + (data[`david-${t}-notes`] || 'לא מולא') + '\n\n';
+            }
+            
+            // תרגיל לילה - כל 4 חניכים
+            csv += '=== תרגיל לילה ===\n\n';
+            for (let t = 0; t < 4; t++) {
+                const traineeName = data['trainee' + (t + 1)] || 'חניך ' + (t + 1);
+                csv += 'חניך: ' + traineeName + '\n';
+                
+                csv += '  שאלה: מלון\n';
+                csv += '  תשובה: ' + (data[`laila-${t}-hotel`] || 'לא מולא') + '\n';
+                
+                csv += '  שאלה: ציון\n';
+                csv += '  תשובה: ' + (data[`laila-${t}-score`] || 'לא מולא') + '\n';
+                
+                csv += '  שאלה: הערות\n';
+                csv += '  תשובה: ' + (data[`laila-${t}-notes`] || 'לא מולא') + '\n\n';
+            }
+            
+            // תרגיל מכתב - כל 4 חניכים
+            csv += '=== תרגיל מכתב ===\n\n';
+            for (let t = 0; t < 4; t++) {
+                const traineeName = data['trainee' + (t + 1)] || 'חניך ' + (t + 1);
+                csv += 'חניך: ' + traineeName + '\n';
+                
+                csv += '  שאלה: ציון\n';
+                csv += '  תשובה: ' + (data[`michtav-${t}-score`] || 'לא מולא') + '\n';
+                
+                csv += '  שאלה: הערות\n';
+                csv += '  תשובה: ' + (data[`michtav-${t}-notes`] || 'לא מולא') + '\n\n';
+            }
+            
+            // תרגיל יומינט - כל 4 חניכים
+            csv += '=== תרגיל יומינט ===\n\n';
+            for (let t = 0; t < 4; t++) {
+                const traineeName = data['trainee' + (t + 1)] || 'חניך ' + (t + 1);
+                csv += 'חניך: ' + traineeName + '\n';
+                
+                csv += '  שאלה: מלון\n';
+                csv += '  תשובה: ' + (data[`yominet-${t}-hotel`] || 'לא מולא') + '\n';
+                
+                csv += '  שאלה: ציון\n';
+                csv += '  תשובה: ' + (data[`yominet-${t}-score`] || 'לא מולא') + '\n';
+                
+                csv += '  שאלה: הערות\n';
+                csv += '  תשובה: ' + (data[`yominet-${t}-notes`] || 'לא מולא') + '\n\n';
+            }
+            
+            // היסטוריית חנויות
+            csv += '=== היסטוריית חנויות ===\n\n';
+            if (data.storeHistory && data.storeHistory.length > 0) {
+                data.storeHistory.forEach((s, i) => {
+                    csv += 'חנות ' + (i + 1) + ':\n';
+                    csv += '  שם: ' + (s.name || 'לא מולא') + '\n';
+                    csv += '  כתובת: ' + (s.address || 'לא מולא') + '\n';
+                    csv += '  תאריך: ' + (s.date || 'לא מולא') + '\n';
+                    csv += '  הערות: ' + (s.notes || 'לא מולא') + '\n\n';
+                });
+            } else {
+                csv += 'אין נתונים\n\n';
+            }
+            
+            // היסטוריית מלונות
+            csv += '=== היסטוריית מלונות ===\n\n';
+            if (data.hotelHistory && data.hotelHistory.length > 0) {
+                data.hotelHistory.forEach((h, i) => {
+                    csv += 'מלון ' + (i + 1) + ':\n';
+                    csv += '  שם: ' + (h.name || 'לא מולא') + '\n';
+                    csv += '  כתובת: ' + (h.address || 'לא מולא') + '\n';
+                    csv += '  תאריך: ' + (h.date || 'לא מולא') + '\n';
+                    csv += '  הערות: ' + (h.notes || 'לא מולא') + '\n\n';
+                });
+            } else {
+                csv += 'אין נתונים\n\n';
+            }
+            
+            return csv;
+        }
+
+        function shareFile() {
+            if (!csvContent) {
+                showStatus('❌ אין נתונים לשיתוף', true);
+                return;
+            }
+
+            const filename = 'משוב-סדנה_' + new Date().toISOString().slice(0, 10) + '.csv';
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            
+            // נסה Web Share API עם קובץ
+            if (navigator.share && navigator.canShare) {
+                const file = new File([blob], filename, { type: 'text/csv;charset=utf-8' });
+                
+                if (navigator.canShare({ files: [file] })) {
+                    navigator.share({
+                        files: [file],
+                        title: 'משוב סדנה',
+                        text: 'קובץ Excel - נתוני הערכה'
+                    }).then(() => {
+                        showStatus('✅ שותף בהצלחה!');
+                    }).catch((error) => {
+                        if (error.name !== 'AbortError') {
+                            console.error('Share failed:', error);
+                            fallbackDownload();
+                        }
+                    });
+                } else {
+                    fallbackDownload();
+                }
+            } else {
+                fallbackDownload();
+            }
+        }
+        
+        function fallbackDownload() {
+            // אם Share לא עובד - הורד את הקובץ
+            const filename = 'משוב-סדנה_' + new Date().toISOString().slice(0, 10) + '.csv';
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            setTimeout(() => {
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }, 100);
+            
+            showStatus('✅ הקובץ הורד ל-Downloads!');
+        }
+
+        function closeWindow() {
+            window.close();
+            // אם לא עובד, נסה לחזור
+            setTimeout(() => {
+                if (window.history.length > 1) {
+                    window.history.back();
+                }
+            }, 100);
+        }
+
+        // טען נתונים
+        window.addEventListener('load', function() {
+            try {
+                const stored = localStorage.getItem('feedbackAppData');
+                if (stored) {
+                    appData = JSON.parse(stored);
+                    csvContent = generateFullCSV(appData);
+                    
+                    // הצג תצוגה מקדימה
+                    document.getElementById('preview').textContent = csvContent;
+                    showStatus('✅ מוכן לשיתוף!');
+                } else {
+                    document.getElementById('preview').textContent = '❌ לא נמצאו נתונים';
+                    showStatus('❌ לא התקבלו נתונים', true);
+                }
+            } catch (error) {
+                document.getElementById('preview').textContent = '❌ שגיאה: ' + error.message;
+                showStatus('❌ שגיאה בטעינת נתונים', true);
+            }
+        });
+    </script>
+</body>
+</html>

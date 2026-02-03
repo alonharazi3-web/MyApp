@@ -165,35 +165,34 @@ window.printExcel = function() {
     }
 };
 
-// Open export popup with working save methods
+// Open preview with Android share
 window.openExcelPreview = function() {
-    console.log('📊 Opening Excel export...');
+    console.log('👁️ Opening preview with share...');
     
     try {
         localStorage.setItem('feedbackAppData', JSON.stringify(window.app.data));
-        localStorage.setItem('exportType', 'excel');
         
-        // פתח export-popup בדפדפן (HTML טהור - השיטות עובדות!)
-        const popup = window.open('export-popup.html', '_blank');
+        // פתח preview.html (תצוגה מקדימה + שיתוף אנדרואיד)
+        const preview = window.open('preview.html', '_blank');
         
-        if (!popup) {
+        if (!preview) {
             alert('⚠️ לא ניתן לפתוח חלון.\n\nאפשר פופאפים בדפדפן!');
         }
     } catch (error) {
-        console.error('Export error:', error);
+        console.error('Preview error:', error);
         alert('❌ שגיאה: ' + error.message);
     }
 };
 
-// Open export popup (for admin page)
+// Open export popup for admin/summary
 window.openExportPopup = function(type) {
     console.log('📊 Opening export:', type);
     
     try {
         localStorage.setItem('feedbackAppData', JSON.stringify(window.app.data));
-        localStorage.setItem('exportType', type); // excel or json
+        localStorage.setItem('exportType', type);
         
-        // פתח export-popup בדפדפן (HTML טהור - השיטות עובדות!)
+        // פתח export-popup.html (בחירת שיטות שמירה)
         const popup = window.open('export-popup.html', '_blank');
         
         if (!popup) {

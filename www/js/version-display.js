@@ -13,7 +13,7 @@ versionDiv.style.cssText = `
     z-index: 99998;
     pointer-events: none;
 `;
-versionDiv.textContent = 'v4.1 - Excel XLSX';
+versionDiv.textContent = 'v4.4 - FINAL';
 
 window.addEventListener('load', () => {
     document.body.appendChild(versionDiv);

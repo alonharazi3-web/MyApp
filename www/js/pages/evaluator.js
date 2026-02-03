@@ -35,6 +35,12 @@ export class EvaluatorPage {
                     <button class="btn btn-forward" onclick="goToPage('assessment')">קדימה ➡</button>
                 </div>
             </div>
+            
+            <!-- Easter Egg -->
+            <div id="easterEgg" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 99999; justify-content: center; align-items: center;">
+                <img src="easter-egg.png" style="max-width: 80%; max-height: 80%; border-radius: 20px; box-shadow: 0 0 50px rgba(255,255,255,0.3);">
+            </div>
+            <audio id="easterEggAudio" src="easter-egg.mp3" loop></audio>
         `;
     }
 
@@ -42,6 +48,7 @@ export class EvaluatorPage {
         this.renderPrimaryButtons();
         this.updateHighlights();
         this.attachEventListeners();
+        this.initEasterEgg();
     }
 
     renderPrimaryButtons() {
@@ -123,6 +130,44 @@ export class EvaluatorPage {
                 e.target.value = '';
             };
         }
+    }
+
+    initEasterEgg() {
+        let clickCount = 0;
+        let clickTimer = null;
+        
+        const evaluatorInput = document.getElementById('evaluatorName');
+        const easterEgg = document.getElementById('easterEgg');
+        const audio = document.getElementById('easterEggAudio');
+        
+        if (!evaluatorInput || !easterEgg || !audio) return;
+        
+        // לחיצה על תיבת טקסט
+        evaluatorInput.addEventListener('click', () => {
+            clickCount++;
+            
+            // איפוס אחרי 2 שניות
+            if (clickTimer) clearTimeout(clickTimer);
+            clickTimer = setTimeout(() => {
+                clickCount = 0;
+            }, 2000);
+            
+            // אם לחצו 10 פעמים
+            if (clickCount >= 10) {
+                clickCount = 0;
+                easterEgg.style.display = 'flex';
+                audio.play().catch(err => console.log('Audio play failed:', err));
+            }
+        });
+        
+        // סגירה בלחיצה על הרקע
+        easterEgg.addEventListener('click', (e) => {
+            if (e.target === easterEgg) {
+                easterEgg.style.display = 'none';
+                audio.pause();
+                audio.currentTime = 0;
+            }
+        });
     }
 
     onLeave() {

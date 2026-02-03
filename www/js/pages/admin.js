@@ -54,14 +54,9 @@ export class AdminPage {
                     📊 ייצוא נתונים
                 </h3>
                 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
-                    <button class="btn btn-save" onclick="openExportPopup('excel')" style="background: #10b981; font-size: 16px;">
-                        📊 ייצוא Excel
-                    </button>
-                    <button class="btn btn-save" onclick="openExportPopup('json')" style="background: #3b82f6; font-size: 16px;">
-                        📄 ייצוא JSON
-                    </button>
-                </div>
+                <button class="btn btn-save" onclick="exportAdminJSON()" style="background: #3b82f6; font-size: 16px; width: 100%; margin-bottom: 15px;">
+                    📄 ייצוא הגדרות (JSON)
+                </button>
                 
                 <div class="nav-buttons">
                     <button class="btn btn-save" onclick="saveAdminAndBack()">💾 שמור וחזור</button>

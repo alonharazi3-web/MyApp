@@ -283,54 +283,30 @@
                 return;
             }
 
-            const filename = 'משוב-סדנה_' + new Date().toISOString().slice(0, 10) + '.csv';
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            console.log('📤 Attempting social share...');
             
-            console.log('📤 Attempting share...');
-            console.log('navigator.share exists:', !!navigator.share);
-            console.log('navigator.canShare exists:', !!navigator.canShare);
-            
-            // בדוק אם Share API זמין
-            if (navigator.share) {
-                const file = new File([blob], filename, { type: 'text/csv;charset=utf-8' });
+            // בדוק אם Social Sharing Plugin זמין
+            if (window.plugins && window.plugins.socialsharing) {
+                console.log('✅ Using Social Sharing Plugin');
                 
-                // בדוק אם אפשר לשתף קבצים
-                if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                    console.log('✅ Can share files!');
-                    
-                    navigator.share({
-                        files: [file],
-                        title: 'משוב סדנה',
-                        text: 'קובץ Excel - נתוני הערכה'
-                    }).then(() => {
-                        console.log('✅ Share successful');
-                        showStatus('✅ שותף בהצלחה!');
-                    }).catch((error) => {
-                        if (error.name === 'AbortError') {
-                            console.log('ℹ️ Share cancelled by user');
-                            showStatus('ביטלת את השיתוף', false);
-                        } else {
-                            console.error('❌ Share failed:', error);
-                            showStatus('❌ שיתוף נכשל: ' + error.message, true);
-                            fallbackDownload();
-                        }
-                    });
-                } else {
-                    console.warn('⚠️ Cannot share files, trying text share');
-                    
-                    // נסה לשתף כטקסט
-                    navigator.share({
-                        title: 'משוב סדנה',
-                        text: 'משוב סדנת אימפרוביזציה - הקובץ הורד למכשיר'
-                    }).then(() => {
-                        fallbackDownload();
-                    }).catch(() => {
-                        fallbackDownload();
-                    });
-                }
+                const filename = 'משוב-סדנה_' + new Date().toISOString().slice(0, 10) + '.csv';
+                const base64 = 'data:text/csv;base64,' + btoa(unescape(encodeURIComponent(csvContent)));
+                
+                window.plugins.socialsharing.shareWithOptions({
+                    message: 'משוב סדנת אימפרוביזציה - נתוני הערכה',
+                    subject: 'משוב סדנה',
+                    files: [base64],
+                    chooserTitle: 'שתף קובץ Excel'
+                }, function(result) {
+                    console.log('✅ Share success');
+                    showStatus('✅ שיתוף הצליח!');
+                }, function(error) {
+                    console.error('❌ Share failed:', error);
+                    showStatus('❌ שיתוף נכשל', true);
+                    fallbackDownload();
+                });
             } else {
-                console.warn('⚠️ Share API not available');
-                showStatus('⚠️ שיתוף אנדרואיד לא זמין - מוריד קובץ', false);
+                console.warn('⚠️ Social Sharing Plugin not available, using fallback');
                 fallbackDownload();
             }
         }
@@ -341,7 +317,6 @@
             const filename = 'משוב-סדנה_' + new Date().toISOString().slice(0, 10) + '.csv';
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
             
-            // שיטה 5 - הכי אמינה
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.style.display = 'none';
@@ -356,24 +331,22 @@
             }, 100);
             
             showStatus('✅ הקובץ הורד ל-Downloads!');
-            
-            // הצג הוראות שיתוף ידני
-            setTimeout(() => {
-                alert('📱 הקובץ נשמר ב-Downloads!\n\n' +
-                      'לשיתוף ידני:\n' +
-                      '1. פתח את תיקיית Downloads\n' +
-                      '2. לחץ לחיצה ארוכה על הקובץ\n' +
-                      '3. בחר "שתף"\n' +
-                      '4. בחר אפליקציה (WhatsApp/Gmail/וכו)');
-            }, 1000);
         }
 
         function closeWindow() {
+            // נסה לסגור את החלון
             window.close();
-            // אם לא עובד, נסה לחזור
+            
+            // אם לא עבד, נסה לחזור אחורה
             setTimeout(() => {
-                if (window.history.length > 1) {
+                if (window.opener) {
+                    window.opener.focus();
+                    window.close();
+                } else if (window.history.length > 1) {
                     window.history.back();
+                } else {
+                    // אם כלום לא עבד, נסה לנווט לדף סיכום
+                    window.location.href = 'index.html#summary';
                 }
             }, 100);
         }

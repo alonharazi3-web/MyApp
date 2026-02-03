@@ -19,14 +19,14 @@ export class SummaryPage {
                 <div class="criteria-list" id="criteriaList"></div>
                 
                 <div class="export-buttons">
-                    <button class="btn btn-excel" onclick="openExportPopup('excel')">📊 ייצוא Excel</button>
-                    <button class="btn btn-print" onclick="openExcelPreview()">👁️ תצוגה מקדימה + שיתוף</button>
+                    <button class="btn btn-excel" onclick="testSocialSharing()">📊 ייצוא Excel</button>
+                    <button class="btn btn-print" onclick="openExcelPreview()">👁️ תצוגה מקדימה</button>
                 </div>
                 
-                <div style="margin-top: 10px; padding: 10px; background: #fff3cd; border-radius: 8px; border: 2px dashed #ffc107;">
-                    <p style="font-size: 12px; color: #856404; margin-bottom: 8px; font-weight: bold;">🧪 בדיקת Social Sharing Plugin:</p>
-                    <button class="btn" onclick="testSocialSharing()" style="width: 100%; background: #ffc107; color: #000;">
-                        📤 שיתוף עם Plugin (אנדרואיד מקורי)
+                <div style="margin-top: 10px; padding: 10px; background: #e3f2fd; border-radius: 8px; border: 2px dashed #2196f3;">
+                    <p style="font-size: 12px; color: #1565c0; margin-bottom: 8px; font-weight: bold;">🧪 בדיקת Cordova File Plugin:</p>
+                    <button class="btn" onclick="testFilePlugin()" style="width: 100%; background: #2196f3; color: white;">
+                        💾 שמירה עם File Plugin
                     </button>
                 </div>
                 

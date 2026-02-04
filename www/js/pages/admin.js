@@ -61,14 +61,14 @@ export class AdminPage {
                 </h3>
                 
                 <button class="btn btn-save" onclick="exportAdminJSON()" style="background: #3b82f6; font-size: 16px; width: 100%; margin-bottom: 15px;">
-                    📄 ייצוא הגדרות (JSON)
+                    📄 ייצוא הגדרות (TXT)
                 </button>
                 
                 <div class="nav-buttons">
                     <button class="btn btn-save" onclick="saveAdminAndBack()">💾 שמור וחזור</button>
                     <button class="btn btn-save" onclick="loadAdminJSON()">📤 טען הגדרות</button>
                 </div>
-                <input type="file" id="jsonFileInput" accept=".json" style="display: none;" onchange="handleJSONFile(event)">
+                <input type="file" id="jsonFileInput" accept=".json,.txt" style="display: none;" onchange="handleJSONFile(event)">
             </div>
         `;
     }

@@ -290,9 +290,9 @@ window.testFilePlugin = function() {
     }
 };
 
-// Export admin JSON - WRITE FILE FIRST, NO ALERT
+// Export admin settings as TXT (JSON content) - MORE COMPATIBLE
 window.exportAdminJSON = function() {
-    console.log('📄 Exporting admin JSON...');
+    console.log('📄 Exporting settings as TXT...');
     
     if (!window.plugins || !window.plugins.socialsharing) {
         alert('❌ Social Sharing Plugin לא זמין!');
@@ -307,9 +307,9 @@ window.exportAdminJSON = function() {
     try {
         const jsonStr = JSON.stringify(window.app.data, null, 2);
         const dateStr = new Date().toISOString().slice(0, 10);
-        const filename = `settings_${dateStr}.json`;
+        const filename = `settings_${dateStr}.txt`;  // Changed to .txt!
         
-        const blob = new Blob([jsonStr], { type: 'application/json' });
+        const blob = new Blob([jsonStr], { type: 'text/plain' });  // Changed to text/plain!
         
         // כתיבה ל-cache
         window.resolveLocalFileSystemURL(window.cordova.file.cacheDirectory, function(dirEntry) {
@@ -320,9 +320,9 @@ window.exportAdminJSON = function() {
                         window.plugins.socialsharing.shareWithOptions({
                             message: 'הגדרות מנהל',
                             files: [fileEntry.nativeURL],
-                            chooserTitle: 'שתף JSON'
+                            chooserTitle: 'שמור קובץ הגדרות'
                         }, function() {
-                            console.log('✅ JSON shared');
+                            console.log('✅ Settings shared');
                         }, function(error) {
                             console.error('❌ Share failed:', error);
                         });

@@ -143,43 +143,6 @@ window.generateTabularExcel = function(data) {
         addRow(traineeName, 'יומינט', qCounter++, 'חריגים או תקלות?', '', '', data[`${yominetPrefix}-incidents`] || '');
         addRow(traineeName, 'יומינט', qCounter++, 'סקירת תוצרים מהנייד:', data[`${yominetPrefix}-reviewed`] || '', '', '');
         addRow(traineeName, 'יומינט', qCounter++, 'ביצוע עפי תוכנית:', data[`${yominetPrefix}-according_to_plan`] || '', '', '');
-        
-        // תרגילים מותאמים אישית
-        if (data.customExercises && data.customExercises.length > 0) {
-            data.customExercises.forEach(customEx => {
-                const exerciseKey = `custom_${customEx.id}_${t}`;
-                const exerciseData = data.exerciseData[exerciseKey] || {};
-                
-                switch (customEx.type) {
-                    case 'story':
-                        addRow(traineeName, customEx.name, qCounter++, 'סיפור הוצג לחניך', 'כן', '', '');
-                        break;
-                    
-                    case 'instructions':
-                        addRow(traineeName, customEx.name, qCounter++, 'הנחיות למעריך בוצעו', 'כן', '', '');
-                        break;
-                    
-                    case 'yesno':
-                        addRow(traineeName, customEx.name, qCounter++, customEx.question, 
-                            exerciseData.answer === 'yes' ? 'כן' : exerciseData.answer === 'no' ? 'לא' : '', '', '');
-                        break;
-                    
-                    case 'yesno-text':
-                        addRow(traineeName, customEx.name, qCounter++, customEx.question, 
-                            exerciseData.answer === 'yes' ? 'כן' : exerciseData.answer === 'no' ? 'לא' : '', '', 
-                            exerciseData.text || '');
-                        break;
-                    
-                    case 'text':
-                        addRow(traineeName, customEx.name, qCounter++, customEx.question, '', '', exerciseData.text || '');
-                        break;
-                    
-                    case 'scale':
-                        addRow(traineeName, customEx.name, qCounter++, customEx.question, '', exerciseData.scale || '', '');
-                        break;
-                }
-            });
-        }
     }
     
     // יצירת workbook

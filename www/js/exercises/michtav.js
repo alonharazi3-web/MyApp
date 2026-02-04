@@ -433,18 +433,75 @@ window.showLetterImage = function() {
     const img = document.createElement('img');
     img.src = 'letter.jpg';
     img.style.cssText = `
-        max-width: none;
+        max-width: 100%;
         width: 100%;
         height: auto;
         cursor: zoom-in;
         border-radius: 10px;
         box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-        touch-action: pan-x pan-y pinch-zoom;
+        touch-action: manipulation;
+        user-select: none;
+        -webkit-user-select: none;
     `;
     
-    let scale = 1;
-    let zoomed = false;
+    // Pinch-to-zoom support
+    let initialDistance = 0;
+    let currentScale = 1;
+    let panning = false;
+    let start = {x: 0, y: 0};
+    let translate = {x: 0, y: 0};
     
+    container.addEventListener('touchstart', (e) => {
+        if (e.touches.length === 2) {
+            // Pinch start
+            initialDistance = getDistance(e.touches);
+            e.preventDefault();
+        } else if (e.touches.length === 1 && currentScale > 1) {
+            // Pan start
+            panning = true;
+            start = {x: e.touches[0].clientX - translate.x, y: e.touches[0].clientY - translate.y};
+            e.preventDefault();
+        }
+    });
+    
+    container.addEventListener('touchmove', (e) => {
+        if (e.touches.length === 2 && initialDistance > 0) {
+            // Pinch zoom
+            const currentDistance = getDistance(e.touches);
+            currentScale = Math.min(Math.max(1, (currentDistance / initialDistance) * currentScale), 5);
+            img.style.transform = `scale(${currentScale}) translate(${translate.x/currentScale}px, ${translate.y/currentScale}px)`;
+            e.preventDefault();
+        } else if (e.touches.length === 1 && panning && currentScale > 1) {
+            // Pan
+            translate.x = e.touches[0].clientX - start.x;
+            translate.y = e.touches[0].clientY - start.y;
+            img.style.transform = `scale(${currentScale}) translate(${translate.x/currentScale}px, ${translate.y/currentScale}px)`;
+            e.preventDefault();
+        }
+    });
+    
+    container.addEventListener('touchend', (e) => {
+        if (e.touches.length < 2) {
+            initialDistance = 0;
+        }
+        if (e.touches.length === 0) {
+            panning = false;
+            if (currentScale <= 1) {
+                currentScale = 1;
+                translate = {x: 0, y: 0};
+                img.style.transform = '';
+            }
+        }
+    });
+    
+    function getDistance(touches) {
+        const dx = touches[0].clientX - touches[1].clientX;
+        const dy = touches[0].clientY - touches[1].clientY;
+        return Math.sqrt(dx * dx + dy * dy);
+    }
+    
+    // Click to toggle zoom
+    let zoomed = false;
     img.onclick = () => {
         if (!zoomed) {
             img.style.width = 'auto';
@@ -455,6 +512,9 @@ window.showLetterImage = function() {
             img.style.width = '100%';
             img.style.maxWidth = '100%';
             img.style.cursor = 'zoom-in';
+            currentScale = 1;
+            translate = {x: 0, y: 0};
+            img.style.transform = '';
             zoomed = false;
         }
     };

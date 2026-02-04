@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.feedback.app" version="5.1.0" 
+<widget id="com.feedback.app" version="5.2.0" 
     xmlns="http://www.w3.org/ns/widgets"
     xmlns:android="http://schemas.android.com/apk/res/android">
     <name>Feedback Workshop</name>
@@ -21,8 +21,24 @@
     <plugin name="cordova-plugin-android-permissions" />
     <plugin name="cordova-plugin-device" />
     <plugin name="cordova-plugin-x-socialsharing" source="npm" />
+    <plugin name="cordova-plugin-intent" spec="https://github.com/darryncampbell/darryncampbell-cordova-plugin-intent.git#2.2.0" />
     
     <platform name="android">
+        <!-- Intent filter to open JSON files with MyApp -->
+        <config-file target="app/src/main/AndroidManifest.xml" parent="/manifest/application/activity[@android:name='MainActivity']">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="file" />
+                <data android:scheme="content" />
+                <data android:mimeType="application/json" />
+                <data android:mimeType="text/plain" />
+                <data android:host="*" />
+                <data android:pathPattern=".*\\.json" />
+            </intent-filter>
+        </config-file>
+        
         <config-file target="app/src/main/res/values/themes.xml" parent="/resources/style[@name='Theme.App.SplashScreen']">
             <item name="android:windowOptOutEdgeToEdgeEnforcement" xmlns:tools="http://schemas.android.com/tools" tools:targetApi="35">true</item>
         </config-file>

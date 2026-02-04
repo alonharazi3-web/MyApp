@@ -12,7 +12,10 @@ export class EvaluatorPage {
                 <div class="import-box">
                     <label style="margin-bottom: 8px;">ייבוא הגדרות מנהל (קובץ JSON)</label>
                     <input type="file" id="jsonFileInput" accept=".json" style="display: none;">
-                    <button class="btn-add" onclick="triggerJSONImport()">📥 טען קובץ הגדרות</button>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn-add" onclick="triggerJSONImport()" style="flex: 1;">📥 טען קובץ הגדרות</button>
+                        <button class="btn-delete" onclick="confirmResetEvaluation()" style="flex: 1; background: #f44336;">🔄 איפוס הערכה</button>
+                    </div>
                 </div>
                 
                 <div style="margin-bottom: 20px;">
@@ -106,6 +109,25 @@ export class EvaluatorPage {
     }
 
     attachEventListeners() {
+        // Reset evaluation function
+        window.confirmResetEvaluation = () => {
+            if (confirm('⚠️ האם אתה בטוח שברצונך לאפס את ההערכה?\n\nפעולה זו תמחק:\n• כל התשובות בתרגילים\n• כל הנתונים בדף הסיכום\n\nשמות חניכים, דגשים והיסטוריה יישמרו.')) {
+                // Reset exercise data
+                window.app.data.exerciseData = {};
+                
+                // Reset summary data
+                window.app.data.summaryData = {};
+                
+                window.storage.saveData();
+                alert('✅ ההערכה אופסה בהצלחה!');
+                
+                // Refresh current page if needed
+                if (window.app.currentPage === 'assessment') {
+                    window.goToPage('assessment');
+                }
+            }
+        };
+        
         window.triggerJSONImport = () => {
             document.getElementById('jsonFileInput').click();
         };
@@ -117,10 +139,24 @@ export class EvaluatorPage {
                 if (!file) return;
 
                 try {
+                    // Ask if user wants to reset evaluation before import
+                    const shouldReset = confirm('❓ האם לאפס את ההערכה הקיימת לפני ייבוא ההגדרות?\n\n✅ כן - מחיקת כל התשובות והנתונים\n❌ לא - שמירת הנתונים הקיימים (רק הגדרות יעודכנו)');
+                    
+                    if (shouldReset) {
+                        // Reset exercise and summary data
+                        window.app.data.exerciseData = {};
+                        window.app.data.summaryData = {};
+                    }
+                    
                     await window.exportManager.loadFromJSON(file);
                     this.renderPrimaryButtons();
                     this.updateHighlights();
-                    alert('✅ הגדרות נטענו בהצלחה!\n\nשם ההערכה, חניכים, דגשים, חנויות ומלונות עודכנו.');
+                    
+                    if (shouldReset) {
+                        alert('✅ הגדרות נטענו והערכה אופסה בהצלחה!\n\nשם ההערכה, חניכים, דגשים, חנויות ומלונות עודכנו.');
+                    } else {
+                        alert('✅ הגדרות נטענו בהצלחה!\n\nשם ההערכה, חניכים, דגשים, חנויות ומלונות עודכנו.\nתשובות קיימות נשמרו.');
+                    }
                 } catch (error) {
                     alert('❌ שגיאה בקריאת קובץ JSON:\n' + error.message);
                     console.error(error);

@@ -16,12 +16,12 @@ window.generateTabularExcel = function(data) {
     const rows = [];
     
     // כותרת ראשית
-    rows.push(['משוב סדנת אימפרוביזציה', '', '', '', '', '', '']);
+    rows.push(['משוב סדנת אימפרוביזציה', '', '', '', '', '', '', '']);
     rows.push([]);
     
     // מידע כללי
-    rows.push(['מעריך:', evaluator, '', 'תאריך:', dateStr, '', '']);
-    rows.push(['דגשים:', data.highlights || 'לא מולא', '', '', '', '', '']);
+    rows.push(['מעריך:', evaluator, '', 'תאריך:', dateStr, '', '', '']);
+    rows.push(['דגשים:', data.highlights || 'לא מולא', '', '', '', '', '', '']);
     rows.push([]);
     
     // כותרות עמודות
@@ -32,12 +32,13 @@ window.generateTabularExcel = function(data) {
         'שאלה',
         'תשובה (בחירה)',
         'תשובה (מספר)',
-        'תשובה (טקסט חופשי)'
+        'תשובה (טקסט חופשי)',
+        'דוגמאות'
     ]);
     
     // פונקציה להוסיף שורה
-    function addRow(trainee, exercise, qNum, question, choice = '', number = '', text = '') {
-        rows.push([trainee, exercise, qNum, question, choice, number, text]);
+    function addRow(trainee, exercise, qNum, question, choice = '', number = '', text = '', examples = '') {
+        rows.push([trainee, exercise, qNum, question, choice, number, text, examples]);
     }
     
     // לכל חניך
@@ -143,6 +144,28 @@ window.generateTabularExcel = function(data) {
         addRow(traineeName, 'יומינט', qCounter++, 'חריגים או תקלות?', '', '', data[`${yominetPrefix}-incidents`] || '');
         addRow(traineeName, 'יומינט', qCounter++, 'סקירת תוצרים מהנייד:', data[`${yominetPrefix}-reviewed`] || '', '', '');
         addRow(traineeName, 'יומינט', qCounter++, 'ביצוע עפי תוכנית:', data[`${yominetPrefix}-according_to_plan`] || '', '', '');
+        
+        // דף סיכום - 12 תכונות
+        const criteria = window.app.criteria;
+        let summaryCounter = 1;
+        
+        for (const criterion of criteria) {
+            const key = `${t}-${criterion}`;
+            const score = window.storage.getSummaryData(key, 'score') || '';
+            const text = window.storage.getSummaryData(key, 'text') || '';
+            const examples = window.storage.getSummaryData(key, 'examples') || '';
+            
+            addRow(
+                traineeName,
+                'סיכום',
+                summaryCounter++,
+                criterion,
+                '',
+                score,
+                text,
+                examples
+            );
+        }
     }
     
     // יצירת workbook
@@ -157,7 +180,8 @@ window.generateTabularExcel = function(data) {
         {wch: 50},  // שאלה
         {wch: 20},  // בחירה
         {wch: 12},  // מספר
-        {wch: 60}   // טקסט חופשי
+        {wch: 60},  // טקסט חופשי
+        {wch: 60}   // דוגמאות
     ];
     
     XLSX.utils.book_append_sheet(wb, ws, 'משוב מלא');

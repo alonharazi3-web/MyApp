@@ -21,7 +21,7 @@
     <plugin name="cordova-plugin-android-permissions" />
     <plugin name="cordova-plugin-device" />
     <plugin name="cordova-plugin-x-socialsharing" source="npm" />
-    <plugin name="cordova-plugin-intent" spec="https://github.com/darryncampbell/darryncampbell-cordova-plugin-intent.git#2.2.0" />
+    <plugin name="com-darryncampbell-cordova-plugin-intent" spec="^2.2.0" />
     
     <platform name="android">
         <!-- Intent filter to open JSON files with MyApp -->
@@ -33,9 +33,6 @@
                 <data android:scheme="file" />
                 <data android:scheme="content" />
                 <data android:mimeType="application/json" />
-                <data android:mimeType="text/plain" />
-                <data android:host="*" />
-                <data android:pathPattern=".*\\.json" />
             </intent-filter>
         </config-file>
         

@@ -32,7 +32,8 @@ window.app = {
         exerciseData: {},
         summaryData: {},
         storeHistory: [],
-        hotelHistory: []
+        hotelHistory: [],
+        customExercises: []
     },
     traineeColors: ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A'],
     exercises: ['בלון', 'טיח', 'דולירה', 'דויד', 'לילה', 'מכתב', 'יומינט'],

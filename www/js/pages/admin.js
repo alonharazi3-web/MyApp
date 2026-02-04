@@ -51,6 +51,12 @@ export class AdminPage {
                 <button class="btn-add" onclick="addHotelToAdmin()">הוסף מלון</button>
                 
                 <h3 style="margin-top: 25px; padding-top: 25px; border-top: 2px solid #eee;">
+                    🎯 תרגילים מותאמים אישית (BETA)
+                </h3>
+                <div id="customExercisesList" class="history-list"></div>
+                <button class="btn-add" onclick="addCustomExercise()">➕ הוסף תרגיל חדש</button>
+                
+                <h3 style="margin-top: 25px; padding-top: 25px; border-top: 2px solid #eee;">
                     📊 ייצוא נתונים
                 </h3>
                 
@@ -70,6 +76,7 @@ export class AdminPage {
     onEnter() {
         this.renderStoreHistory();
         this.renderHotelHistory();
+        this.renderCustomExercises();
         this.attachEventListeners();
     }
 
@@ -161,6 +168,60 @@ export class AdminPage {
         window.addHotelToAdmin = () => {
             window.storage.addHotel('', '', '');
             this.renderHotelHistory();
+        };
+
+        window.addCustomExercise = () => {
+            const types = [
+                { value: 'story', label: 'סיפור מעשה לחניך' },
+                { value: 'instructions', label: 'הנחיות למעריך' },
+                { value: 'yesno', label: 'שאלה עם תשובה כן/לא' },
+                { value: 'yesno-text', label: 'שאלה עם תשובה כן/לא ותיבת טקסט' },
+                { value: 'text', label: 'שאלה עם תשובה תיבת טקסט' },
+                { value: 'scale', label: 'שאלה עם תשובה מספר 1-7' }
+            ];
+            
+            const typeList = types.map((t, i) => `${i + 1}. ${t.label}`).join('\n');
+            const typeChoice = prompt(`בחר סוג תרגיל (1-6):\n\n${typeList}`);
+            
+            if (!typeChoice || typeChoice < 1 || typeChoice > 6) return;
+            
+            const selectedType = types[parseInt(typeChoice) - 1];
+            const name = prompt('שם התרגיל:');
+            if (!name) return;
+            
+            const exercise = {
+                id: Date.now(),
+                name: name.trim(),
+                type: selectedType.value
+            };
+            
+            // הוסף שדות לפי סוג
+            if (selectedType.value === 'story') {
+                const story = prompt('הכנס את הסיפור מעשה לחניך:');
+                if (story) exercise.story = story.trim();
+            } else if (selectedType.value === 'instructions') {
+                const instructions = prompt('הכנס הנחיות למעריך:');
+                if (instructions) exercise.instructions = instructions.trim();
+            } else {
+                const question = prompt('הכנס את השאלה:');
+                if (question) exercise.question = question.trim();
+            }
+            
+            if (!window.app.data.customExercises) {
+                window.app.data.customExercises = [];
+            }
+            
+            window.app.data.customExercises.push(exercise);
+            window.storage.saveData();
+            this.renderCustomExercises();
+        };
+
+        window.deleteCustomExercise = (idx) => {
+            if (confirm('האם אתה בטוח שברצונך למחוק תרגיל זה?')) {
+                window.app.data.customExercises.splice(idx, 1);
+                window.storage.saveData();
+                this.renderCustomExercises();
+            }
         };
 
         window.saveAdminAndBack = () => {
@@ -416,6 +477,54 @@ export class AdminPage {
             default:
                 alert(`❌ שיטה ${method} לא נתמכת`);
         }
+    }
+
+    renderCustomExercises() {
+        const container = document.getElementById('customExercisesList');
+        if (!container) return;
+
+        if (!window.app.data.customExercises) {
+            window.app.data.customExercises = [];
+        }
+
+        container.innerHTML = '';
+
+        if (window.app.data.customExercises.length === 0) {
+            container.innerHTML = '<p style="color: #666; font-size: 14px; text-align: center; padding: 20px;">אין תרגילים מותאמים. לחץ "הוסף תרגיל חדש" כדי להתחיל.</p>';
+            return;
+        }
+
+        window.app.data.customExercises.forEach((ex, index) => {
+            const card = document.createElement('div');
+            card.className = 'history-card';
+            card.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: start;">
+                    <div style="flex: 1;">
+                        <strong style="color: #667eea; font-size: 16px;">${window.escapeHtml(ex.name)}</strong>
+                        <div style="margin-top: 5px; color: #666; font-size: 13px;">
+                            סוג: ${this.getExerciseTypeName(ex.type)}
+                        </div>
+                        ${ex.story ? `<div style="margin-top: 8px; padding: 8px; background: #f0f0f0; border-radius: 6px; font-size: 13px; white-space: pre-wrap;">${window.escapeHtml(ex.story)}</div>` : ''}
+                        ${ex.instructions ? `<div style="margin-top: 8px; padding: 8px; background: #fff3cd; border-radius: 6px; font-size: 13px; white-space: pre-wrap;"><strong>הנחיות:</strong> ${window.escapeHtml(ex.instructions)}</div>` : ''}
+                        ${ex.question ? `<div style="margin-top: 8px; color: #333; font-size: 14px;"><strong>שאלה:</strong> ${window.escapeHtml(ex.question)}</div>` : ''}
+                    </div>
+                    <button onclick="deleteCustomExercise(${index})" class="btn-delete">🗑️</button>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    getExerciseTypeName(type) {
+        const types = {
+            'story': 'סיפור מעשה',
+            'instructions': 'הנחיות למעריך',
+            'yesno': 'כן/לא',
+            'yesno-text': 'כן/לא + טקסט',
+            'text': 'טקסט חופשי',
+            'scale': 'ציון 1-7'
+        };
+        return types[type] || type;
     }
 
     onLeave() {

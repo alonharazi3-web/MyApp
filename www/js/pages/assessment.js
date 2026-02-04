@@ -10,10 +10,11 @@ import { DavidExercise } from '../exercises/david.js';
 import { LailaExercise } from '../exercises/laila.js';
 import { MichtavExercise } from '../exercises/michtav.js';
 import { YominetExercise } from '../exercises/yominet.js';
+import { CustomExercisePage } from './custom-exercise.js';
 
 export class AssessmentPage {
     constructor() {
-        this.exercises = [
+        this.baseExercises = [
             new BalloonExercise(),
             new TiachExercise(),
             new DoliraExercise(),
@@ -22,6 +23,31 @@ export class AssessmentPage {
             new MichtavExercise(),
             new YominetExercise()
         ];
+    }
+    
+    getExercises() {
+        // Combine base exercises with custom exercises
+        const exercises = [...this.baseExercises];
+        
+        if (window.app.data.customExercises && window.app.data.customExercises.length > 0) {
+            window.app.data.customExercises.forEach(customEx => {
+                exercises.push(new CustomExercisePage(customEx));
+            });
+        }
+        
+        return exercises;
+    }
+    
+    getExerciseNames() {
+        const names = [...window.app.exercises]; // Base exercise names
+        
+        if (window.app.data.customExercises && window.app.data.customExercises.length > 0) {
+            window.app.data.customExercises.forEach(customEx => {
+                names.push(customEx.name);
+            });
+        }
+        
+        return names;
     }
 
     render() {
@@ -73,7 +99,10 @@ export class AssessmentPage {
 
         container.innerHTML = '';
         
-        window.app.exercises.forEach((exerciseName, i) => {
+        const exercises = this.getExercises();
+        const exerciseNames = this.getExerciseNames();
+        
+        exerciseNames.forEach((exerciseName, i) => {
             const btn = document.createElement('button');
             btn.className = 'exercise-tab';
             btn.id = `exerciseTab${i}`;
@@ -118,7 +147,8 @@ export class AssessmentPage {
         window.app.currentExercise = index;
         
         // Update tab styles
-        window.app.exercises.forEach((_, i) => {
+        const exerciseNames = this.getExerciseNames();
+        exerciseNames.forEach((_, i) => {
             const tab = document.getElementById(`exerciseTab${i}`);
             if (!tab) return;
             
@@ -138,14 +168,17 @@ export class AssessmentPage {
 
         const traineeId = window.app.currentTrainee;
         const exerciseId = window.app.currentExercise;
-        const exercise = this.exercises[exerciseId];
+        const exercises = this.getExercises();
+        const exercise = exercises[exerciseId];
         
         if (exercise) {
             content.innerHTML = exercise.render(traineeId, exerciseId);
             
-            // Call onRender hook if exists
+            // Call onRender or onEnter hook if exists
             if (exercise.onRender) {
                 setTimeout(() => exercise.onRender(traineeId, exerciseId), 0);
+            } else if (exercise.onEnter) {
+                setTimeout(() => exercise.onEnter(), 0);
             }
         } else {
             content.innerHTML = '<p>תרגיל לא נמצא</p>';

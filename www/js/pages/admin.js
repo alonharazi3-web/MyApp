@@ -54,17 +54,9 @@ export class AdminPage {
                     📊 ייצוא הגדרות
                 </h3>
                 
-                <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px;">
-                    <button class="btn btn-save" onclick="exportAdminJSON('share')" style="background: #3b82f6;">
-                        📤 שיתוף (Social Share)
-                    </button>
-                    <button class="btn btn-save" onclick="exportAdminJSON('external')" style="background: #10b981;">
-                        💾 שמירה (External Storage)
-                    </button>
-                    <button class="btn btn-save" onclick="exportAdminJSON('dialog')" style="background: #f59e0b;">
-                        📁 בחר מיקום (Save Dialog)
-                    </button>
-                </div>
+                <button class="btn btn-save" onclick="exportAdminJSON()" style="background: #3b82f6; margin-bottom: 15px;">
+                    📤 ייצוא הגדרות (JSON)
+                </button>
                 
                 <div class="nav-buttons">
                     <button class="btn btn-save" onclick="saveAdminAndBack()">💾 שמור וחזור</button>

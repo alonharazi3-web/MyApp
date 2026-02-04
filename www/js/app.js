@@ -290,11 +290,16 @@ window.testFilePlugin = function() {
 };
 
 // Export admin JSON with 3 methods
-window.exportAdminJSON = function(method) {
-    console.log(`📄 Exporting JSON via method: ${method}`);
+window.exportAdminJSON = function() {
+    console.log('📄 Exporting JSON via Social Share');
     
     if (!window.cordova || !window.cordova.file) {
         console.error('❌ File Plugin not available');
+        return;
+    }
+    
+    if (!window.plugins || !window.plugins.socialsharing) {
+        console.error('❌ Social Sharing Plugin not available');
         return;
     }
     
@@ -304,78 +309,33 @@ window.exportAdminJSON = function(method) {
         const filename = `settings_${dateStr}.json`;
         const blob = new Blob([jsonStr], { type: 'application/json' });
         
-        if (method === 'share') {
-            // Method 1: Social Sharing
-            if (!window.plugins || !window.plugins.socialsharing) {
-                console.error('❌ Social Sharing Plugin not available');
-                return;
-            }
-            
-            window.resolveLocalFileSystemURL(window.cordova.file.cacheDirectory, function(dirEntry) {
-                dirEntry.getFile(filename, { create: true, exclusive: false }, function(fileEntry) {
-                    fileEntry.createWriter(function(fileWriter) {
-                        fileWriter.onwriteend = function() {
-                            window.plugins.socialsharing.shareWithOptions({
-                                message: 'הגדרות מנהל',
-                                files: [fileEntry.nativeURL],
-                                chooserTitle: 'שתף קובץ הגדרות'
-                            }, function() {
-                                console.log('✅ Share success');
-                            }, function(error) {
-                                console.error('❌ Share failed:', error);
-                            });
-                        };
-                        
-                        fileWriter.onerror = function(e) {
-                            console.error('❌ Write failed:', e);
-                        };
-                        
-                        fileWriter.write(blob);
-                    });
-                }, function(error) {
-                    console.error('❌ getFile failed:', error);
+        // Social Sharing - קובץ בלבד, ללא message
+        window.resolveLocalFileSystemURL(window.cordova.file.cacheDirectory, function(dirEntry) {
+            dirEntry.getFile(filename, { create: true, exclusive: false }, function(fileEntry) {
+                fileEntry.createWriter(function(fileWriter) {
+                    fileWriter.onwriteend = function() {
+                        window.plugins.socialsharing.shareWithOptions({
+                            files: [fileEntry.nativeURL],
+                            chooserTitle: 'שתף קובץ הגדרות'
+                        }, function() {
+                            console.log('✅ Share success');
+                        }, function(error) {
+                            console.error('❌ Share failed:', error);
+                        });
+                    };
+                    
+                    fileWriter.onerror = function(e) {
+                        console.error('❌ Write failed:', e);
+                    };
+                    
+                    fileWriter.write(blob);
                 });
             }, function(error) {
-                console.error('❌ File system access failed:', error);
+                console.error('❌ getFile failed:', error);
             });
-            
-        } else if (method === 'external') {
-            // Method 2: External Storage
-            window.resolveLocalFileSystemURL(window.cordova.file.externalDataDirectory, function(dirEntry) {
-                dirEntry.getFile(filename, { create: true, exclusive: false }, function(fileEntry) {
-                    fileEntry.createWriter(function(fileWriter) {
-                        fileWriter.onwriteend = function() {
-                            console.log('✅ Saved to:', fileEntry.nativeURL);
-                        };
-                        
-                        fileWriter.onerror = function(e) {
-                            console.error('❌ Write failed:', e);
-                        };
-                        
-                        fileWriter.write(blob);
-                    });
-                }, function(error) {
-                    console.error('❌ getFile failed:', error);
-                });
-            }, function(error) {
-                console.error('❌ External storage access failed:', error);
-            });
-            
-        } else if (method === 'dialog') {
-            // Method 3: Save Dialog
-            if (!window.cordova || !window.cordova.plugins || !window.cordova.plugins.saveDialog) {
-                console.error('❌ Save Dialog Plugin not installed');
-                return;
-            }
-            
-            window.cordova.plugins.saveDialog.saveFile(blob, filename)
-                .then(function(uri) {
-                    console.log('✅ Saved to:', uri);
-                })
-                .catch(function(error) {
-                    console.error('❌ Save dialog failed:', error);
-                });
-        }
+        }, function(error) {
+            console.error('❌ File system access failed:', error);
+        });
         
     } catch (error) {
         console.error('❌ Error:', error);

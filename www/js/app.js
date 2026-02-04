@@ -294,7 +294,7 @@ window.exportAdminJSON = function(method) {
     console.log(`📄 Exporting JSON via method: ${method}`);
     
     if (!window.cordova || !window.cordova.file) {
-        alert('❌ File Plugin לא זמין!');
+        console.error('❌ File Plugin not available');
         return;
     }
     
@@ -305,9 +305,9 @@ window.exportAdminJSON = function(method) {
         const blob = new Blob([jsonStr], { type: 'application/json' });
         
         if (method === 'share') {
-            // Method 1: Social Sharing (existing)
+            // Method 1: Social Sharing
             if (!window.plugins || !window.plugins.socialsharing) {
-                alert('❌ Social Sharing Plugin לא זמין!');
+                console.error('❌ Social Sharing Plugin not available');
                 return;
             }
             
@@ -323,68 +323,65 @@ window.exportAdminJSON = function(method) {
                                 console.log('✅ Share success');
                             }, function(error) {
                                 console.error('❌ Share failed:', error);
-                                alert('❌ שיתוף נכשל');
                             });
                         };
                         
-                        fileWriter.onerror = function() {
-                            alert('❌ כתיבה נכשלה');
+                        fileWriter.onerror = function(e) {
+                            console.error('❌ Write failed:', e);
                         };
                         
                         fileWriter.write(blob);
                     });
                 }, function(error) {
-                    alert('❌ יצירת קובץ נכשלה');
+                    console.error('❌ getFile failed:', error);
                 });
-            }, function() {
-                alert('❌ גישה למערכת קבצים נכשלה');
+            }, function(error) {
+                console.error('❌ File system access failed:', error);
             });
             
         } else if (method === 'external') {
-            // Method 2: External Storage (direct save)
+            // Method 2: External Storage
             window.resolveLocalFileSystemURL(window.cordova.file.externalDataDirectory, function(dirEntry) {
                 dirEntry.getFile(filename, { create: true, exclusive: false }, function(fileEntry) {
                     fileEntry.createWriter(function(fileWriter) {
                         fileWriter.onwriteend = function() {
-                            alert(`✅ נשמר בהצלחה!\n\nמיקום: ${fileEntry.nativeURL}`);
                             console.log('✅ Saved to:', fileEntry.nativeURL);
                         };
                         
-                        fileWriter.onerror = function() {
-                            alert('❌ שמירה נכשלה');
+                        fileWriter.onerror = function(e) {
+                            console.error('❌ Write failed:', e);
                         };
                         
                         fileWriter.write(blob);
                     });
                 }, function(error) {
-                    alert('❌ יצירת קובץ נכשלה');
+                    console.error('❌ getFile failed:', error);
                 });
-            }, function() {
-                alert('❌ גישה לאחסון חיצוני נכשלה');
+            }, function(error) {
+                console.error('❌ External storage access failed:', error);
             });
             
         } else if (method === 'dialog') {
-            // Method 3: Save Dialog (if available)
+            // Method 3: Save Dialog
             if (!window.cordova || !window.cordova.plugins || !window.cordova.plugins.saveDialog) {
-                alert('❌ Save Dialog Plugin לא מותקן!\n\nהשתמש ב"שיתוף" או "שמירה" במקום.');
+                console.error('❌ Save Dialog Plugin not installed');
                 return;
             }
             
             window.cordova.plugins.saveDialog.saveFile(blob, filename)
                 .then(function(uri) {
-                    alert('✅ נשמר בהצלחה!');
                     console.log('✅ Saved to:', uri);
                 })
                 .catch(function(error) {
                     console.error('❌ Save dialog failed:', error);
-                    alert('❌ שמירה נכשלה');
                 });
         }
         
     } catch (error) {
-        alert('❌ שגיאה: ' + error.message);
+        console.error('❌ Error:', error);
     }
 };
+
 
 
 

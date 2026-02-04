@@ -194,10 +194,6 @@ export class AdminPage {
             goToPage('landing');
         };
 
-        window.exportAdminJSON = async () => {
-            await window.exportManager.exportToJSON();
-        };
-
         window.loadAdminJSON = () => {
             document.getElementById('jsonFileInput').click();
         };

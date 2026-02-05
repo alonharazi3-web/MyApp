@@ -16,7 +16,7 @@
     <preference name="GradleVersion" value="8.9" />
     <preference name="AndroidPersistentFileLocation" value="Internal" />
     
-    <!-- Plugins - NO INTENT! -->
+    <!-- Plugins -->
     <plugin name="cordova-plugin-file" />
     <plugin name="cordova-plugin-whitelist" />
     <plugin name="cordova-plugin-statusbar" />
@@ -25,7 +25,7 @@
     <plugin name="cordova-plugin-x-socialsharing" source="npm" />
     
     <platform name="android">
-        <!-- Icons - multiple densities -->
+        <!-- Icons -->
         <icon src="www/icon-192.png" density="ldpi" />
         <icon src="www/icon-192.png" density="mdpi" />
         <icon src="www/icon-512.png" density="hdpi" />
@@ -36,20 +36,13 @@
         <preference name="AndroidInsecureFileModeEnabled" value="true" />
         
         <allow-intent href="market:*" />
+        
         <edit-config file="app/src/main/AndroidManifest.xml" mode="merge" target="/manifest/application">
             <application android:usesCleartextTraffic="true" />
             <application android:requestLegacyExternalStorage="true" />
         </edit-config>
         
-        <config-file target="AndroidManifest.xml" parent="/manifest">
-            <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
-            <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
-            <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
-            <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
-            <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
-        </config-file>
-        
-        <!-- Adaptive icon support -->
+        <!-- Resource files for adaptive icons -->
         <resource-file src="www/icon-512.png" target="app/src/main/res/mipmap-hdpi/ic_launcher.png" />
         <resource-file src="www/icon-512.png" target="app/src/main/res/mipmap-mdpi/ic_launcher.png" />
         <resource-file src="www/icon-512.png" target="app/src/main/res/mipmap-xhdpi/ic_launcher.png" />

@@ -2,8 +2,8 @@ const versionDiv = document.createElement('div');
 versionDiv.id = 'version-display';
 versionDiv.style.cssText = `
     position: fixed;
-    bottom: 5px;
-    left: 5px;
+    bottom: calc(5px + env(safe-area-inset-bottom));
+    left: calc(5px + env(safe-area-inset-left));
     background: rgba(0, 0, 0, 0.5);
     color: rgba(255, 255, 255, 0.7);
     font-family: monospace;

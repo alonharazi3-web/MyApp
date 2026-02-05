@@ -12,7 +12,7 @@
     <preference name="android-minSdkVersion" value="24" />
     <preference name="android-targetSdkVersion" value="35" />
     <preference name="android-compileSdkVersion" value="35" />
-    <preference name="AndroidGradlePluginVersion" value="8.7.3" />
+    <preference name="AndroidGradlePluginVersion" value="8.2.0" />
     <preference name="GradleVersion" value="8.9" />
     
     <!-- Plugins -->
@@ -21,20 +21,10 @@
     <plugin name="cordova-plugin-android-permissions" />
     <plugin name="cordova-plugin-device" />
     <plugin name="cordova-plugin-x-socialsharing" source="npm" />
-    <plugin name="com-darryncampbell-cordova-plugin-intent" spec="^2.2.0" />
     
     <platform name="android">
-        <!-- Intent filter to open JSON files with MyApp -->
-        <config-file target="app/src/main/AndroidManifest.xml" parent="/manifest/application/activity[@android:name='MainActivity']">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="file" />
-                <data android:scheme="content" />
-                <data android:mimeType="application/json" />
-            </intent-filter>
-        </config-file>
+        <!-- Set launch mode to singleTask -->
+        <preference name="AndroidLaunchMode" value="singleTask"/>
         
         <config-file target="app/src/main/res/values/themes.xml" parent="/resources/style[@name='Theme.App.SplashScreen']">
             <item name="android:windowOptOutEdgeToEdgeEnforcement" xmlns:tools="http://schemas.android.com/tools" tools:targetApi="35">true</item>

@@ -26,6 +26,34 @@ jobs:
         cordova plugin add cordova-plugin-statusbar
         cordova plugin add cordova-plugin-dialogs
         cordova plugin add cordova-plugin-x-socialsharing
+    - name: Fix duplicate permissions in manifest
+      run: |
+        MANIFEST="platforms/android/app/src/main/AndroidManifest.xml"
+        echo "=== Before fix ==="
+        grep -n "WRITE_EXTERNAL_STORAGE" "$MANIFEST" || true
+        # Use python to remove duplicate permission lines
+        python3 << 'PYEOF'
+        import re
+        with open("platforms/android/app/src/main/AndroidManifest.xml", "r") as f:
+            content = f.read()
+        # Find all WRITE_EXTERNAL_STORAGE lines
+        lines = content.split('\n')
+        seen_write = False
+        new_lines = []
+        for line in lines:
+            if 'WRITE_EXTERNAL_STORAGE' in line:
+                if not seen_write:
+                    seen_write = True
+                    new_lines.append(line)
+                else:
+                    print(f"Removed duplicate: {line.strip()}")
+            else:
+                new_lines.append(line)
+        with open("platforms/android/app/src/main/AndroidManifest.xml", "w") as f:
+            f.write('\n'.join(new_lines))
+        PYEOF
+        echo "=== After fix ==="
+        grep -n "WRITE_EXTERNAL_STORAGE" "$MANIFEST" || true
     - run: cordova build android --debug
     - name: Prepare outputs
       run: |

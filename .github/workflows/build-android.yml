@@ -26,34 +26,60 @@ jobs:
         cordova plugin add cordova-plugin-statusbar
         cordova plugin add cordova-plugin-dialogs
         cordova plugin add cordova-plugin-x-socialsharing
-    - name: Fix duplicate permissions in manifest
+    - name: Fix AndroidManifest - remove ALL duplicates
       run: |
         MANIFEST="platforms/android/app/src/main/AndroidManifest.xml"
-        echo "=== Before fix ==="
-        grep -n "WRITE_EXTERNAL_STORAGE" "$MANIFEST" || true
-        # Use python to remove duplicate permission lines
+        echo "=== MANIFEST BEFORE FIX ==="
+        cat -n "$MANIFEST"
         python3 << 'PYEOF'
-        import re
-        with open("platforms/android/app/src/main/AndroidManifest.xml", "r") as f:
-            content = f.read()
-        # Find all WRITE_EXTERNAL_STORAGE lines
-        lines = content.split('\n')
-        seen_write = False
-        new_lines = []
-        for line in lines:
-            if 'WRITE_EXTERNAL_STORAGE' in line:
-                if not seen_write:
-                    seen_write = True
-                    new_lines.append(line)
-                else:
-                    print(f"Removed duplicate: {line.strip()}")
-            else:
-                new_lines.append(line)
-        with open("platforms/android/app/src/main/AndroidManifest.xml", "w") as f:
-            f.write('\n'.join(new_lines))
-        PYEOF
-        echo "=== After fix ==="
-        grep -n "WRITE_EXTERNAL_STORAGE" "$MANIFEST" || true
+import re
+
+path = "platforms/android/app/src/main/AndroidManifest.xml"
+with open(path, "r") as f:
+    lines = f.readlines()
+
+output = []
+seen_perms = set()
+seen_feats = set()
+removed = 0
+
+for i, line in enumerate(lines):
+    stripped = line.strip()
+
+    # Check for duplicate uses-permission
+    if 'uses-permission' in stripped:
+        perm_match = re.search(r'android\.permission\.([A-Z_]+)', stripped)
+        if perm_match:
+            perm_name = perm_match.group(1)
+            if perm_name in seen_perms:
+                print(f"REMOVED duplicate permission line {i+1}: {stripped}")
+                removed += 1
+                continue
+            seen_perms.add(perm_name)
+
+    # Check for duplicate uses-feature
+    if 'uses-feature' in stripped:
+        feat_match = re.search(r'android\.hardware\.([a-z._]+)', stripped)
+        if feat_match:
+            feat_name = feat_match.group(1)
+            if feat_name in seen_feats:
+                print(f"REMOVED duplicate feature line {i+1}: {stripped}")
+                removed += 1
+                continue
+            seen_feats.add(feat_name)
+
+    output.append(line)
+
+with open(path, "w") as f:
+    f.writelines(output)
+
+print(f"\nTotal removed: {removed}")
+print(f"Kept permissions: {sorted(seen_perms)}")
+print(f"Kept features: {sorted(seen_feats)}")
+PYEOF
+        echo ""
+        echo "=== MANIFEST AFTER FIX ==="
+        cat -n "$MANIFEST"
     - run: cordova build android --debug
     - name: Prepare outputs
       run: |

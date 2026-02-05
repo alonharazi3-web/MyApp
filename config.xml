@@ -7,8 +7,6 @@
     <author email="alonharazi3@gmail.com">Feedback Team</author>
     <content src="index.html" />
     <access origin="*" />
-    <access origin="https://cdn.sheetjs.com" />
-    <access origin="https://cdnjs.cloudflare.com" />
     
     <preference name="android-minSdkVersion" value="24" />
     <preference name="android-targetSdkVersion" value="35" />
@@ -25,9 +23,8 @@
     <!-- Camera preferences -->
     <preference name="CameraUsesGeolocation" value="false" />
     
-    <!-- Plugins -->
+    <!-- Plugins - must match workflow exactly -->
     <plugin name="cordova-plugin-file" />
-    <plugin name="cordova-plugin-whitelist" />
     <plugin name="cordova-plugin-statusbar" />
     <plugin name="cordova-plugin-dialogs" />
     <plugin name="cordova-plugin-device" />
@@ -47,9 +44,9 @@
         
         <allow-intent href="market:*" />
         
+        <!-- SINGLE application element with ALL attributes merged -->
         <edit-config file="app/src/main/AndroidManifest.xml" mode="merge" target="/manifest/application">
-            <application android:usesCleartextTraffic="true" />
-            <application android:requestLegacyExternalStorage="true" />
+            <application android:usesCleartextTraffic="true" android:requestLegacyExternalStorage="true" />
         </edit-config>
         
         <!-- Resource files for adaptive icons -->

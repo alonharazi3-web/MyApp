@@ -1,6 +1,7 @@
 /**
- * Assessment Page Module
+ * Assessment Page Module v5.4
  * Main assessment interface with trainee and exercise tabs
+ * Now includes camera scan buttons at top and bottom of each exercise
  */
 
 import { BalloonExercise } from '../exercises/balloon.js';
@@ -54,9 +55,7 @@ export class AssessmentPage {
     renderTraineeTabs() {
         const container = document.getElementById('traineeTabs');
         if (!container) return;
-
         container.innerHTML = '';
-        
         for (let i = 0; i < 4; i++) {
             const div = document.createElement('div');
             div.className = 'trainee-tab';
@@ -70,12 +69,8 @@ export class AssessmentPage {
     renderExerciseTabs() {
         const container = document.getElementById('exerciseTabs');
         if (!container) return;
-
         container.innerHTML = '';
-        
-        const exercises = this.exercises;
         const exerciseNames = window.app.exercises;
-        
         exerciseNames.forEach((exerciseName, i) => {
             const btn = document.createElement('button');
             btn.className = 'exercise-tab';
@@ -88,12 +83,9 @@ export class AssessmentPage {
 
     selectTrainee(index) {
         window.app.currentTrainee = index;
-        
-        // Update tab styles
         for (let i = 0; i < 4; i++) {
             const tab = document.getElementById(`traineeTab${i}`);
             if (!tab) continue;
-            
             if (i === index) {
                 tab.classList.add('active');
                 tab.style.backgroundColor = window.app.traineeColors[i];
@@ -106,33 +98,23 @@ export class AssessmentPage {
                 tab.style.color = '';
             }
         }
-        
-        // Update container background
         const container = document.getElementById('assessmentContainer');
         if (container) {
             container.style.backgroundColor = window.app.traineeColors[index];
             container.style.transition = 'background-color 0.3s';
         }
-        
         this.renderCurrentExercise();
     }
 
     selectExercise(index) {
         window.app.currentExercise = index;
-        
-        // Update tab styles
         const exerciseNames = window.app.exercises;
         exerciseNames.forEach((_, i) => {
             const tab = document.getElementById(`exerciseTab${i}`);
             if (!tab) return;
-            
-            if (i === index) {
-                tab.classList.add('active');
-            } else {
-                tab.classList.remove('active');
-            }
+            if (i === index) { tab.classList.add('active'); }
+            else { tab.classList.remove('active'); }
         });
-        
         this.renderCurrentExercise();
     }
 
@@ -142,13 +124,29 @@ export class AssessmentPage {
 
         const traineeId = window.app.currentTrainee;
         const exerciseId = window.app.currentExercise;
-        const exercises = this.exercises;
-        const exercise = exercises[exerciseId];
+        const exercise = this.exercises[exerciseId];
         
         if (exercise) {
-            content.innerHTML = exercise.render(traineeId, exerciseId);
+            // Build content with camera buttons at top and bottom
+            const scanBtnTop = window.documentScanner.renderCameraButton(exerciseId);
+            const exerciseHtml = exercise.render(traineeId, exerciseId);
             
-            // Call onRender or onEnter hook if exists
+            const scanCount = window.documentScanner.getScanCount(traineeId);
+            const scanBtnBottom = `
+                <div class="scan-bottom-row">
+                    <button class="scan-camera-btn" onclick="window.documentScanner.openScanDialog(${exerciseId})" 
+                            style="width: auto; border-radius: 25px; padding: 8px 20px; font-size: 15px;">
+                        📷 סרוק מסמך${scanCount > 0 ? ' (' + scanCount + ')' : ''}
+                    </button>
+                </div>
+            `;
+            
+            content.innerHTML = `
+                <div class="scan-top-row">${scanBtnTop}</div>
+                ${exerciseHtml}
+                ${scanBtnBottom}
+            `;
+            
             if (exercise.onRender) {
                 setTimeout(() => exercise.onRender(traineeId, exerciseId), 0);
             } else if (exercise.onEnter) {

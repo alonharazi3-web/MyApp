@@ -22,8 +22,9 @@ jobs:
       run: |
         cordova plugin add cordova-plugin-file
         cordova plugin add cordova-plugin-camera
-        cordova plugin add cordova-plugin-android-permissions
         cordova plugin add cordova-plugin-device
+        cordova plugin add cordova-plugin-statusbar
+        cordova plugin add cordova-plugin-dialogs
         cordova plugin add cordova-plugin-x-socialsharing
     - run: cordova build android --debug
     - name: Prepare outputs

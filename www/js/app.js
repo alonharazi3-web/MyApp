@@ -1,11 +1,12 @@
 /**
- * Main Application Entry Point
+ * Main Application Entry Point v5.4
  * Handles routing, initialization, and page management
  */
 
 import { Storage } from './storage.js';
 import { Router } from './router.js';
 import { ExportManager } from './export.js';
+import { DocumentScanner } from './document-scanner.js';
 import { LandingPage } from './pages/landing.js';
 import { AdminPage } from './pages/admin.js';
 import { EvaluatorPage } from './pages/evaluator.js';
@@ -58,6 +59,9 @@ window.storage = new Storage();
 // Initialize export manager
 window.exportManager = new ExportManager();
 
+// Initialize document scanner
+window.documentScanner = new DocumentScanner();
+
 // Initialize router
 window.router = new Router();
 
@@ -71,23 +75,16 @@ window.router.register('preview', new PreviewPage());
 
 // Initialize app when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('🚀 App initializing...');
-    
-    // Load saved data
+    console.log('🚀 App v5.4 initializing...');
     window.storage.loadData();
-    
-    // Navigate to landing page
     window.router.navigate('landing');
-    
-    // Setup auto-save every 30 seconds
     setInterval(() => {
         if (window.app.currentPage !== 'landing') {
             window.storage.saveData();
             console.log('💾 Auto-saved');
         }
     }, 30000);
-    
-    console.log('✅ App initialized');
+    console.log('✅ App v5.4 initialized');
 });
 
 // Global helper functions
@@ -103,13 +100,7 @@ window.getTraineeName = function(index) {
 
 window.escapeHtml = function(text) {
     if (!text) return '';
-    const map = {
-        '&': '&amp;',
-        '<': '&lt;',
-        '>': '&gt;',
-        '"': '&quot;',
-        "'": '&#039;'
-    };
+    const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
     return String(text).replace(/[&<>"']/g, m => map[m]);
 };
 
@@ -122,226 +113,102 @@ window.csvEscape = function(text) {
     return text;
 };
 
-// Make global navigation function
 window.goToPage = function(pageId) {
     window.storage.saveData();
     window.router.navigate(pageId);
 };
 
-// Make global export functions
 window.exportToExcel = async function() {
-    console.log('📊 Exporting to Excel...');
-    try {
-        await window.exportManager.exportToExcel();
-    } catch (error) {
-        console.error('Export error:', error);
-        alert('❌ שגיאה בייצוא Excel:\n' + error.message);
-    }
+    try { await window.exportManager.exportToExcel(); }
+    catch (error) { alert('❌ שגיאה בייצוא Excel:\n' + error.message); }
 };
 
 window.shareToWhatsApp = function() {
-    console.log('📱 Sharing to WhatsApp...');
-    try {
-        window.exportManager.shareToWhatsApp();
-    } catch (error) {
-        console.error('Share error:', error);
-        alert('❌ שגיאה בשיתוף:\n' + error.message);
-    }
+    try { window.exportManager.shareToWhatsApp(); }
+    catch (error) { alert('❌ שגיאה בשיתוף:\n' + error.message); }
 };
 
-console.log('📦 App module loaded');
+console.log('📦 App module v5.4 loaded');
 
-// Print Excel function - opens export popup
 window.printExcel = function() {
-    console.log('🖨️ Opening export popup...');
-    
-    // שמור נתונים ל-localStorage כדי שה-popup יוכל לגשת
     try {
         localStorage.setItem('feedbackAppData', JSON.stringify(window.app.data));
-        
-        // פתח popup
         window.open('export-popup.html', '_blank', 'width=500,height=600');
-    } catch (error) {
-        console.error('Export popup error:', error);
-        alert('❌ שגיאה בפתיחת חלון ייצוא:\n' + error.message);
-    }
+    } catch (error) { alert('❌ שגיאה בפתיחת חלון ייצוא:\n' + error.message); }
 };
 
-// Open preview with Android share
-window.openExcelPreview = function() {
-    console.log('👁️ Opening preview...');
-    window.goToPage('preview');
-};
+window.openExcelPreview = function() { window.goToPage('preview'); };
 
-// Test Social Sharing Plugin with organized CSV by trainee
-// Test Social Sharing Plugin with XLSX tabular format - WRITE FILE FIRST
+// Social Sharing - XLSX
 window.testSocialSharing = function() {
-    console.log('🧪 Testing Social Sharing Plugin...');
-    
-    if (!window.plugins || !window.plugins.socialsharing) {
-        alert('❌ Social Sharing Plugin לא זמין!');
-        return;
-    }
-    
-    if (!window.cordova || !window.cordova.file) {
-        alert('❌ File Plugin לא זמין!');
-        return;
-    }
-    
+    if (!window.plugins || !window.plugins.socialsharing) { alert('❌ Social Sharing Plugin לא זמין!'); return; }
+    if (!window.cordova || !window.cordova.file) { alert('❌ File Plugin לא זמין!'); return; }
     try {
         const data = window.app.data;
         const evaluator = data.evaluatorName || 'מעריך';
         const dateStr = new Date().toLocaleDateString('he-IL').replace(/\//g, '-');
         const filename = `${evaluator}_${dateStr}.xlsx`;
-        
-        // יצירת Excel
         const excelBuffer = window.generateTabularExcel(data);
-        if (!excelBuffer) {
-            alert('❌ שגיאה ביצירת Excel');
-            return;
-        }
-        
+        if (!excelBuffer) { alert('❌ שגיאה ביצירת Excel'); return; }
         const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-        
-        // כתיבה ל-cache
         window.resolveLocalFileSystemURL(window.cordova.file.cacheDirectory, function(dirEntry) {
             dirEntry.getFile(filename, { create: true, exclusive: false }, function(fileEntry) {
                 fileEntry.createWriter(function(fileWriter) {
                     fileWriter.onwriteend = function() {
-                        // שתף את הקובץ
                         window.plugins.socialsharing.shareWithOptions({
-                            message: 'משוב סדנת אימפרוביזציה',
-                            files: [fileEntry.nativeURL],
-                            chooserTitle: 'שתף Excel'
-                        }, function() {
-                            console.log('✅ Share success');
-                        }, function(error) {
-                            console.error('❌ Share failed:', error);
-                            alert('❌ שיתוף נכשל');
-                        });
+                            message: 'משוב סדנת אימפרוביזציה', files: [fileEntry.nativeURL], chooserTitle: 'שתף Excel'
+                        }, () => {}, (error) => alert('❌ שיתוף נכשל'));
                     };
-                    
-                    fileWriter.onerror = function(e) {
-                        alert('❌ כתיבה נכשלה');
-                    };
-                    
+                    fileWriter.onerror = () => alert('❌ כתיבה נכשלה');
                     fileWriter.write(blob);
                 });
             });
-        }, function(error) {
-            alert('❌ גישה למערכת קבצים נכשלה');
-        });
-        
-    } catch (error) {
-        alert('❌ שגיאה: ' + error.message);
-    }
+        }, () => alert('❌ גישה למערכת קבצים נכשלה'));
+    } catch (error) { alert('❌ שגיאה: ' + error.message); }
 };
 
-// Test File Plugin - Save XLSX to Downloads
+// Save XLSX to Downloads
 window.testFilePlugin = function() {
-    console.log('🧪 Testing File Plugin...');
-    
-    if (!window.cordova || !window.cordova.file) {
-        alert('❌ File Plugin לא זמין!');
-        return;
-    }
-    
+    if (!window.cordova || !window.cordova.file) { alert('❌ File Plugin לא זמין!'); return; }
     try {
         const data = window.app.data;
         const evaluator = data.evaluatorName || 'מעריך';
         const dateStr = new Date().toLocaleDateString('he-IL').replace(/\//g, '-');
         const filename = `${evaluator}_${dateStr}.xlsx`;
-        
-        // יצירת Excel בפורמט טבלאי
         const excelBuffer = window.generateTabularExcel(data);
-        
-        if (!excelBuffer) {
-            alert('❌ שגיאה ביצירת קובץ Excel');
-            return;
-        }
-        
+        if (!excelBuffer) { alert('❌ שגיאה ביצירת קובץ Excel'); return; }
         const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-        
-        // שמור לתיקיית Downloads
         window.resolveLocalFileSystemURL(cordova.file.externalRootDirectory + 'Download/', function(dir) {
             dir.getFile(filename, { create: true }, function(file) {
                 file.createWriter(function(fileWriter) {
-                    fileWriter.onwriteend = function() {
-                        alert('✅ הקובץ נשמר ב-Downloads!\n\n' + filename);
-                    };
-                    fileWriter.onerror = function(e) {
-                        alert('❌ שגיאת כתיבה:\n' + e.toString());
-                    };
-                    
+                    fileWriter.onwriteend = () => alert('✅ הקובץ נשמר ב-Downloads!\n\n' + filename);
+                    fileWriter.onerror = (e) => alert('❌ שגיאת כתיבה:\n' + e.toString());
                     fileWriter.write(blob);
-                }, function(error) {
-                    alert('❌ שגיאה ביצירת writer:\n' + error);
-                });
-            }, function(error) {
-                alert('❌ שגיאה ביצירת קובץ:\n' + error);
-            });
-        }, function(error) {
-            alert('❌ לא ניתן לגשת ל-Downloads:\n' + error);
-        });
-        
-    } catch (error) {
-        alert('❌ שגיאה:\n' + error.message);
-    }
+                }, (error) => alert('❌ שגיאה ביצירת writer:\n' + error));
+            }, (error) => alert('❌ שגיאה ביצירת קובץ:\n' + error));
+        }, (error) => alert('❌ לא ניתן לגשת ל-Downloads:\n' + error));
+    } catch (error) { alert('❌ שגיאה:\n' + error.message); }
 };
 
-// Export admin JSON with 3 methods
+// Export admin JSON
 window.exportAdminJSON = function() {
-    console.log('📄 Exporting JSON via Social Share');
-    
-    if (!window.cordova || !window.cordova.file) {
-        console.error('❌ File Plugin not available');
-        return;
-    }
-    
-    if (!window.plugins || !window.plugins.socialsharing) {
-        console.error('❌ Social Sharing Plugin not available');
-        return;
-    }
-    
+    if (!window.cordova || !window.cordova.file || !window.plugins || !window.plugins.socialsharing) return;
     try {
         const jsonStr = JSON.stringify(window.app.data, null, 2);
         const dateStr = new Date().toISOString().slice(0, 10);
         const filename = `settings_${dateStr}.json`;
         const blob = new Blob([jsonStr], { type: 'application/json' });
-        
-        // Social Sharing - קובץ בלבד, ללא message
         window.resolveLocalFileSystemURL(window.cordova.file.cacheDirectory, function(dirEntry) {
             dirEntry.getFile(filename, { create: true, exclusive: false }, function(fileEntry) {
                 fileEntry.createWriter(function(fileWriter) {
                     fileWriter.onwriteend = function() {
                         window.plugins.socialsharing.shareWithOptions({
-                            files: [fileEntry.nativeURL],
-                            chooserTitle: 'שתף קובץ הגדרות'
-                        }, function() {
-                            console.log('✅ Share success');
-                        }, function(error) {
-                            console.error('❌ Share failed:', error);
-                        });
+                            files: [fileEntry.nativeURL], chooserTitle: 'שתף קובץ הגדרות'
+                        }, () => {}, (error) => console.error('Share failed:', error));
                     };
-                    
-                    fileWriter.onerror = function(e) {
-                        console.error('❌ Write failed:', e);
-                    };
-                    
                     fileWriter.write(blob);
                 });
-            }, function(error) {
-                console.error('❌ getFile failed:', error);
             });
-        }, function(error) {
-            console.error('❌ File system access failed:', error);
         });
-        
-    } catch (error) {
-        console.error('❌ Error:', error);
-    }
+    } catch (error) { console.error('❌ Error:', error); }
 };
-
-
-
-

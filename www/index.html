@@ -11,9 +11,10 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Feedback">
-    <meta http-equiv="Content-Security-Policy" content="default-src * 'self' 'unsafe-inline' 'unsafe-eval' data: gap: content:">
+    <meta http-equiv="Content-Security-Policy" content="default-src * 'self' 'unsafe-inline' 'unsafe-eval' data: gap: content: blob:">
     <title>Feedback System</title>
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/scanner.css">
 </head>
 <body>
     <div id="app">
@@ -37,6 +38,12 @@
     
     <!-- SheetJS for Excel generation -->
     <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.mini.min.js"></script>
+    
+    <!-- jsPDF for PDF generation (document scanner) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
+    
+    <!-- JSZip for ZIP export (document scanner) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     
     <!-- Excel Generator -->
     <script src="js/excel-generator.js"></script>

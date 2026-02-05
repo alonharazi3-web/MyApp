@@ -350,89 +350,89 @@ document.addEventListener('deviceready', function() {
     handleOpenIntent();
     
     // Handle new intents when app is already running
-    if (window.plugins && window.plugins.intentShim) {
-        window.plugins.intentShim.onIntent(handleOpenIntent);
+    if (window.plugins && window.plugins.intent) {
+        window.plugins.intent.setNewIntentHandler(handleOpenIntent);
     }
 }, false);
 
-function handleOpenIntent(intent) {
-    if (!window.plugins || !window.plugins.intentShim) {
+function handleOpenIntent() {
+    if (!window.plugins || !window.plugins.intent) {
         console.log('Intent plugin not available');
         return;
     }
     
-    // If no intent parameter, get the current intent
-    if (!intent) {
-        window.plugins.intentShim.getIntent(function(receivedIntent) {
-            if (receivedIntent && receivedIntent.action === 'android.intent.action.VIEW' && receivedIntent.data) {
-                processIntentData(receivedIntent.data);
-            }
-        }, function(error) {
-            console.error('Get intent error:', error);
-        });
-    } else if (intent.action === 'android.intent.action.VIEW' && intent.data) {
-        processIntentData(intent.data);
-    }
-}
-
-function processIntentData(fileUri) {
-    console.log('📄 Opening JSON file:', fileUri);
-    
-    // Load the JSON file
-    window.resolveLocalFileSystemURL(fileUri, function(fileEntry) {
-        fileEntry.file(function(file) {
-            const reader = new FileReader();
+    window.plugins.intent.getCordovaIntent(function(intent) {
+        if (!intent || !intent.data) {
+            console.log('No intent data');
+            return;
+        }
+        
+        console.log('📥 Received intent:', intent.action, intent.data);
+        
+        // Check if this is a VIEW action with file data
+        if (intent.action === 'android.intent.action.VIEW' && intent.data) {
+            const fileUri = intent.data;
+            console.log('📄 Opening JSON file:', fileUri);
             
-            reader.onloadend = function() {
-                try {
-                    const jsonData = JSON.parse(this.result);
+            // Load the JSON file
+            window.resolveLocalFileSystemURL(fileUri, function(fileEntry) {
+                fileEntry.file(function(file) {
+                    const reader = new FileReader();
                     
-                    // Ask if user wants to reset before import
-                    const shouldReset = confirm('📥 נפתח קובץ הגדרות!\n\n❓ האם לאפס את ההערכה הקיימת לפני ייבוא?\n\n✅ כן - מחיקת כל התשובות\n❌ לא - שמירת הנתונים הקיימים');
-                    
-                    if (shouldReset) {
-                        window.app.data.exerciseData = {};
-                        window.app.data.summaryData = {};
-                    }
-                    
-                    // Import the data
-                    Object.keys(jsonData).forEach(key => {
-                        if (key !== 'exerciseData' && key !== 'summaryData') {
-                            window.app.data[key] = jsonData[key];
+                    reader.onloadend = function() {
+                        try {
+                            const jsonData = JSON.parse(this.result);
+                            
+                            // Ask if user wants to reset before import
+                            const shouldReset = confirm('📥 נפתח קובץ הגדרות!\n\n❓ האם לאפס את ההערכה הקיימת לפני ייבוא?\n\n✅ כן - מחיקת כל התשובות\n❌ לא - שמירת הנתונים הקיימים');
+                            
+                            if (shouldReset) {
+                                window.app.data.exerciseData = {};
+                                window.app.data.summaryData = {};
+                            }
+                            
+                            // Import the data
+                            Object.keys(jsonData).forEach(key => {
+                                if (key !== 'exerciseData' && key !== 'summaryData') {
+                                    window.app.data[key] = jsonData[key];
+                                }
+                            });
+                            
+                            window.storage.saveData();
+                            
+                            // Navigate to evaluator page
+                            window.goToPage('evaluator');
+                            
+                            if (shouldReset) {
+                                alert('✅ הגדרות נטענו והערכה אופסה!\n\nהאפליקציה מוכנה לשימוש.');
+                            } else {
+                                alert('✅ הגדרות נטענו בהצלחה!\n\nתשובות קיימות נשמרו.');
+                            }
+                            
+                        } catch (error) {
+                            alert('❌ שגיאה בקריאת קובץ JSON:\n' + error.message);
+                            console.error('JSON parse error:', error);
                         }
-                    });
+                    };
                     
-                    window.storage.saveData();
+                    reader.onerror = function(error) {
+                        alert('❌ שגיאה בקריאת הקובץ:\n' + error);
+                        console.error('File read error:', error);
+                    };
                     
-                    // Navigate to evaluator page
-                    window.goToPage('evaluator');
+                    reader.readAsText(file);
                     
-                    if (shouldReset) {
-                        alert('✅ הגדרות נטענו והערכה אופסה!\n\nהאפליקציה מוכנה לשימוש.');
-                    } else {
-                        alert('✅ הגדרות נטענו בהצלחה!\n\nתשובות קיימות נשמרו.');
-                    }
-                    
-                } catch (error) {
-                    alert('❌ שגיאה בקריאת קובץ JSON:\n' + error.message);
-                    console.error('JSON parse error:', error);
-                }
-            };
-            
-            reader.onerror = function(error) {
-                alert('❌ שגיאה בקריאת הקובץ:\n' + error);
-                console.error('File read error:', error);
-            };
-            
-            reader.readAsText(file);
-            
-        }, function(error) {
-            alert('❌ שגיאה בגישה לקובץ:\n' + error);
-            console.error('File access error:', error);
-        });
+                }, function(error) {
+                    alert('❌ שגיאה בגישה לקובץ:\n' + error);
+                    console.error('File access error:', error);
+                });
+            }, function(error) {
+                alert('❌ לא ניתן לפתוח את הקובץ:\n' + error);
+                console.error('FileSystem error:', error);
+            });
+        }
     }, function(error) {
-        alert('❌ לא ניתן לפתוח את הקובץ:\n' + error);
-        console.error('FileSystem error:', error);
+        console.error('Intent error:', error);
     });
 }
 

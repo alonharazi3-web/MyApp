@@ -24,9 +24,9 @@ export class SummaryPage {
                 </div>
                 
                 <div style="margin-top: 10px; padding: 10px; background: #e3f2fd; border-radius: 8px; border: 2px dashed #2196f3;">
-                    <p style="font-size: 12px; color: #1565c0; margin-bottom: 8px; font-weight: bold;">🧪 בדיקת Cordova File Plugin:</p>
+                    <p style="font-size: 12px; color: #1565c0; margin-bottom: 8px; font-weight: bold;">💾 שמירת גיבוי מקומי:</p>
                     <button class="btn" onclick="testFilePlugin()" style="width: 100%; background: #2196f3; color: white;">
-                        💾 שמירה עם File Plugin
+                        שמירת גיבוי מקומי
                     </button>
                 </div>
                 

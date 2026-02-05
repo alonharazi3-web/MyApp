@@ -11,7 +11,7 @@ export class EvaluatorPage {
                 
                 <div class="import-box">
                     <label style="margin-bottom: 8px;">ייבוא הגדרות מנהל (קובץ JSON)</label>
-                    <input type="file" id="jsonFileInput" accept=".json" style="display: none;">
+                    <input type="file" id="jsonFileInput" accept=".json" style="display: none;" data-folder="whatsapp"">
                     <div style="display: flex; gap: 10px;">
                         <button class="btn-add" onclick="triggerJSONImport()" style="flex: 1;">📥 טען קובץ הגדרות</button>
                         <button class="btn-delete" onclick="resetExerciseData()" style="flex: 1;">🔄 איפוס נתונים</button>
@@ -109,8 +109,21 @@ export class EvaluatorPage {
     }
 
     attachEventListeners() {
-        window.triggerJSONImport = () => {
-            document.getElementById('jsonFileInput').click();
+        window.triggerJSONImport = async () => {
+            const input = document.getElementById('jsonFileInput');
+            
+            // ניסיון לפתוח ישירות את תיקיית WhatsApp (עובד רק ב-Chrome מודרני)
+            if (window.cordova && window.cordova.file) {
+                try {
+                    // נסה לגשת לתיקיית WhatsApp
+                    const whatsappPath = '/storage/emulated/0/Android/media/com.whatsapp/WhatsApp/Media/WhatsApp Documents/';
+                    console.log('Attempting to open WhatsApp folder:', whatsappPath);
+                } catch (e) {
+                    console.log('Could not pre-navigate to WhatsApp folder');
+                }
+            }
+            
+            input.click();
         };
         
         // פונקציה לאיפוס נתונים

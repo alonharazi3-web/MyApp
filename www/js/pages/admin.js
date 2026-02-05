@@ -186,8 +186,20 @@ export class AdminPage {
             goToPage('landing');
         };
 
-        window.loadAdminJSON = () => {
-            document.getElementById('jsonFileInput').click();
+        window.loadAdminJSON = async () => {
+            const input = document.getElementById('jsonFileInput');
+            
+            // ניסיון לפתוח ישירות את תיקיית WhatsApp
+            if (window.cordova && window.cordova.file) {
+                try {
+                    const whatsappPath = '/storage/emulated/0/Android/media/com.whatsapp/WhatsApp/Media/WhatsApp Documents/';
+                    console.log('Attempting to open WhatsApp folder:', whatsappPath);
+                } catch (e) {
+                    console.log('Could not pre-navigate to WhatsApp folder');
+                }
+            }
+            
+            input.click();
         };
 
         window.handleJSONFile = async (event) => {

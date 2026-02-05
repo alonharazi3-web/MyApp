@@ -468,7 +468,7 @@ window.showLetterImage = function() {
         if (e.touches.length === 2 && initialDistance > 0) {
             // Pinch zoom
             const currentDistance = getDistance(e.touches);
-            currentScale = Math.min(Math.max(1, (currentDistance / initialDistance) * currentScale), 5);
+            currentScale = Math.min(Math.max(1, (currentDistance / initialDistance) * currentScale), 3);
             img.style.transform = `scale(${currentScale}) translate(${translate.x/currentScale}px, ${translate.y/currentScale}px)`;
             e.preventDefault();
         } else if (e.touches.length === 1 && panning && currentScale > 1) {

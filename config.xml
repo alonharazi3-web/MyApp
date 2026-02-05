@@ -2,8 +2,8 @@
 <widget id="com.feedback.app" version="5.2.0" 
     xmlns="http://www.w3.org/ns/widgets"
     xmlns:android="http://schemas.android.com/apk/res/android">
-    <name>Feedback Workshop</name>
-    <description>Feedback Workshop App</description>
+    <name>Improv Workshop</name>
+    <description>Improvisation Workshop Feedback App</description>
     <author email="alonharazi3@gmail.com">Feedback Team</author>
     <content src="index.html" />
     <access origin="*" />
@@ -14,33 +14,54 @@
     <preference name="android-compileSdkVersion" value="35" />
     <preference name="AndroidGradlePluginVersion" value="8.7.3" />
     <preference name="GradleVersion" value="8.9" />
+    <preference name="AndroidPersistentFileLocation" value="Internal" />
     
-    <!-- Plugins -->
+    <!-- Plugins - NO INTENT! -->
     <plugin name="cordova-plugin-file" />
-    <plugin name="cordova-plugin-camera" />
-    <plugin name="cordova-plugin-android-permissions" />
+    <plugin name="cordova-plugin-whitelist" />
+    <plugin name="cordova-plugin-statusbar" />
+    <plugin name="cordova-plugin-dialogs" />
     <plugin name="cordova-plugin-device" />
     <plugin name="cordova-plugin-x-socialsharing" source="npm" />
-    <plugin name="cordova-plugin-intent" spec="https://github.com/darryncampbell/darryncampbell-cordova-plugin-intent.git#2.2.0" />
     
     <platform name="android">
-        <!-- Intent filter to open JSON files with MyApp -->
-        <config-file target="app/src/main/AndroidManifest.xml" parent="/manifest/application/activity[@android:name='MainActivity']">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="file" />
-                <data android:scheme="content" />
-                <data android:mimeType="application/json" />
-                <data android:mimeType="text/plain" />
-                <data android:host="*" />
-                <data android:pathPattern=".*\\.json" />
-            </intent-filter>
+        <!-- Icons - multiple densities -->
+        <icon src="www/icon-192.png" density="ldpi" />
+        <icon src="www/icon-192.png" density="mdpi" />
+        <icon src="www/icon-512.png" density="hdpi" />
+        <icon src="www/icon-512.png" density="xhdpi" />
+        <icon src="www/icon-512.png" density="xxhdpi" />
+        <icon src="www/icon-512.png" density="xxxhdpi" />
+        
+        <preference name="AndroidInsecureFileModeEnabled" value="true" />
+        
+        <allow-intent href="market:*" />
+        <edit-config file="app/src/main/AndroidManifest.xml" mode="merge" target="/manifest/application">
+            <application android:usesCleartextTraffic="true" />
+            <application android:requestLegacyExternalStorage="true" />
+        </edit-config>
+        
+        <config-file target="AndroidManifest.xml" parent="/manifest">
+            <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+            <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+            <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+            <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+            <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
         </config-file>
         
-        <config-file target="app/src/main/res/values/themes.xml" parent="/resources/style[@name='Theme.App.SplashScreen']">
-            <item name="android:windowOptOutEdgeToEdgeEnforcement" xmlns:tools="http://schemas.android.com/tools" tools:targetApi="35">true</item>
-        </config-file>
+        <!-- Adaptive icon support -->
+        <resource-file src="www/icon-512.png" target="app/src/main/res/mipmap-hdpi/ic_launcher.png" />
+        <resource-file src="www/icon-512.png" target="app/src/main/res/mipmap-mdpi/ic_launcher.png" />
+        <resource-file src="www/icon-512.png" target="app/src/main/res/mipmap-xhdpi/ic_launcher.png" />
+        <resource-file src="www/icon-512.png" target="app/src/main/res/mipmap-xxhdpi/ic_launcher.png" />
+        <resource-file src="www/icon-512.png" target="app/src/main/res/mipmap-xxxhdpi/ic_launcher.png" />
     </platform>
+    
+    <allow-navigation href="*" />
+    <allow-intent href="http://*/*" />
+    <allow-intent href="https://*/*" />
+    <allow-intent href="tel:*" />
+    <allow-intent href="sms:*" />
+    <allow-intent href="mailto:*" />
+    <allow-intent href="geo:*" />
 </widget>

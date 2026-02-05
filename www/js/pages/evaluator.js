@@ -14,7 +14,7 @@ export class EvaluatorPage {
                     <input type="file" id="jsonFileInput" accept=".json" style="display: none;">
                     <div style="display: flex; gap: 10px;">
                         <button class="btn-add" onclick="triggerJSONImport()" style="flex: 1;">📥 טען קובץ הגדרות</button>
-                        <button class="btn-delete" onclick="confirmResetEvaluation()" style="flex: 1; background: #f44336;">🔄 איפוס הערכה</button>
+                        <button class="btn-delete" onclick="resetExerciseData()" style="flex: 1;">🔄 איפוס נתונים</button>
                     </div>
                 </div>
                 
@@ -109,27 +109,21 @@ export class EvaluatorPage {
     }
 
     attachEventListeners() {
-        // Reset evaluation function
-        window.confirmResetEvaluation = () => {
-            if (confirm('⚠️ האם אתה בטוח שברצונך לאפס את ההערכה?\n\nפעולה זו תמחק:\n• כל התשובות בתרגילים\n• כל הנתונים בדף הסיכום\n\nשמות חניכים, דגשים והיסטוריה יישמרו.')) {
-                // Reset exercise data
+        window.triggerJSONImport = () => {
+            document.getElementById('jsonFileInput').click();
+        };
+        
+        // פונקציה לאיפוס נתונים
+        window.resetExerciseData = () => {
+            if (confirm('⚠️ האם אתה בטוח שברצונך למחוק את כל נתוני התרגילים והסיכום של כל החניכים?\n\nפעולה זו תמחק:\n✓ כל התשובות בתרגילים\n✓ כל הציונים והערות בסיכום ההערכה\n\nהנתונים האחרים (שמות חניכים, דגשים, חנויות ומלונות) לא יושפעו.')) {
+                // מחיקת נתוני תרגילים
                 window.app.data.exerciseData = {};
-                
-                // Reset summary data
+                // מחיקת נתוני סיכום
                 window.app.data.summaryData = {};
                 
                 window.storage.saveData();
-                alert('✅ ההערכה אופסה בהצלחה!');
-                
-                // Refresh current page if needed
-                if (window.app.currentPage === 'assessment') {
-                    window.goToPage('assessment');
-                }
+                alert('✅ נתוני התרגילים והסיכום נמחקו בהצלחה!');
             }
-        };
-        
-        window.triggerJSONImport = () => {
-            document.getElementById('jsonFileInput').click();
         };
 
         const fileInput = document.getElementById('jsonFileInput');
@@ -139,11 +133,10 @@ export class EvaluatorPage {
                 if (!file) return;
 
                 try {
-                    // Ask if user wants to reset evaluation before import
-                    const shouldReset = confirm('❓ האם לאפס את ההערכה הקיימת לפני ייבוא ההגדרות?\n\n✅ כן - מחיקת כל התשובות והנתונים\n❌ לא - שמירת הנתונים הקיימים (רק הגדרות יעודכנו)');
+                    // שאלה אם למחוק נתונים לפני ייבוא
+                    const shouldReset = confirm('❓ האם ברצונך למחוק את נתוני התרגילים והסיכום לפני הייבוא?\n\n✓ כן - מחק נתונים קיימים ואז טען את ההגדרות\n✗ לא - רק טען הגדרות (שמות, דגשים, היסטוריה)');
                     
                     if (shouldReset) {
-                        // Reset exercise and summary data
                         window.app.data.exerciseData = {};
                         window.app.data.summaryData = {};
                     }
@@ -151,12 +144,7 @@ export class EvaluatorPage {
                     await window.exportManager.loadFromJSON(file);
                     this.renderPrimaryButtons();
                     this.updateHighlights();
-                    
-                    if (shouldReset) {
-                        alert('✅ הגדרות נטענו והערכה אופסה בהצלחה!\n\nשם ההערכה, חניכים, דגשים, חנויות ומלונות עודכנו.');
-                    } else {
-                        alert('✅ הגדרות נטענו בהצלחה!\n\nשם ההערכה, חניכים, דגשים, חנויות ומלונות עודכנו.\nתשובות קיימות נשמרו.');
-                    }
+                    alert('✅ הגדרות נטענו בהצלחה!\n\nשם ההערכה, חניכים, דגשים, חנויות ומלונות עודכנו.');
                 } catch (error) {
                     alert('❌ שגיאה בקריאת קובץ JSON:\n' + error.message);
                     console.error(error);

@@ -30,7 +30,12 @@ jobs:
       run: |
         MANIFEST=platforms/android/app/src/main/AndroidManifest.xml
         if [ -f "$MANIFEST" ]; then
-          awk '!seen[$0]++ || !/uses-permission/' "$MANIFEST" > tmp_manifest.xml && mv tmp_manifest.xml "$MANIFEST"
+          grep -n "WRITE_EXTERNAL_STORAGE" "$MANIFEST" | tail -n +2 | cut -d: -f1 | sort -rn | while read line; do
+            sed -i "${line}d" "$MANIFEST"
+          done
+          grep -n "READ_EXTERNAL_STORAGE" "$MANIFEST" | tail -n +2 | cut -d: -f1 | sort -rn | while read line; do
+            sed -i "${line}d" "$MANIFEST"
+          done
         fi
     - run: cordova build android --release
     - uses: actions/upload-artifact@v4

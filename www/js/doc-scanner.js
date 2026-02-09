@@ -158,7 +158,15 @@ export class DocScanner {
             }
 
             navigator.camera.getPicture(
-                (imageData) => resolve(imageData),
+                (imageData) => {
+                    // Camera v8 returns full data URI, v7 returns raw base64
+                    // Normalize to raw base64
+                    if (imageData.startsWith('data:')) {
+                        resolve(imageData.split(',')[1]);
+                    } else {
+                        resolve(imageData);
+                    }
+                },
                 (error) => {
                     if (error === 'No Image Selected' || error === 'Camera cancelled.' || error === 'Selection cancelled.') {
                         reject('cancelled');

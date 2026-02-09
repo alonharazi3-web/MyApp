@@ -1,8 +1,10 @@
 /**
  * Document Scanner Module v5.4
  * Camera capture → Image enhancement → PDF generation
- * Uses cordova-plugin-camera + jsPDF
+ * Uses cordova-plugin-camera + built-in PDF generator (no CDN needed)
  */
+
+import { PDFGenerator } from './pdf-generator.js';
 
 export class DocScanner {
     constructor() {
@@ -257,50 +259,16 @@ export class DocScanner {
     }
 
     /**
-     * Generate PDF from image base64
+     * Generate PDF from image base64 (built-in, no external dependency)
      */
     generatePDF(base64Image) {
-        // Try multiple ways to access jsPDF
-        let jsPDFClass = null;
-        if (window.jspdf && window.jspdf.jsPDF) {
-            jsPDFClass = window.jspdf.jsPDF;
-        } else if (window.jsPDF) {
-            jsPDFClass = window.jsPDF;
-        } else if (typeof jspdf !== 'undefined' && jspdf.jsPDF) {
-            jsPDFClass = jspdf.jsPDF;
-        }
-
-        if (!jsPDFClass) {
-            return Promise.reject(new Error('jsPDF לא נטען. בדוק חיבור לאינטרנט ונסה שוב.'));
-        }
-
-        const doc = new jsPDFClass('p', 'mm', 'a4');
-
-        const img = new Image();
-        img.src = 'data:image/jpeg;base64,' + base64Image;
-
-        return new Promise((resolve) => {
-            img.onload = () => {
-                const pageW = 210;
-                const pageH = 297;
-                const ratio = img.width / img.height;
-
-                let imgW, imgH;
-                if (ratio > pageW / pageH) {
-                    imgW = pageW - 10;
-                    imgH = imgW / ratio;
-                } else {
-                    imgH = pageH - 10;
-                    imgW = imgH * ratio;
-                }
-
-                const x = (pageW - imgW) / 2;
-                const y = (pageH - imgH) / 2;
-
-                doc.addImage('data:image/jpeg;base64,' + base64Image, 'JPEG', x, y, imgW, imgH);
-                const pdfBase64 = doc.output('datauristring').split(',')[1];
+        return new Promise((resolve, reject) => {
+            try {
+                const pdfBase64 = PDFGenerator.generate(base64Image);
                 resolve(pdfBase64);
-            };
+            } catch (error) {
+                reject(new Error('שגיאה ביצירת PDF: ' + error.message));
+            }
         });
     }
 

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'feedback-app-v2.9';
+const CACHE_NAME = 'feedback-app-v3.0';
 const urlsToCache = [
   '/',
   '/index.html',
@@ -16,6 +16,10 @@ const urlsToCache = [
   '/js/pages/evaluator.js',
   '/js/pages/assessment.js',
   '/js/pages/summary.js',
+  '/js/pages/preview.js',
+  '/js/doc-scanner.js',
+  '/js/pdf-generator.js',
+  '/js/excel-generator.js',
   '/js/exercises/balloon.js',
   '/js/exercises/tiach.js',
   '/js/exercises/dolira.js',

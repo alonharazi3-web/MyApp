@@ -1,7 +1,8 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.feedback.app" version="5.4.0" 
+<widget id="com.feedback.app" version="5.4.0"
     xmlns="http://www.w3.org/ns/widgets"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
     <name>Improv Workshop</name>
     <description>Improvisation Workshop Feedback App</description>
     <author email="alonharazi3@gmail.com">Feedback Team</author>
@@ -48,7 +49,9 @@
             <application android:usesCleartextTraffic="true" />
             <application android:requestLegacyExternalStorage="true" />
         </edit-config>
-        
+<config-file target="app/src/main/AndroidManifest.xml" parent="/manifest">
+            <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" tools:replace="android:maxSdkVersion" android:maxSdkVersion="32" />
+        </config-file>        
         <!-- Resource files for adaptive icons -->
         <resource-file src="www/icon-512.png" target="app/src/main/res/mipmap-hdpi/ic_launcher.png" />
         <resource-file src="www/icon-512.png" target="app/src/main/res/mipmap-mdpi/ic_launcher.png" />

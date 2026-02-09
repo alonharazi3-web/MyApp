@@ -1,7 +1,6 @@
 /**
- * Summary Page Module v5.4
+ * Summary Page Module
  * Final summary and export functionality
- * Now includes camera scan button and document export buttons
  */
 
 import { ExportManager } from '../export.js';
@@ -18,7 +17,7 @@ export class SummaryPage {
                 
                 <div class="trainee-tabs" id="summaryTabs"></div>
                 
-                <div id="summaryScanBtn" style="display: flex; justify-content: flex-end; margin: 8px 0;"></div>
+                <button class="btn-scan scan-btn-summary" onclick="window.startDocScanSummary()">📷 סרוק מסמך</button>
                 
                 <div class="criteria-list" id="criteriaList"></div>
                 
@@ -34,18 +33,12 @@ export class SummaryPage {
                     </button>
                 </div>
                 
-                <div class="scan-export-section" id="scanExportSection">
-                    <p>📷 מסמכים סרוקים:</p>
-                    <div class="scan-export-buttons">
-                        <button class="scan-export-btn zip-btn" onclick="window.documentScanner.exportAsZip(window.app.currentSummaryTrainee)">
-                            📦 ייצוא מסמכים ZIP (שיתוף)
-                        </button>
-                        <button class="scan-export-btn pdf-btn" onclick="window.documentScanner.exportAsPdfs(window.app.currentSummaryTrainee)">
-                            📄 שמירת PDFs ב-Downloads
-                        </button>
-                        <button class="scan-export-btn view-btn" onclick="window.documentScanner.openDocViewer(window.app.currentSummaryTrainee)">
-                            👁️ צפייה במסמכים
-                        </button>
+                <div style="margin-top: 10px; padding: 10px; background: #fef3c7; border-radius: 8px; border: 2px dashed #f59e0b;">
+                    <p style="font-size: 12px; color: #92400e; margin-bottom: 8px; font-weight: bold;">📄 מסמכים סרוקים:</p>
+                    <div class="doc-export-buttons">
+                        <button class="btn btn-doc-export" onclick="exportDocsZip()">📤 שתף מסמכים</button>
+                        <button class="btn btn-doc-export" onclick="exportDocsLocal()" style="background:#059669;">💾 שמור לתיקייה</button>
+                        <button class="btn btn-doc-export" onclick="showDocsList()" style="background:#6366f1;">👁️ צפייה</button>
                     </div>
                 </div>
                 
@@ -65,7 +58,9 @@ export class SummaryPage {
     renderSummaryTabs() {
         const container = document.getElementById('summaryTabs');
         if (!container) return;
+
         container.innerHTML = '';
+        
         for (let i = 0; i < 4; i++) {
             const div = document.createElement('div');
             div.className = 'trainee-tab';
@@ -79,9 +74,11 @@ export class SummaryPage {
     selectSummaryTrainee(index) {
         window.app.currentSummaryTrainee = index;
         
+        // Update tab styles
         for (let i = 0; i < 4; i++) {
             const tab = document.getElementById(`summaryTab${i}`);
             if (!tab) continue;
+            
             if (i === index) {
                 tab.classList.add('active');
                 tab.style.backgroundColor = window.app.traineeColors[i];
@@ -95,45 +92,20 @@ export class SummaryPage {
             }
         }
         
+        // Update container background
         const container = document.getElementById('summaryContainer');
         if (container) {
             container.style.backgroundColor = window.app.traineeColors[index];
             container.style.transition = 'background-color 0.3s';
         }
         
-        // Update camera button for this trainee
-        this.updateScanButton(index);
-        
-        // Update scan export section visibility
-        this.updateScanExportSection(index);
-        
         this.renderCriteria();
-    }
-
-    updateScanButton(traineeIndex) {
-        const scanBtnDiv = document.getElementById('summaryScanBtn');
-        if (scanBtnDiv) {
-            scanBtnDiv.innerHTML = window.documentScanner.renderCameraButton('summary');
-        }
-    }
-
-    updateScanExportSection(traineeIndex) {
-        const section = document.getElementById('scanExportSection');
-        if (!section) return;
-        
-        const count = window.documentScanner.getScanCount(traineeIndex);
-        if (count > 0) {
-            section.style.display = 'block';
-            section.querySelector('p').textContent = `📷 מסמכים סרוקים (${count}):`;
-        } else {
-            section.style.display = 'block';
-            section.querySelector('p').textContent = '📷 מסמכים סרוקים (0):';
-        }
     }
 
     renderCriteria() {
         const list = document.getElementById('criteriaList');
         if (!list) return;
+
         list.innerHTML = '';
         
         window.app.criteria.forEach(criterion => {

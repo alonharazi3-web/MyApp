@@ -64,6 +64,7 @@ export class Storage {
                 if (!window.app.data.hotelHistory) window.app.data.hotelHistory = [];
                 if (!window.app.data.exerciseData) window.app.data.exerciseData = {};
                 if (!window.app.data.summaryData) window.app.data.summaryData = {};
+                if (!window.app.data.scannedDocs) window.app.data.scannedDocs = {};
 
                 // Populate form fields
                 const fields = [

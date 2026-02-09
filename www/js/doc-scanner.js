@@ -260,9 +260,21 @@ export class DocScanner {
      * Generate PDF from image base64
      */
     generatePDF(base64Image) {
-        // Use jsPDF
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF('p', 'mm', 'a4');
+        // Try multiple ways to access jsPDF
+        let jsPDFClass = null;
+        if (window.jspdf && window.jspdf.jsPDF) {
+            jsPDFClass = window.jspdf.jsPDF;
+        } else if (window.jsPDF) {
+            jsPDFClass = window.jsPDF;
+        } else if (typeof jspdf !== 'undefined' && jspdf.jsPDF) {
+            jsPDFClass = jspdf.jsPDF;
+        }
+
+        if (!jsPDFClass) {
+            return Promise.reject(new Error('jsPDF לא נטען. בדוק חיבור לאינטרנט ונסה שוב.'));
+        }
+
+        const doc = new jsPDFClass('p', 'mm', 'a4');
 
         const img = new Image();
         img.src = 'data:image/jpeg;base64,' + base64Image;

@@ -327,23 +327,62 @@ window.testFilePlugin = function() {
 window.exportAdminJSON = function() {
     console.log('📄 Exporting JSON via Social Share');
     
-    if (!window.cordova || !window.cordova.file) {
-        console.error('❌ File Plugin not available');
-        return;
+    // Save current admin fields first
+    const assessmentInput = document.getElementById('assessmentName');
+    if (assessmentInput) window.app.data.assessmentName = assessmentInput.value;
+    for (let i = 1; i <= 4; i++) {
+        const traineeInput = document.getElementById(`trainee${i}`);
+        if (traineeInput) window.app.data[`trainee${i}`] = traineeInput.value;
+    }
+    const highlightsInput = document.getElementById('highlights');
+    if (highlightsInput) window.app.data.highlights = highlightsInput.value;
+    window.storage.saveData();
+    
+    // Build structured export (same format as loadFromJSON expects)
+    const exportData = {
+        metadata: {
+            assessmentName: window.app.data.assessmentName,
+            evaluatorName: window.app.data.evaluatorName,
+            exportDate: new Date().toISOString(),
+            appVersion: '5.4'
+        },
+        trainees: [],
+        highlights: window.app.data.highlights,
+        storeHistory: window.app.data.storeHistory,
+        hotelHistory: window.app.data.hotelHistory
+    };
+    
+    for (let t = 0; t < 4; t++) {
+        exportData.trainees.push({
+            id: t,
+            name: window.app.data[`trainee${t + 1}`] || `חניך ${t + 1}`
+        });
     }
     
-    if (!window.plugins || !window.plugins.socialsharing) {
-        console.error('❌ Social Sharing Plugin not available');
+    if (!window.cordova || !window.cordova.file || !window.plugins || !window.plugins.socialsharing) {
+        // Fallback: download via blob
+        try {
+            const jsonStr = JSON.stringify(exportData, null, 2);
+            const blob = new Blob([jsonStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `settings_${new Date().toISOString().slice(0, 10)}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            alert('✅ קובץ הגדרות יוצא!');
+        } catch (e) {
+            alert('❌ שגיאה: ' + e.message);
+        }
         return;
     }
     
     try {
-        const jsonStr = JSON.stringify(window.app.data, null, 2);
+        const jsonStr = JSON.stringify(exportData, null, 2);
         const dateStr = new Date().toISOString().slice(0, 10);
         const filename = `settings_${dateStr}.json`;
         const blob = new Blob([jsonStr], { type: 'application/json' });
         
-        // Social Sharing - קובץ בלבד, ללא message
         window.resolveLocalFileSystemURL(window.cordova.file.cacheDirectory, function(dirEntry) {
             dirEntry.getFile(filename, { create: true, exclusive: false }, function(fileEntry) {
                 fileEntry.createWriter(function(fileWriter) {

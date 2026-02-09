@@ -184,10 +184,15 @@ export class ExportManager {
                 try {
                     const data = JSON.parse(e.target.result);
                     
-                    // Update admin settings
+                    // Detect format: structured (has metadata) vs raw (has trainee1 directly)
                     if (data.metadata) {
+                        // Structured format
                         window.app.data.assessmentName = data.metadata.assessmentName || '';
                         window.app.data.evaluatorName = data.metadata.evaluatorName || '';
+                    } else if (data.assessmentName !== undefined) {
+                        // Raw app.data format
+                        window.app.data.assessmentName = data.assessmentName || '';
+                        window.app.data.evaluatorName = data.evaluatorName || '';
                     }
                     
                     // Update trainees
@@ -195,10 +200,19 @@ export class ExportManager {
                         for (let i = 0; i < Math.min(4, data.trainees.length); i++) {
                             window.app.data[`trainee${i + 1}`] = data.trainees[i].name || '';
                         }
+                    } else {
+                        // Raw format - trainee1..4 directly
+                        for (let i = 1; i <= 4; i++) {
+                            if (data[`trainee${i}`] !== undefined) {
+                                window.app.data[`trainee${i}`] = data[`trainee${i}`];
+                            }
+                        }
                     }
                     
                     // Update highlights
-                    window.app.data.highlights = data.highlights || '';
+                    if (data.highlights !== undefined) {
+                        window.app.data.highlights = data.highlights || '';
+                    }
                     
                     // Update histories
                     if (data.storeHistory) {

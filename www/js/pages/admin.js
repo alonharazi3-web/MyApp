@@ -62,7 +62,7 @@ export class AdminPage {
                     <button class="btn btn-save" onclick="saveAdminAndBack()">💾 שמור וחזור</button>
                     <button class="btn btn-save" onclick="loadAdminJSON()">📤 טען הגדרות</button>
                 </div>
-                <input type="file" id="jsonFileInput" accept=".json,.txt" style="display: none;" onchange="handleJSONFile(event)">
+                <input type="file" id="jsonFileInput" accept="application/json,.json,.txt,text/plain,*/*" style="display: none;" onchange="handleJSONFile(event)">
             </div>
         `;
     }

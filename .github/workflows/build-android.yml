@@ -26,8 +26,10 @@ jobs:
         cordova plugin add cordova-plugin-dialogs
         cordova plugin add cordova-plugin-statusbar
         cordova plugin add cordova-plugin-x-socialsharing
-    - run: cordova build android --release
+    - run: cordova build android
+    - name: Find APK
+      run: find platforms/android -name "*.apk" -type f
     - uses: actions/upload-artifact@v4
       with:
-        name: app-release
-        path: platforms/android/app/build/outputs/apk/**/*.apk
+        name: app-debug
+        path: platforms/android/app/build/outputs/apk/debug/app-debug.apk

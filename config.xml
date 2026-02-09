@@ -1,8 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <widget id="com.feedback.app" version="5.4.0"
     xmlns="http://www.w3.org/ns/widgets"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:android="http://schemas.android.com/apk/res/android">
     <name>Improv Workshop</name>
     <description>Improvisation Workshop Feedback App</description>
     <author email="alonharazi3@gmail.com">Feedback Team</author>
@@ -10,28 +9,27 @@
     <access origin="*" />
     <access origin="https://cdn.sheetjs.com" />
     <access origin="https://cdnjs.cloudflare.com" />
-    
+
     <preference name="android-minSdkVersion" value="24" />
     <preference name="android-targetSdkVersion" value="35" />
     <preference name="android-compileSdkVersion" value="35" />
     <preference name="AndroidGradlePluginVersion" value="8.7.3" />
     <preference name="GradleVersion" value="8.9" />
     <preference name="AndroidPersistentFileLocation" value="Internal" />
-    
+
     <!-- StatusBar preferences -->
     <preference name="StatusBarOverlaysWebView" value="false" />
     <preference name="StatusBarBackgroundColor" value="#667eea" />
     <preference name="StatusBarStyle" value="lightcontent" />
-    
+
     <!-- Plugins -->
     <plugin name="cordova-plugin-file" />
-    <plugin name="cordova-plugin-whitelist" />
     <plugin name="cordova-plugin-statusbar" />
     <plugin name="cordova-plugin-dialogs" />
     <plugin name="cordova-plugin-device" />
     <plugin name="cordova-plugin-camera" />
     <plugin name="cordova-plugin-x-socialsharing" source="npm" />
-    
+
     <platform name="android">
         <!-- Icons -->
         <icon src="www/icon-192.png" density="ldpi" />
@@ -40,18 +38,19 @@
         <icon src="www/icon-512.png" density="xhdpi" />
         <icon src="www/icon-512.png" density="xxhdpi" />
         <icon src="www/icon-512.png" density="xxxhdpi" />
-        
+
         <preference name="AndroidInsecureFileModeEnabled" value="true" />
-        
+
         <allow-intent href="market:*" />
-        
+
         <edit-config file="app/src/main/AndroidManifest.xml" mode="merge" target="/manifest/application">
-            <application android:usesCleartextTraffic="true" />
-            <application android:requestLegacyExternalStorage="true" />
+            <application android:usesCleartextTraffic="true" android:requestLegacyExternalStorage="true" />
         </edit-config>
-<config-file target="app/src/main/AndroidManifest.xml" parent="/manifest">
-            <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" tools:replace="android:maxSdkVersion" android:maxSdkVersion="32" />
-        </config-file>        
+
+        <config-file target="AndroidManifest.xml" parent="/*">
+            <uses-permission android:name="android.permission.CAMERA" />
+        </config-file>
+
         <!-- Resource files for adaptive icons -->
         <resource-file src="www/icon-512.png" target="app/src/main/res/mipmap-hdpi/ic_launcher.png" />
         <resource-file src="www/icon-512.png" target="app/src/main/res/mipmap-mdpi/ic_launcher.png" />
@@ -59,7 +58,7 @@
         <resource-file src="www/icon-512.png" target="app/src/main/res/mipmap-xxhdpi/ic_launcher.png" />
         <resource-file src="www/icon-512.png" target="app/src/main/res/mipmap-xxxhdpi/ic_launcher.png" />
     </platform>
-    
+
     <allow-navigation href="*" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />

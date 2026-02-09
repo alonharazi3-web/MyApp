@@ -26,6 +26,26 @@ jobs:
         cordova plugin add cordova-plugin-dialogs
         cordova plugin add cordova-plugin-statusbar
         cordova plugin add cordova-plugin-x-socialsharing
+    - name: Fix manifest duplicates
+      run: |
+        MANIFEST=platforms/android/app/src/main/AndroidManifest.xml
+        if [ -f "$MANIFEST" ]; then
+          python3 << 'PYEOF'
+with open("platforms/android/app/src/main/AndroidManifest.xml") as f:
+    lines = f.readlines()
+seen = set()
+out = []
+for line in lines:
+    if "uses-permission" in line:
+        perm = line.strip()
+        if perm in seen:
+            continue
+        seen.add(perm)
+    out.append(line)
+with open("platforms/android/app/src/main/AndroidManifest.xml","w") as f:
+    f.writelines(out)
+PYEOF
+        fi
     - run: cordova build android --release
     - uses: actions/upload-artifact@v4
       with:

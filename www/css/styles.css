@@ -319,7 +319,6 @@ textarea {
     padding: 10px;
     border-radius: 10px;
     min-height: 400px;
-    max-height: 600px;
     overflow-y: auto;
 }
 
@@ -998,6 +997,114 @@ textarea {
 }
 
 /* ===== END DOCUMENT SCANNER ===== */
+/* ===== SCORE BAR ===== */
+.score-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 5px;
+}
+
+.score-btn {
+    min-width: 36px;
+    height: 32px;
+    padding: 2px 4px;
+    font-size: 13px;
+    font-weight: 600;
+    border: 2px solid #d1d5db;
+    background: white;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: #374151;
+}
+
+.score-btn:hover {
+    background: #f0f0f0;
+    border-color: #667eea;
+}
+
+.score-btn.selected {
+    background: #667eea;
+    color: white;
+    border-color: #667eea;
+    transform: scale(1.08);
+}
+
+/* ===== STICKY BOTTOM NAV ===== */
+.sticky-bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    border-top: 2px solid #e5e7eb;
+    padding: 5px 10px;
+    padding-bottom: max(5px, env(safe-area-inset-bottom));
+    display: flex;
+    gap: 5px;
+    z-index: 9000;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.sticky-bottom-nav .nav-btn {
+    flex: 1;
+    padding: 9px 6px;
+    border: 2px solid;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.sticky-bottom-nav .nav-btn-back {
+    background: white;
+    color: #6b7280;
+    border-color: #d1d5db;
+}
+
+.sticky-bottom-nav .nav-btn-forward {
+    background: #667eea;
+    color: white;
+    border-color: #667eea;
+}
+
+.sticky-bottom-nav .nav-btn-save {
+    background: #10b981;
+    color: white;
+    border-color: #10b981;
+    flex: 0;
+    min-width: 42px;
+    font-size: 16px;
+    padding: 9px 10px;
+}
+
+.sticky-bottom-nav .scroll-top-btn {
+    background: white;
+    color: #667eea;
+    border: 2px solid #667eea;
+    border-radius: 50%;
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    flex: 0;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    padding: 0;
+}
+
+.sticky-bottom-nav .scroll-top-btn:hover {
+    background: #667eea;
+    color: white;
+}
+
+/* ===== END STICKY BOTTOM NAV ===== */
 .option-btn {
     padding: 15px;
     font-size: 16px;

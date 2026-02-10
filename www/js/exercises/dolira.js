@@ -298,13 +298,11 @@ export class DoliraExercise {
 
     renderScoreQuestion(key, title, field) {
         const value = this.getData(key, field) || '';
-        return `
-            <div class="question-block">
-                <div class="question-title">${title}</div>
-                <input type="number" min="1" max="7" step="0.5" value="${value}" 
-                    onchange="setExerciseData('${key}', '${field}', this.value)">
-            </div>
-        `;
+        const vals = [1,1.5,2,2.5,3,3.5,4,4.5,5,5.5,6,6.5,7];
+        let btns = vals.map(v => 
+            `<button type="button" class="score-btn ${value == v ? 'selected' : ''}" onclick="this.parentElement.querySelectorAll('.score-btn').forEach(b=>b.classList.remove('selected')); this.classList.add('selected'); setExerciseData('${key}', '${field}', '${v}')">${v}</button>`
+        ).join('');
+        return `<div class="question-block"><div class="question-title">${title}</div><div class="score-bar">${btns}</div></div>`;
     }
 
     getData(key, field) {

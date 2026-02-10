@@ -13,30 +13,6 @@ export class LailaExercise {
         
         html += `<div class="info-box"><strong>שלבי התרגיל:</strong><br>א. תדריך וביצוע סיוש<br>ב. כתיבת תוכנית פעולה ואישורה<br>ג. ביצוע<br>ד. ביצוע תחקירים</div>`;
         
-        // היסטוריית מלונות
-        html += `<div class="section-title">היסטוריית מלונות</div>`;
-        html += `<div class="info-box">`;
-        if (window.app.data.hotelHistory && window.app.data.hotelHistory.length > 0) {
-            html += `<table style="width:100%; border-collapse: collapse;">`;
-            html += `<tr><th style="border:1px solid #ddd; padding:5px;">שם</th><th style="border:1px solid #ddd; padding:5px;">כתובת</th><th style="border:1px solid #ddd; padding:5px;">תאריך</th></tr>`;
-            window.app.data.hotelHistory.forEach(hotel => {
-                html += `<tr>`;
-                html += `<td style="border:1px solid #ddd; padding:5px;">${window.escapeHtml(hotel.name)}</td>`;
-                html += `<td style="border:1px solid #ddd; padding:5px;">${window.escapeHtml(hotel.address)}</td>`;
-                html += `<td style="border:1px solid #ddd; padding:5px;">${hotel.date || ''}</td>`;
-                html += `</tr>`;
-            });
-            html += `</table>`;
-        } else {
-            html += `אין מלונות שמורים בהיסטוריה`;
-        }
-        html += `</div>`;
-
-        // פרטי מלון
-        html += `<div class="section-title">פרטי מלון</div>`;
-        html += this.renderQuestion(key, 'שם מלון', 'hotel_name_input', 'text');
-        html += this.renderQuestion(key, 'כתובת מלון', 'hotel_address_input', 'text');
-        html += `<div class="question-block"><div class="question-title">תאריך</div><input type="text" value="${this.getData(key, 'hotel_date') || new Date().toLocaleDateString('he-IL')}" readonly style="background:#f0f0f0;"></div>`;
         
         html += `<div class="info-box"><strong>סיפור המעשה לחניך:</strong><br>לוחמי היחידה ביצעו מעצר סמוי של מנהל החנות בו שהית בצהריים. בחקירתו סיפר כי העביר לפעיל הארד דיסק מוצפן ובו מידע חשוב לפעילות התשתית. השליח/פעיל אינו מודע למידע שנמצא על הכונן וציין בפניו כשנפגש עימו שידאג להעביר את הכונן לידי שאר הפעילים בתשתית לטובת תכנון הפעולה. הוא אינו מודע למהות הפעולה המתוכננת.<br>אנו מבינים שבנקודה האמורה עתיד להתקיים פגישה אשר עליה אנו מעוניינים לפקח מבלי לעורר את חשד הסביבה או הנפגשים.<br>עלייך לקיים תצפית רציפה, אפקטיבית, סטטית ולא בהסתר לעבר היעד שנמצא ב-_______ למשך פרק זמן של עד שעתיים.<br>בסיום התצפית עלייך לדווח בצורה מדוייקת ומפורטת את כל אשר ראית והתרחש סביבך ובנקודת המפגש האמורה.<br>לרשותך 70 דק מרגע סיום התדריך עמ לממש את סיור השטח ולהגיע חזרה למלון, לשרטט את האזור ולחשוב על 2 דפאות לביצוע. עלייך לאכול א. ערב בפרק הזמן הנל. שימוש במונית לחזרה למלון אפשרי באישור טלפוני מהמדריך.</div>`;
 
@@ -174,7 +150,11 @@ export class LailaExercise {
 
     renderScoreQuestion(key, title, field) {
         const value = this.getData(key, field) || '';
-        return `<div class="question-block"><div class="question-title">${title}</div><input type="number" min="1" max="7" step="0.5" value="${value}" onchange="setExerciseData('${key}', '${field}', this.value)"></div>`;
+        const vals = [1,1.5,2,2.5,3,3.5,4,4.5,5,5.5,6,6.5,7];
+        let btns = vals.map(v => 
+            `<button type="button" class="score-btn ${value == v ? 'selected' : ''}" onclick="this.parentElement.querySelectorAll('.score-btn').forEach(b=>b.classList.remove('selected')); this.classList.add('selected'); setExerciseData('${key}', '${field}', '${v}')">${v}</button>`
+        ).join('');
+        return `<div class="question-block"><div class="question-title">${title}</div><div class="score-bar">${btns}</div></div>`;
     }
 
     getData(key, field) {

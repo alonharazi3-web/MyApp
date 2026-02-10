@@ -12,7 +12,7 @@ export class SummaryPage {
 
     render() {
         return `
-            <div class="container" id="summaryContainer">
+            <div class="container" id="summaryContainer" style="padding-bottom: 65px;">
                 <h2 style="text-align: center;">סיכום הערכה</h2>
                 
                 <div class="trainee-tabs" id="summaryTabs"></div>
@@ -41,10 +41,11 @@ export class SummaryPage {
                         <button class="btn btn-doc-export" onclick="showDocsList()" style="background:#6366f1;">👁️ צפייה</button>
                     </div>
                 </div>
-                
-                <button class="btn btn-back" onclick="goToPage('assessment')" style="width: 100%; margin-top: 10px;">
-                    ⬅ חזור להערכה
-                </button>
+            </div>
+            <div class="sticky-bottom-nav" id="summaryNav">
+                <button class="nav-btn nav-btn-back" onclick="goToPage('assessment')">⬅ חזור להערכה</button>
+                <button class="nav-btn-save" onclick="window.storage.saveData(); alert('נשמר ✅')" title="שמירה">💾</button>
+                <button class="scroll-top-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="למעלה">⬆</button>
             </div>
         `;
     }
@@ -115,12 +116,13 @@ export class SummaryPage {
             div.className = 'criterion-item';
             div.innerHTML = `
                 <h4>${criterion}</h4>
-                <div class="grid-2">
-                    <div>
-                        <label>ציון (1-7)</label>
-                        <input type="number" min="1" max="7" step="0.5" 
-                            value="${window.storage.getSummaryData(key, 'score')}" 
-                            onchange="updateSummaryScore('${key}', this.value)">
+                <div>
+                    <label>ציון (1-7)</label>
+                    <div class="score-bar">
+                        ${[1,1.5,2,2.5,3,3.5,4,4.5,5,5.5,6,6.5,7].map(v => 
+                            `<button type="button" class="score-btn ${window.storage.getSummaryData(key, 'score') == v ? 'selected' : ''}" 
+                                onclick="this.parentElement.querySelectorAll('.score-btn').forEach(b=>b.classList.remove('selected')); this.classList.add('selected'); updateSummaryScore('${key}', '${v}')">${v}</button>`
+                        ).join('')}
                     </div>
                 </div>
                 <div>

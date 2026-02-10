@@ -41,9 +41,7 @@ export class BalloonExercise {
             html += `
                 <div class="question-block">
                     <div class="question-title">${score}</div>
-                    <input type="number" min="1" max="7" step="0.5" 
-                        value="${window.escapeHtml(this.getData(key, `score_${i}`))}" 
-                        onchange="setExerciseData('${key}', 'score_${i}', this.value)">
+                    <div class="score-bar">\${[1,1.5,2,2.5,3,3.5,4,4.5,5,5.5,6,6.5,7].map(v => \`<button type="button" class="score-btn \${this.getData(key, \`score_\${i}\`) == v ? 'selected' : ''}" onclick="this.parentElement.querySelectorAll('.score-btn').forEach(b=>b.classList.remove('selected')); this.classList.add('selected'); setExerciseData('\${key}', 'score_\${i}', '\${v}')">\${v}</button>\`).join('')}</div>
                 </div>
             `;
         });

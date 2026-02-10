@@ -26,7 +26,7 @@ export class AssessmentPage {
 
     render() {
         return `
-            <div class="container" id="assessmentContainer">
+            <div class="container" id="assessmentContainer" style="padding-bottom: 65px;">
                 <div class="assessment-header">
                     <h3 id="assessmentTitle">${window.app.data.assessmentName || 'הערכה'}</h3>
                     <p id="evaluatorDisplay">מעריך: ${window.app.data.evaluatorName || ''}</p>
@@ -35,11 +35,12 @@ export class AssessmentPage {
                 <div class="trainee-tabs" id="traineeTabs"></div>
                 <div class="exercise-tabs" id="exerciseTabs"></div>
                 <div class="exercise-content" id="exerciseContent"></div>
-                
-                <div class="nav-buttons">
-                    <button class="btn btn-back" onclick="goToPage('evaluator')">⬅ אחורה</button>
-                    <button class="btn btn-forward" onclick="goToPage('summary')">קדימה ➡</button>
-                </div>
+            </div>
+            <div class="sticky-bottom-nav" id="assessmentNav">
+                <button class="nav-btn nav-btn-back" onclick="goToPage('evaluator')">⬅ אחורה</button>
+                <button class="nav-btn-save" onclick="window.storage.saveData(); alert('נשמר ✅')" title="שמירה">💾</button>
+                <button class="nav-btn nav-btn-forward" onclick="goToPage('summary')">קדימה ➡</button>
+                <button class="scroll-top-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="למעלה">⬆</button>
             </div>
         `;
     }

@@ -245,6 +245,10 @@ export class Storage {
      */
     clearAllData() {
         if (confirm('האם אתה בטוח שברצונך למחוק את כל הנתונים? פעולה זו אינה ניתנת לביטול!')) {
+            // Clear scanned docs from memory
+            if (window.app && window.app.data && window.app.data.scannedDocs) {
+                window.app.data.scannedDocs = {};
+            }
             localStorage.removeItem(this.storageKey);
             localStorage.removeItem(this.primaryKey);
             window.location.reload();

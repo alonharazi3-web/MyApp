@@ -38,15 +38,23 @@ export class BalloonExercise {
         html += '<div class="section-title">ציונים</div>';
         
         this.scores.forEach((score, i) => {
-            html += `
-                <div class="question-block">
-                    <div class="question-title">${score}</div>
-                    <div class="score-bar">\${[1,1.5,2,2.5,3,3.5,4,4.5,5,5.5,6,6.5,7].map(v => \`<button type="button" class="score-btn \${this.getData(key, \`score_\${i}\`) == v ? 'selected' : ''}" onclick="this.parentElement.querySelectorAll('.score-btn').forEach(b=>b.classList.remove('selected')); this.classList.add('selected'); setExerciseData('\${key}', 'score_\${i}', '\${v}')">\${v}</button>\`).join('')}</div>
-                </div>
-            `;
+            html += this.renderScoreQuestion(key, score, `score_${i}`);
         });
+
+        html += `
+            <div class="question-block">
+                <div class="question-title">התייחסות חופשית</div>
+                <textarea onchange="setExerciseData('${key}', 'free_comment', this.value)">${window.escapeHtml(this.getData(key, 'free_comment'))}</textarea>
+            </div>
+        `;
         
         return html;
+    }
+
+    renderScoreQuestion(key, title, field) {
+        const value = this.getData(key, field) || '';
+        const vals = [1,1.5,2,2.5,3,3.5,4,4.5,5,5.5,6,6.5,7];
+        return `<div class="question-block"><div class="question-title">${title}</div><select onchange="setExerciseData('${key}', '${field}', this.value)"><option value="">בחר ציון...</option>${vals.map(v => `<option value="${v}" ${value == v ? 'selected' : ''}>${v}</option>`).join('')}</select></div>`;
     }
 
     getData(key, field) {
@@ -55,8 +63,6 @@ export class BalloonExercise {
 
     onRender(traineeId, exerciseId) {
         const key = `${traineeId}-${exerciseId}`;
-        
-        // Make setExerciseData global for this exercise
         window.setExerciseData = (k, field, value) => {
             const [tId, eId] = k.split('-');
             window.storage.setExerciseData(parseInt(tId), parseInt(eId), field, value);

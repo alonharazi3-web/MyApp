@@ -244,13 +244,44 @@ export class Storage {
      * Clear all data (with confirmation)
      */
     clearAllData() {
-        if (confirm('האם אתה בטוח שברצונך למחוק את כל הנתונים? פעולה זו אינה ניתנת לביטול!')) {
-            // Clear scanned docs from memory
-            if (window.app && window.app.data && window.app.data.scannedDocs) {
-                window.app.data.scannedDocs = {};
-            }
+        if (confirm('האם אתה בטוח שברצונך למחוק את כל הנתונים כולל מסמכים סרוקים?\n\nפעולה זו אינה ניתנת לביטול!')) {
+            // Prevent auto-save from re-saving during clear
+            window._clearingData = true;
+            
+            // Clear all in-memory data
+            window.app.data = {
+                assessmentName: '',
+                trainee1: '',
+                trainee2: '',
+                trainee3: '',
+                trainee4: '',
+                highlights: '',
+                evaluatorName: '',
+                primaryTrainees: [],
+                exerciseData: {},
+                summaryData: {},
+                storeHistory: [],
+                hotelHistory: [],
+                scannedDocs: {}
+            };
+            window.app.primaryTrainees = [];
+            
+            // Clear ALL app-related localStorage
             localStorage.removeItem(this.storageKey);
             localStorage.removeItem(this.primaryKey);
+            localStorage.removeItem('scannedDocs');
+            
+            // Force clear any remaining keys
+            const keysToRemove = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && (key.startsWith('feedback') || key.startsWith('scanned') || key.startsWith('primary'))) {
+                    keysToRemove.push(key);
+                }
+            }
+            keysToRemove.forEach(k => localStorage.removeItem(k));
+            
+            console.log('🗑️ All data cleared including scanned documents');
             window.location.reload();
         }
     }

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'feedback-app-v3.1';
+const CACHE_NAME = 'feedback-app-v5.6.1';
 const urlsToCache = [
   '/',
   '/index.html',

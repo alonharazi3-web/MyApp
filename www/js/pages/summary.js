@@ -118,12 +118,12 @@ export class SummaryPage {
                 <h4>${criterion}</h4>
                 <div>
                     <label>ציון (1-7)</label>
-                    <div class="score-bar">
+                    <select onchange="updateSummaryScore('${key}', this.value)" style="width:100%;padding:8px;font-size:16px;border-radius:8px;border:1px solid #ddd;">
+                        <option value="">בחר ציון...</option>
                         ${[1,1.5,2,2.5,3,3.5,4,4.5,5,5.5,6,6.5,7].map(v => 
-                            `<button type="button" class="score-btn ${window.storage.getSummaryData(key, 'score') == v ? 'selected' : ''}" 
-                                onclick="this.parentElement.querySelectorAll('.score-btn').forEach(b=>b.classList.remove('selected')); this.classList.add('selected'); updateSummaryScore('${key}', '${v}')">${v}</button>`
+                            `<option value="${v}" ${window.storage.getSummaryData(key, 'score') == v ? 'selected' : ''}>${v}</option>`
                         ).join('')}
-                    </div>
+                    </select>
                 </div>
                 <div>
                     <label>הערות</label>

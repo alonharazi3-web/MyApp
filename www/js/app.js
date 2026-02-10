@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Setup auto-save every 30 seconds
     setInterval(() => {
-        if (window.app.currentPage !== 'landing') {
+        if (window.app.currentPage !== 'landing' && !window._clearingData) {
             window.storage.saveData();
             console.log('💾 Auto-saved');
         }

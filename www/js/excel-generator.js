@@ -40,6 +40,7 @@ window.generateTabularExcel = function(data) {
         addRow(traineeName, 'בלון', q++, 'התרשמות חופשית', '', '', exd(t, 0, 'impression'));
         var balloonScores = ['גמישות מחשבתית', 'יכולת תכנון', 'תמודדות עם לחץ ועמימות', 'התמקמות כלומד', 'בטחון עצמי', 'עבודה בצוות', 'ציון מסכם'];
         balloonScores.forEach(function(s, i) { addRow(traineeName, 'בלון', q++, s, '', exd(t, 0, 'score_' + i), ''); });
+        addRow(traineeName, 'בלון', q++, 'התייחסות חופשית', '', '', exd(t, 0, 'free_comment'));
         
         // ========== טיח 1 (exercise 1) ==========
         addRow(traineeName, 'טיח 1', q++, 'שם חנות', '', '', exd(t, 1, 'tiach1_store_name_input'));
@@ -99,6 +100,7 @@ window.generateTabularExcel = function(data) {
         addRow(traineeName, 'טיח 2', q++, 'סיכום תרגיל', '', '', exd(t, 1, 'tiach2_summary'));
         var tiach2Scores = ['גמישות מחשבתית','יכולת תכנון','התמודדות עם לחץ ועמימות','התמקמות כלומד','בטחון עצמי','יכולת דיווח','ציון מסכם'];
         tiach2Scores.forEach(function(s, i) { addRow(traineeName, 'טיח 2', q++, s, '', exd(t, 1, 'tiach2_score_' + i), ''); });
+        addRow(traineeName, 'טיח', q++, 'התייחסות חופשית', '', '', exd(t, 1, 'free_comment'));
         
         // ========== דולירה (exercise 2) ==========
         addRow(traineeName, 'דולירה', q++, 'התקן', exd(t, 2, 'clarify_device'), '', '');
@@ -145,6 +147,7 @@ window.generateTabularExcel = function(data) {
         addRow(traineeName, 'דולירה', q++, 'סיכום כללי', '', '', exd(t, 2, 'summary_general'));
         var dolScores = ['יכולת למידה ויישום','גמישות מחשבתית','יכולת תכנון','תמודדות עם לחץ ועמימות','התמקמות כלומד','בטחון עצמי','גמישות ביצועית','בטחון מול יעילות','יכולת דיווח','ציון מסכם'];
         dolScores.forEach(function(s, i) { addRow(traineeName, 'דולירה', q++, s, '', exd(t, 2, 'score_' + i), ''); });
+        addRow(traineeName, 'דולירה', q++, 'התייחסות חופשית', '', '', exd(t, 2, 'free_comment'));
         
         // ========== דויד (exercise 3) ==========
         var davidMem = [['follower_address','כתובת (עוקב)'],['follower_streets','רחובות'],['follower_directions','כיוונים'],['follower_plates','לוחיות רישוי'],['follower_red_cars','מכוניות אדומות'],['follower_stopped','עצירות'],['follower_sidewalk','מדרכה'],['follower_reports','דיווחים'],['object_address','כתובת (אובייקט)'],['object_streets','רחובות (אובייקט)'],['object_directions','כיוונים (אובייקט)']];
@@ -157,6 +160,7 @@ window.generateTabularExcel = function(data) {
         addRow(traineeName, 'דויד', q++, 'סיכום תרגיל', '', '', exd(t, 3, 'summary'));
         var davidScores = ['גמישות מחשבתית','מיומנות - התמצאות במרחב','תמודדות עם לחץ ועמימות','התמקמות כלומד','בטחון עצמי','כישורי שטח בינאישיים','יכולת דיווח','ציון מסכם'];
         davidScores.forEach(function(s, i) { addRow(traineeName, 'דויד', q++, s, '', exd(t, 3, 'score_' + i), ''); });
+        addRow(traineeName, 'דויד', q++, 'התייחסות חופשית', '', '', exd(t, 3, 'free_comment'));
         
         // ========== לילה (exercise 4) ==========
         addRow(traineeName, 'לילה', q++, 'שאלות הבהרה', '', '', exd(t, 4, 'clarify_questions'));
@@ -207,6 +211,7 @@ window.generateTabularExcel = function(data) {
         addRow(traineeName, 'לילה', q++, 'סיכום תרגיל', '', '', exd(t, 4, 'summary'));
         var lailaScores = ['יכולות למידה ויישום','גמישות מחשבתית','יכולות תכנון','בטחון מול יעילות','יכולת דיווח','התמודדות עם לחץ ועמימות','התמקמות כלומד','בטחון עצמי','ציון מסכם'];
         lailaScores.forEach(function(s, i) { addRow(traineeName, 'לילה', q++, s, '', exd(t, 4, 'score_' + i), ''); });
+        addRow(traineeName, 'לילה', q++, 'התייחסות חופשית', '', '', exd(t, 4, 'free_comment'));
         
         // ========== מכתב (exercise 5) ==========
         addRow(traineeName, 'מכתב', q++, 'לקחים מיום קודם', '', '', exd(t, 5, 'lessons_previous_day'));

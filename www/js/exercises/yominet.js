@@ -262,12 +262,9 @@ export class YominetExercise {
         ];
         
         scores.forEach((score, i) => {
-            html += `
-                <div class="question-block">
-                    <div class="question-title">${score}</div>
-                    <div class="score-bar">\${[1,1.5,2,2.5,3,3.5,4,4.5,5,5.5,6,6.5,7].map(v => \`<button type="button" class="score-btn \${this.getData(key, \`score_\${i}\`) == v ? 'selected' : ''}" onclick="this.parentElement.querySelectorAll('.score-btn').forEach(b=>b.classList.remove('selected')); this.classList.add('selected'); setExerciseData('\${key}', 'score_\${i}', '\${v}')">\${v}</button>\`).join('')}</div>
-                </div>
-            `;
+            const val = this.getData(key, `score_${i}`) || '';
+            const opts = [1,1.5,2,2.5,3,3.5,4,4.5,5,5.5,6,6.5,7].map(v => `<option value="${v}" ${val == v ? 'selected' : ''}>${v}</option>`).join('');
+            html += `<div class="question-block"><div class="question-title">${score}</div><select onchange="setExerciseData('${key}', 'score_${i}', this.value)"><option value="">בחר ציון...</option>${opts}</select></div>`;
         });
         
         html += `

@@ -125,30 +125,25 @@ export class PDFGenerator {
      * Parse JPEG SOF marker to get image dimensions
      */
     static _getJpegDimensions(bytes) {
-        let i = 0;
         // Verify JPEG magic bytes
         if (bytes[0] !== 0xFF || bytes[1] !== 0xD8) {
-            // Fallback dimensions if not valid JPEG header
-            return { width: 2480, height: 3508 };
+            return { width: 1240, height: 1754 };
         }
 
-        i = 2;
+        let i = 2;
         while (i < bytes.length - 1) {
             if (bytes[i] !== 0xFF) { i++; continue; }
             const marker = bytes[i + 1];
 
             // SOF markers (Start of Frame)
             if (marker >= 0xC0 && marker <= 0xCF && marker !== 0xC4 && marker !== 0xC8 && marker !== 0xCC) {
-                // SOF segment: length(2) + precision(1) + height(2) + width(2)
                 const height = (bytes[i + 5] << 8) | bytes[i + 6];
                 const width = (bytes[i + 7] << 8) | bytes[i + 8];
                 return { width, height };
             }
 
             // Skip segment
-            if (marker === 0xD0 || marker === 0xD1 || marker === 0xD2 || marker === 0xD3 ||
-                marker === 0xD4 || marker === 0xD5 || marker === 0xD6 || marker === 0xD7 ||
-                marker === 0xD8 || marker === 0xD9) {
+            if (marker >= 0xD0 && marker <= 0xD9) {
                 i += 2;
             } else {
                 const segLen = (bytes[i + 2] << 8) | bytes[i + 3];
@@ -156,13 +151,9 @@ export class PDFGenerator {
             }
         }
 
-        // Fallback
-        return { width: 2480, height: 3508 };
+        return { width: 1240, height: 1754 };
     }
 
-    /**
-     * Convert string to Uint8Array (Latin-1 encoding)
-     */
     static _strToBytes(str) {
         const bytes = new Uint8Array(str.length);
         for (let i = 0; i < str.length; i++) {
@@ -171,20 +162,13 @@ export class PDFGenerator {
         return bytes;
     }
 
-    /**
-     * Get total length of array of Uint8Arrays
-     */
     static _totalLength(parts) {
         let len = 0;
         for (const p of parts) len += p.length;
         return len;
     }
 
-    /**
-     * Convert Uint8Array to base64 string
-     */
     static _bytesToBase64(bytes) {
-        // Process in chunks to avoid call stack overflow
         const CHUNK = 32768;
         let binary = '';
         for (let i = 0; i < bytes.length; i += CHUNK) {

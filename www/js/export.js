@@ -222,7 +222,7 @@ export class ExportManager {
                         window.app.data.hotelHistory = data.hotelHistory;
                     }
                     
-                    window.storage.saveData();
+                    window.storage.saveData(true); // skipDomSync=true: don't read stale DOM values
                     resolve(data);
                 } catch (error) {
                     reject(error);

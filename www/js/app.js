@@ -169,20 +169,17 @@ window.startDocScanSummary = function() {
     window.docScanner.startScan(traineeIndex, 'summary');
 };
 
-// Document Scanner - export functions
+// Document Scanner - export functions (with trainee picker)
 window.exportDocsZip = function() {
-    const traineeIndex = window.app.currentSummaryTrainee;
-    window.docScanner.exportDocsZip(traineeIndex);
+    window.docScanner.exportDocsZipWithPicker();
 };
 
 window.exportDocsLocal = function() {
-    const traineeIndex = window.app.currentSummaryTrainee;
-    window.docScanner.exportDocsLocal(traineeIndex);
+    window.docScanner.exportDocsLocalWithPicker();
 };
 
 window.showDocsList = function() {
-    const traineeIndex = window.app.currentSummaryTrainee;
-    window.docScanner.showDocsList(traineeIndex);
+    window.docScanner.showDocsListWithPicker();
 };
 
 // Print Excel function - opens export popup

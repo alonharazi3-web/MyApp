@@ -10,30 +10,39 @@ export class Storage {
     }
 
     /**
-     * Save current app data to localStorage
+     * Sync current DOM input values into app.data
+     * Call this before persisting when on a page with form fields
      */
-    saveData() {
+    syncFromDOM() {
+        const fields = [
+            'assessmentName',
+            'trainee1',
+            'trainee2',
+            'trainee3',
+            'trainee4',
+            'highlights',
+            'evaluatorName'
+        ];
+
+        fields.forEach(field => {
+            const element = document.getElementById(field);
+            if (element) {
+                window.app.data[field] = element.value;
+            }
+        });
+
+        window.app.data.primaryTrainees = window.app.primaryTrainees;
+    }
+
+    /**
+     * Save current app data to localStorage
+     * @param {boolean} skipDomSync - if true, skip reading from DOM (use after programmatic data changes)
+     */
+    saveData(skipDomSync = false) {
         try {
-            // Get all input values
-            const fields = [
-                'assessmentName',
-                'trainee1',
-                'trainee2',
-                'trainee3',
-                'trainee4',
-                'highlights',
-                'evaluatorName'
-            ];
-
-            fields.forEach(field => {
-                const element = document.getElementById(field);
-                if (element) {
-                    window.app.data[field] = element.value;
-                }
-            });
-
-            // Update primary trainees
-            window.app.data.primaryTrainees = window.app.primaryTrainees;
+            if (!skipDomSync) {
+                this.syncFromDOM();
+            }
 
             // Save to localStorage
             localStorage.setItem(this.storageKey, JSON.stringify(window.app.data));
@@ -42,8 +51,40 @@ export class Storage {
             console.log('💾 Data saved successfully');
             return true;
         } catch (error) {
+            // Handle QuotaExceededError silently for auto-save
+            if (error.name === 'QuotaExceededError' || error.code === 22 || error.code === 1014) {
+                console.warn('⚠️ localStorage quota exceeded - trying to save without scanned docs...');
+                return this._saveWithoutLargeData();
+            }
             console.error('❌ Error saving data:', error);
-            alert('שגיאה בשמירת נתונים. אנא וודא שיש מספיק שטח אחסון.');
+            return false;
+        }
+    }
+
+    /**
+     * Fallback: save essential data without large base64 scanned docs
+     * Keeps scannedDocs metadata but removes image/PDF data from localStorage
+     */
+    _saveWithoutLargeData() {
+        try {
+            // Create a copy without the heavy base64 fields
+            const lightData = JSON.parse(JSON.stringify(window.app.data));
+            
+            if (lightData.scannedDocs) {
+                Object.keys(lightData.scannedDocs).forEach(key => {
+                    const doc = lightData.scannedDocs[key];
+                    // Keep metadata, remove heavy data
+                    doc.imageBase64 = '[saved-in-memory]';
+                    doc.pdfBase64 = '[saved-in-memory]';
+                });
+            }
+
+            localStorage.setItem(this.storageKey, JSON.stringify(lightData));
+            localStorage.setItem(this.primaryKey, JSON.stringify(window.app.primaryTrainees));
+            console.log('💾 Data saved (light mode - scanned docs in memory only)');
+            return true;
+        } catch (error) {
+            console.error('❌ Error saving even light data:', error);
             return false;
         }
     }

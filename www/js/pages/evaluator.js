@@ -128,14 +128,34 @@ export class EvaluatorPage {
         
         // פונקציה לאיפוס נתונים
         window.resetExerciseData = () => {
-            if (confirm('⚠️ האם אתה בטוח שברצונך למחוק את כל נתוני התרגילים והסיכום של כל החניכים?\n\nפעולה זו תמחק:\n✓ כל התשובות בתרגילים\n✓ כל הציונים והערות בסיכום ההערכה\n\nהנתונים האחרים (שמות חניכים, דגשים, חנויות ומלונות) לא יושפעו.')) {
+            if (confirm('⚠️ האם אתה בטוח שברצונך למחוק את כל נתוני התרגילים, הסיכום והמסמכים הסרוקים?\n\nפעולה זו תמחק:\n✓ כל התשובות בתרגילים\n✓ כל הציונים והערות בסיכום ההערכה\n✓ כל המסמכים הסרוקים\n\nהנתונים האחרים (שמות חניכים, דגשים, חנויות ומלונות) לא יושפעו.')) {
                 // מחיקת נתוני תרגילים
                 window.app.data.exerciseData = {};
                 // מחיקת נתוני סיכום
                 window.app.data.summaryData = {};
+                // מחיקת מסמכים סרוקים מהזיכרון
+                window.app.data.scannedDocs = {};
                 
-                window.storage.saveData();
-                alert('✅ נתוני התרגילים והסיכום נמחקו בהצלחה!');
+                // ניקוי קבצים זמניים מהcache (לא מ-Downloads)
+                if (window.cordova && window.cordova.file) {
+                    try {
+                        window.resolveLocalFileSystemURL(window.cordova.file.cacheDirectory, function(cacheDir) {
+                            var reader = cacheDir.createReader();
+                            reader.readEntries(function(entries) {
+                                entries.forEach(function(entry) {
+                                    if (entry.isDirectory && (entry.name.includes('_docs_') || entry.name.includes('מסמכים'))) {
+                                        entry.removeRecursively(function() { console.log('🗑️ Cache dir removed:', entry.name); }, function() {});
+                                    } else if (entry.isFile && entry.name.endsWith('.pdf')) {
+                                        entry.remove(function() { console.log('🗑️ Cache file removed:', entry.name); }, function() {});
+                                    }
+                                });
+                            }, function() {});
+                        }, function() {});
+                    } catch(e) { console.warn('Cache cleanup error:', e); }
+                }
+                
+                window.storage.saveData(true);
+                alert('✅ נתוני התרגילים, הסיכום והמסמכים הסרוקים נמחקו בהצלחה!');
             }
         };
 

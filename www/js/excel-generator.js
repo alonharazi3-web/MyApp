@@ -261,19 +261,62 @@ window.generateTabularExcel = function(data) {
         mScores.forEach(function(s, i) { addRow(traineeName, 'מכתב', q++, s, '', exd(t, 5, 'score_' + i), ''); });
         
         // ========== יומינט (exercise 6) ==========
-        for (var i = 0; i < 12; i++) {
+        // בנק תרגילים - 12 אתגרי רחוב
+        var yomChallenges = [
+            'עצירת אדם ל2 דק\'',
+            'עצירת בנאדם והוצאת פרטים אישיים',
+            'השאלת פריט לבוש מאדם',
+            'להצטלם עם אדם ברחוב',
+            'החזרת אדם אחורה מספר צעדים ברחוב',
+            'החזרת אדם אחורה במעבר חצייה',
+            'עלייה על מונית ונסיעה מספר מטרים',
+            'כניסה מאחורי דוכן אוכל',
+            'קבלת אוכל/שתיה ללא תשלום',
+            'קבלת שירות ללא תמורה - לק/לבוש ייחודי/תספורת',
+            'הקמת מגע',
+            'סיור שטח וצילום חדר מלון'
+        ];
+        yomChallenges.forEach(function(ch, i) {
             var taskVal = exd(t, 6, 'task_' + i);
             if (taskVal) {
-                addRow(traineeName, 'יומינט', q++, 'משימה ' + (i+1), taskVal, '', '');
-                addRow(traineeName, 'יומינט', q++, 'הערות משימה ' + (i+1), '', '', exd(t, 6, 'taskq_' + i));
-                addRow(traineeName, 'יומינט', q++, 'תכנון משימה ' + (i+1), '', '', exd(t, 6, 'plan_' + i));
+                addRow(traineeName, 'יומינט - בנק תרגילים', q++, ch + ' - סטטוס', taskVal, '', '');
             }
-        }
-        addRow(traineeName, 'יומינט', q++, 'חריגים/תקלות', '', '', exd(t, 6, 'incidents'));
-        addRow(traineeName, 'יומינט', q++, 'מל"מ', '', '', exd(t, 6, 'intel'));
-        addRow(traineeName, 'יומינט', q++, 'סקירת תוצרים', exd(t, 6, 'reviewed'), '', '');
-        addRow(traineeName, 'יומינט', q++, 'ביצוע עפי תוכנית', exd(t, 6, 'asplanned'), '', exd(t, 6, 'asplanned_notes'));
-        addRow(traineeName, 'יומינט', q++, 'הצלחה', exd(t, 6, 'success'), '', exd(t, 6, 'success_notes'));
+        });
+        // בנק שאלות לתרגילים - 6 שאלות תחקיר
+        var yomTaskQuestions = [
+            'איך היה לך?',
+            'מה היה הסיפור כיסוי?',
+            'האם האמינו לסיפור כיסוי שלך?',
+            'כמה זמן הצלחת לעכב/לשהות/לבצע?',
+            'למה לדעתך הצלחת או לא הצלחת במשימה?',
+            'מה היית עושה אחרת?'
+        ];
+        yomTaskQuestions.forEach(function(tq, i) {
+            addRow(traineeName, 'יומינט - תחקיר תרגילים', q++, tq, '', '', exd(t, 6, 'taskq_' + i));
+        });
+        // משימת מלון - פרטים
+        addRow(traineeName, 'יומינט - מלון', q++, 'שם מלון', '', '', exd(t, 6, 'hotel_name_input'));
+        addRow(traineeName, 'יומינט - מלון', q++, 'כתובת מלון', '', '', exd(t, 6, 'hotel_address_input'));
+        // הצגת דפאות ותכנון - 8 שאלות
+        var yomPlanQuestions = [
+            'הצג את דפא א\'',
+            'הצג את דפא ב\'',
+            'דפא א\' - איך הסיפור מביא אותך לחדר? משהו מהסביבה שישמש?',
+            'דפא ב\' - איך הסיפור מביא אותך לחדר? משהו מהסביבה שישמש?',
+            'דפא א\' - האם הסיפור כיסוי בדיק?',
+            'דפא ב\' - האם הסיפור כיסוי בדיק?',
+            'דפא א\' - מה הפקיד יחשוב על הסיפור ואיזה מנוף מפעיל מולו?',
+            'דפא ב\' - מה הפקיד יחשוב על הסיפור ואיזה מנוף מפעיל מולו?'
+        ];
+        yomPlanQuestions.forEach(function(pq, i) {
+            addRow(traineeName, 'יומינט - תכנון מלון', q++, pq, '', '', exd(t, 6, 'plan_' + i));
+        });
+        // תחקיר אחרי ביצוע
+        addRow(traineeName, 'יומינט - תחקיר ביצוע', q++, 'חריגים או תקלות או חשדות?', '', '', exd(t, 6, 'incidents'));
+        addRow(traineeName, 'יומינט - תחקיר ביצוע', q++, 'מל"מ שנאסף (פריסת חדרים, מעליות, אמצעים, זויות תצפית, פריסת לובי, אבטחה, מפתחות)', '', '', exd(t, 6, 'intel'));
+        addRow(traineeName, 'יומינט - תחקיר ביצוע', q++, 'סקירת תוצרים מהנייד', exd(t, 6, 'reviewed'), '', '');
+        addRow(traineeName, 'יומינט - תחקיר ביצוע', q++, 'האם ביצעת עפ"י תוכנית?', exd(t, 6, 'asplanned'), '', exd(t, 6, 'asplanned_notes'));
+        addRow(traineeName, 'יומינט - תחקיר ביצוע', q++, 'האם הצלחת להגיע לחדר? מה עזר או הכשיל?', exd(t, 6, 'success'), '', exd(t, 6, 'success_notes'));
         addRow(traineeName, 'יומינט', q++, 'הערות חופשיות', '', '', exd(t, 6, 'free_notes'));
         var yScores = ['גמישות מחשבתית','גמישות ביצועית','כישורי שטח בינאישיים','התמודדות עם מצבי לחץ','התמקמות כלומד','בטחון עצמי','ציון מסכם'];
         yScores.forEach(function(s, i) { addRow(traineeName, 'יומינט', q++, s, '', exd(t, 6, 'score_' + i), ''); });
@@ -291,7 +334,7 @@ window.generateTabularExcel = function(data) {
     
     var wb = XLSX.utils.book_new();
     var ws = XLSX.utils.aoa_to_sheet(rows);
-    ws['!cols'] = [{wch:15},{wch:12},{wch:6},{wch:45},{wch:22},{wch:10},{wch:60}];
+    ws['!cols'] = [{wch:15},{wch:22},{wch:6},{wch:55},{wch:22},{wch:10},{wch:60}];
     XLSX.utils.book_append_sheet(wb, ws, 'משוב מלא');
     return XLSX.write(wb, {bookType:'xlsx', type:'array'});
 };

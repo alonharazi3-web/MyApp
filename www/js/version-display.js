@@ -2,18 +2,18 @@ const versionDiv = document.createElement('div');
 versionDiv.id = 'version-display';
 versionDiv.style.cssText = `
     position: fixed;
-    bottom: calc(5px + env(safe-area-inset-bottom));
-    left: calc(5px + env(safe-area-inset-left));
-    background: rgba(0, 0, 0, 0.5);
-    color: rgba(255, 255, 255, 0.7);
+    bottom: calc(50px + env(safe-area-inset-bottom));
+    left: calc(2px + env(safe-area-inset-left));
+    background: rgba(0, 0, 0, 0.25);
+    color: rgba(255, 255, 255, 0.5);
     font-family: monospace;
-    font-size: 11px;
-    padding: 3px 6px;
-    border-radius: 3px;
+    font-size: 8px;
+    padding: 1px 3px;
+    border-radius: 2px;
     z-index: 99998;
     pointer-events: none;
 `;
-versionDiv.textContent = 'v5.6.1';
+versionDiv.textContent = 'v5.6.3';
 
 window.addEventListener('load', () => {
     document.body.appendChild(versionDiv);

@@ -39,6 +39,12 @@ export class Storage {
      * @param {boolean} skipDomSync - if true, skip reading from DOM (use after programmatic data changes)
      */
     saveData(skipDomSync = false) {
+        // Block saves during data clearing to prevent race conditions
+        if (window._clearingData) {
+            console.log('🚫 Save blocked - clearing in progress');
+            return false;
+        }
+
         try {
             if (!skipDomSync) {
                 this.syncFromDOM();
@@ -242,48 +248,136 @@ export class Storage {
 
     /**
      * Clear all data (with confirmation)
+     * Phase 1: Block saves and clear in-memory data
+     * Phase 2: Nuke all localStorage
+     * Phase 3: Delete physical files from device filesystem (cache + Downloads)
      */
     clearAllData() {
-        if (confirm('האם אתה בטוח שברצונך למחוק את כל הנתונים כולל מסמכים סרוקים?\n\nפעולה זו אינה ניתנת לביטול!')) {
-            // Prevent auto-save from re-saving during clear
-            window._clearingData = true;
-            
-            // Clear all in-memory data
-            window.app.data = {
-                assessmentName: '',
-                trainee1: '',
-                trainee2: '',
-                trainee3: '',
-                trainee4: '',
-                highlights: '',
-                evaluatorName: '',
-                primaryTrainees: [],
-                exerciseData: {},
-                summaryData: {},
-                storeHistory: [],
-                hotelHistory: [],
-                scannedDocs: {}
-            };
-            window.app.primaryTrainees = [];
-            
-            // Clear ALL app-related localStorage
-            localStorage.removeItem(this.storageKey);
-            localStorage.removeItem(this.primaryKey);
-            localStorage.removeItem('scannedDocs');
-            
-            // Force clear any remaining keys
+        if (!confirm('האם אתה בטוח שברצונך למחוק את כל הנתונים כולל מסמכים סרוקים?\n\nפעולה זו אינה ניתנת לביטול!')) {
+            return;
+        }
+
+        console.log('🗑️ === CLEARING ALL DATA ===');
+
+        // ===== PHASE 1: Block all saves immediately =====
+        window._clearingData = true;
+        console.log('🗑️ Phase 1: Blocking saves, clearing memory...');
+
+        // Clear in-memory data completely
+        window.app.data = {
+            assessmentName: '', trainee1: '', trainee2: '',
+            trainee3: '', trainee4: '', highlights: '',
+            evaluatorName: '', primaryTrainees: [],
+            exerciseData: {}, summaryData: {},
+            storeHistory: [], hotelHistory: [],
+            scannedDocs: {}
+        };
+        window.app.primaryTrainees = [];
+
+        // ===== PHASE 2: Nuke all localStorage =====
+        console.log('🗑️ Phase 2: Clearing localStorage...');
+        try {
+            // Remove known keys first
+            localStorage.removeItem(this.storageKey);   // feedbackAppData
+            localStorage.removeItem(this.primaryKey);    // primaryTrainees
+            localStorage.removeItem('scannedDocs');      // legacy key
+
+            // Sweep ALL remaining keys - this app owns this WebView
             const keysToRemove = [];
             for (let i = 0; i < localStorage.length; i++) {
                 const key = localStorage.key(i);
-                if (key && (key.startsWith('feedback') || key.startsWith('scanned') || key.startsWith('primary'))) {
-                    keysToRemove.push(key);
-                }
+                if (key) keysToRemove.push(key);
             }
-            keysToRemove.forEach(k => localStorage.removeItem(k));
-            
-            console.log('🗑️ All data cleared including scanned documents');
-            window.location.reload();
+            keysToRemove.forEach(k => {
+                try { localStorage.removeItem(k); } catch(e) {}
+            });
+            console.log('🗑️ localStorage cleared (' + keysToRemove.length + ' keys removed)');
+        } catch (e) {
+            console.error('localStorage clear error:', e);
         }
+
+        // ===== PHASE 3: Delete physical files from device =====
+        console.log('🗑️ Phase 3: Cleaning device filesystem...');
+        this._cleanFilesystem().then(() => {
+            console.log('🗑️ === ALL CLEAR COMPLETE ===');
+            window.location.reload();
+        }).catch((err) => {
+            console.warn('Filesystem cleanup partial:', err);
+            window.location.reload();
+        });
+    }
+
+    /**
+     * Delete cached and exported scanned document files from device
+     * Cleans: cacheDirectory (temp share files) + Download folders (exported PDFs)
+     */
+    _cleanFilesystem() {
+        return new Promise((resolve) => {
+            if (!window.cordova || !window.cordova.file) {
+                console.log('No Cordova file API - skipping filesystem cleanup');
+                resolve();
+                return;
+            }
+
+            let pending = 0;
+            let completed = 0;
+            const checkDone = () => { if (++completed >= pending) resolve(); };
+
+            // --- Clean cache directory (temp files from sharing) ---
+            pending++;
+            try {
+                window.resolveLocalFileSystemURL(window.cordova.file.cacheDirectory, function(cacheDir) {
+                    const reader = cacheDir.createReader();
+                    reader.readEntries(function(entries) {
+                        if (entries.length === 0) { checkDone(); return; }
+                        let done = 0;
+                        entries.forEach(function(entry) {
+                            if (entry.isDirectory && (entry.name.includes('_docs_') || entry.name.includes('מסמכים'))) {
+                                entry.removeRecursively(
+                                    function() { console.log('🗑️ Cache dir removed:', entry.name); if (++done >= entries.length) checkDone(); },
+                                    function() { if (++done >= entries.length) checkDone(); }
+                                );
+                            } else if (entry.isFile && entry.name.endsWith('.pdf')) {
+                                entry.remove(
+                                    function() { console.log('🗑️ Cache file removed:', entry.name); if (++done >= entries.length) checkDone(); },
+                                    function() { if (++done >= entries.length) checkDone(); }
+                                );
+                            } else {
+                                if (++done >= entries.length) checkDone();
+                            }
+                        });
+                    }, function() { checkDone(); });
+                }, function() { checkDone(); });
+            } catch(e) { checkDone(); }
+
+            // --- Clean Download directory (exported PDF folders) ---
+            pending++;
+            try {
+                window.resolveLocalFileSystemURL(window.cordova.file.externalRootDirectory + 'Download/', function(dlDir) {
+                    const reader = dlDir.createReader();
+                    reader.readEntries(function(entries) {
+                        if (entries.length === 0) { checkDone(); return; }
+                        let done = 0;
+                        entries.forEach(function(entry) {
+                            if (entry.isDirectory && entry.name.includes('מסמכים')) {
+                                entry.removeRecursively(
+                                    function() { console.log('🗑️ Download dir removed:', entry.name); if (++done >= entries.length) checkDone(); },
+                                    function() { if (++done >= entries.length) checkDone(); }
+                                );
+                            } else {
+                                if (++done >= entries.length) checkDone();
+                            }
+                        });
+                    }, function() { checkDone(); });
+                }, function() { checkDone(); });
+            } catch(e) { checkDone(); }
+
+            // Safety timeout - don't hang if filesystem ops stall
+            setTimeout(() => {
+                console.warn('Filesystem cleanup timeout - proceeding');
+                resolve();
+            }, 5000);
+        });
     }
 
     /**

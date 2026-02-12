@@ -1,6 +1,6 @@
 /**
- * Summary Page Module
- * Final summary and export functionality
+ * Summary Page Module v5.7
+ * Primary trainee priority, PDF summary report
  */
 
 import { ExportManager } from '../export.js';
@@ -8,6 +8,19 @@ import { ExportManager } from '../export.js';
 export class SummaryPage {
     constructor() {
         this.exportManager = new ExportManager();
+    }
+
+    getOrderedTrainees() {
+        const primary = window.app.primaryTrainees || [];
+        const all = [0, 1, 2, 3];
+        const ordered = [];
+        primary.forEach(p => { if (all.includes(p)) ordered.push(p); });
+        all.forEach(i => { if (!ordered.includes(i)) ordered.push(i); });
+        return ordered;
+    }
+
+    isPrimary(index) {
+        return (window.app.primaryTrainees || []).includes(index);
     }
 
     render() {
@@ -25,6 +38,8 @@ export class SummaryPage {
                     <button class="btn btn-excel" onclick="testSocialSharing()">📊 ייצוא Excel</button>
                     <button class="btn btn-print" onclick="openExcelPreview()">👁️ תצוגה מקדימה</button>
                 </div>
+                
+                <button class="btn-pdf-summary" onclick="window.generatePDFSummary()">📄 סיכום PDF לחניך</button>
                 
                 <div style="margin-top: 10px; padding: 10px; background: #e3f2fd; border-radius: 8px; border: 2px dashed #2196f3;">
                     <p style="font-size: 12px; color: #1565c0; margin-bottom: 8px; font-weight: bold;">💾 שמירת גיבוי מקומי:</p>
@@ -52,34 +67,31 @@ export class SummaryPage {
 
     onEnter() {
         this.renderSummaryTabs();
-        this.selectSummaryTrainee(window.app.currentSummaryTrainee || 0);
+        this.selectSummaryTrainee(window.app.currentSummaryTrainee || this.getOrderedTrainees()[0]);
         this.attachEventListeners();
     }
 
     renderSummaryTabs() {
         const container = document.getElementById('summaryTabs');
         if (!container) return;
-
         container.innerHTML = '';
-        
-        for (let i = 0; i < 4; i++) {
+        const ordered = this.getOrderedTrainees();
+        ordered.forEach(i => {
             const div = document.createElement('div');
             div.className = 'trainee-tab';
             div.id = `summaryTab${i}`;
             div.textContent = window.getTraineeName(i);
+            if (this.isPrimary(i)) div.classList.add('primary-trainee');
             div.onclick = () => this.selectSummaryTrainee(i);
             container.appendChild(div);
-        }
+        });
     }
 
     selectSummaryTrainee(index) {
         window.app.currentSummaryTrainee = index;
-        
-        // Update tab styles
         for (let i = 0; i < 4; i++) {
             const tab = document.getElementById(`summaryTab${i}`);
             if (!tab) continue;
-            
             if (i === index) {
                 tab.classList.add('active');
                 tab.style.backgroundColor = window.app.traineeColors[i];
@@ -92,26 +104,20 @@ export class SummaryPage {
                 tab.style.color = '';
             }
         }
-        
-        // Update container background
         const container = document.getElementById('summaryContainer');
         if (container) {
-            container.style.backgroundColor = window.app.traineeColors[index];
+            container.style.backgroundColor = window.app.traineeColors[index] + '08';
             container.style.transition = 'background-color 0.3s';
         }
-        
         this.renderCriteria();
     }
 
     renderCriteria() {
         const list = document.getElementById('criteriaList');
         if (!list) return;
-
         list.innerHTML = '';
-        
         window.app.criteria.forEach(criterion => {
             const key = `${window.app.currentSummaryTrainee}-${criterion}`;
-            
             const div = document.createElement('div');
             div.className = 'criterion-item';
             div.innerHTML = `
@@ -134,7 +140,6 @@ export class SummaryPage {
                     <textarea onchange="updateSummaryExamples('${key}', this.value)">${window.escapeHtml(window.storage.getSummaryData(key, 'examples'))}</textarea>
                 </div>
             `;
-            
             list.appendChild(div);
         });
     }
@@ -143,11 +148,9 @@ export class SummaryPage {
         window.updateSummaryScore = (key, value) => {
             window.storage.setSummaryData(key, 'score', value);
         };
-
         window.updateSummaryText = (key, value) => {
             window.storage.setSummaryData(key, 'text', value);
         };
-
         window.updateSummaryExamples = (key, value) => {
             window.storage.setSummaryData(key, 'examples', value);
         };

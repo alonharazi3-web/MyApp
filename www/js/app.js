@@ -36,7 +36,7 @@ window.app = {
         hotelHistory: [],
         scannedDocs: {}
     },
-    traineeColors: ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A'],
+    traineeColors: ['#e63946', '#2a9d8f', '#457b9d', '#e9c46a'],
     exercises: ['בלון', 'טיח', 'דולירה', 'דויד', 'לילה', 'מכתב', 'יומינט'],
     criteria: [
         'כישורי חשיבה - יכולת למידה',

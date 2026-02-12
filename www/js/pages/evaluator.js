@@ -19,7 +19,7 @@ export class EvaluatorPage {
                 </div>
                 
                 <div style="margin-bottom: 20px;">
-                    <label>שם המעריך</label>
+                    <label id="evaluatorLabel" style="cursor:default;user-select:none;-webkit-user-select:none;">שם המעריך</label>
                     <input type="text" id="evaluatorName" value="${window.escapeHtml(window.app.data.evaluatorName)}">
                 </div>
                 
@@ -193,23 +193,21 @@ export class EvaluatorPage {
         let clickCount = 0;
         let clickTimer = null;
         
-        const evaluatorInput = document.getElementById('evaluatorName');
+        const evaluatorLabel = document.getElementById('evaluatorLabel');
         const easterEgg = document.getElementById('easterEgg');
         const audio = document.getElementById('easterEggAudio');
         
-        if (!evaluatorInput || !easterEgg || !audio) return;
+        if (!evaluatorLabel || !easterEgg || !audio) return;
         
-        // לחיצה על תיבת טקסט
-        evaluatorInput.addEventListener('click', () => {
+        evaluatorLabel.addEventListener('click', (e) => {
+            e.preventDefault();
             clickCount++;
             
-            // איפוס אחרי 2 שניות
             if (clickTimer) clearTimeout(clickTimer);
             clickTimer = setTimeout(() => {
                 clickCount = 0;
-            }, 2000);
+            }, 3000);
             
-            // אם לחצו 10 פעמים
             if (clickCount >= 10) {
                 clickCount = 0;
                 easterEgg.style.display = 'flex';
@@ -217,7 +215,6 @@ export class EvaluatorPage {
             }
         });
         
-        // סגירה בלחיצה על הרקע
         easterEgg.addEventListener('click', (e) => {
             if (e.target === easterEgg) {
                 easterEgg.style.display = 'none';

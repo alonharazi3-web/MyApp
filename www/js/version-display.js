@@ -2,8 +2,8 @@ const versionDiv = document.createElement('div');
 versionDiv.id = 'version-display';
 versionDiv.style.cssText = `
     position: fixed;
-    bottom: calc(50px + env(safe-area-inset-bottom));
-    left: calc(2px + env(safe-area-inset-left));
+    bottom: 50px;
+    left: 2px;
     background: rgba(0, 0, 0, 0.25);
     color: rgba(255, 255, 255, 0.5);
     font-family: monospace;
@@ -13,7 +13,7 @@ versionDiv.style.cssText = `
     z-index: 99998;
     pointer-events: none;
 `;
-versionDiv.textContent = 'v5.7.0';
+versionDiv.textContent = 'v5.7.0c';
 
 window.addEventListener('load', () => {
     document.body.appendChild(versionDiv);

@@ -1,35 +1,78 @@
 name: Build Android APK
+
 on:
   push:
+    branches: [main]
   workflow_dispatch:
+
 jobs:
   build:
     runs-on: ubuntu-latest
+    
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-    - uses: actions/setup-java@v4
-      with:
-        distribution: 'temurin'
-        java-version: '17'
-    - uses: android-actions/setup-android@v3
-    - run: yes | sdkmanager --licenses || true
-    - run: npm install -g cordova@latest
-    - run: cordova platform add android@latest
-    - name: Install plugins
-      run: |
-        cordova plugin add cordova-plugin-file
-        cordova plugin add cordova-plugin-camera@8
-        cordova plugin add cordova-plugin-device
-        cordova plugin add cordova-plugin-dialogs
-        cordova plugin add cordova-plugin-statusbar
-        cordova plugin add cordova-plugin-x-socialsharing
-    - run: cordova build android
-    - name: Find APK
-      run: find platforms/android -name "*.apk" -type f
-    - uses: actions/upload-artifact@v4
-      with:
-        name: app-debug
-        path: platforms/android/app/build/outputs/apk/debug/app-debug.apk
+      - uses: actions/checkout@v4
+      
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Install Cordova
+        run: npm install -g cordova
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+      
+      - name: Accept Android licenses
+        run: yes | sdkmanager --licenses || true
+        
+      - name: Install Android SDK components
+        run: |
+          sdkmanager "platforms;android-34" "build-tools;34.0.0"
+      
+      - name: Add Android platform
+        run: |
+          cordova platform add android@latest || true
+
+      - name: Patch cordova.gradle for Groovy 4
+        run: |
+          CORDOVA_GRADLE="platforms/android/CordovaLib/cordova.gradle"
+          if [ -f "$CORDOVA_GRADLE" ]; then
+            if ! grep -q "import groovy.xml.XmlParser" "$CORDOVA_GRADLE"; then
+              sed -i '1s/^/import groovy.xml.XmlParser\n/' "$CORDOVA_GRADLE"
+              echo "✅ Patched cordova.gradle"
+            fi
+          fi
+          APP_GRADLE="platforms/android/app/build.gradle"
+          if [ -f "$APP_GRADLE" ] && grep -q "XmlParser" "$APP_GRADLE"; then
+            if ! grep -q "import groovy.xml.XmlParser" "$APP_GRADLE"; then
+              sed -i '1s/^/import groovy.xml.XmlParser\n/' "$APP_GRADLE"
+              echo "✅ Patched app/build.gradle"
+            fi
+          fi
+
+      - name: Build debug APK
+        run: cordova build android --debug
+      
+      - name: Find and rename APK
+        id: apk
+        run: |
+          APK=$(find platforms/android -name "*.apk" -type f | head -1)
+          echo "path=$APK" >> $GITHUB_OUTPUT
+          VERSION=$(grep 'version=' config.xml | head -1 | sed 's/.*version="\([^"]*\)".*/\1/')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          cp "$APK" "MyApp-v${VERSION}.apk"
+          echo "✅ APK: MyApp-v${VERSION}.apk"
+      
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: MyApp-${{ steps.apk.outputs.version }}
+          path: MyApp-*.apk
+          retention-days: 90

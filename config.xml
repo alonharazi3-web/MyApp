@@ -6,63 +6,35 @@
     <description>Improvisation Workshop Feedback App</description>
     <author email="alonharazi3@gmail.com">Feedback Team</author>
     <content src="index.html" />
+    
     <access origin="*" />
-    <access origin="https://cdn.sheetjs.com" />
-
-    <preference name="android-minSdkVersion" value="24" />
-    <preference name="android-targetSdkVersion" value="35" />
-    <preference name="android-compileSdkVersion" value="35" />
-    <preference name="AndroidGradlePluginVersion" value="8.7.3" />
-    <preference name="GradleVersion" value="8.9" />
-    <preference name="AndroidPersistentFileLocation" value="Internal" />
-
-    <!-- StatusBar preferences -->
-    <preference name="StatusBarOverlaysWebView" value="false" />
-    <preference name="StatusBarBackgroundColor" value="#667eea" />
-    <preference name="StatusBarStyle" value="lightcontent" />
-
-    <!-- Plugins -->
-    <plugin name="cordova-plugin-file" />
-    <plugin name="cordova-plugin-statusbar" />
-    <plugin name="cordova-plugin-dialogs" />
-    <plugin name="cordova-plugin-device" />
-    <plugin name="cordova-plugin-camera" />
-    <plugin name="cordova-plugin-x-socialsharing" source="npm" />
-
-    <platform name="android">
-        <!-- Icons -->
-        <icon src="www/icon-192.png" density="ldpi" />
-        <icon src="www/icon-192.png" density="mdpi" />
-        <icon src="www/icon-512.png" density="hdpi" />
-        <icon src="www/icon-512.png" density="xhdpi" />
-        <icon src="www/icon-512.png" density="xxhdpi" />
-        <icon src="www/icon-512.png" density="xxxhdpi" />
-
-        <preference name="AndroidInsecureFileModeEnabled" value="true" />
-
-        <allow-intent href="market:*" />
-
-        <edit-config file="app/src/main/AndroidManifest.xml" mode="merge" target="/manifest/application">
-            <application android:usesCleartextTraffic="true" android:requestLegacyExternalStorage="true" />
-        </edit-config>
-
-        <config-file target="AndroidManifest.xml" parent="/*">
-            <uses-permission android:name="android.permission.CAMERA" />
-        </config-file>
-
-        <!-- Resource files for adaptive icons -->
-        <resource-file src="www/icon-512.png" target="app/src/main/res/mipmap-hdpi/ic_launcher.png" />
-        <resource-file src="www/icon-512.png" target="app/src/main/res/mipmap-mdpi/ic_launcher.png" />
-        <resource-file src="www/icon-512.png" target="app/src/main/res/mipmap-xhdpi/ic_launcher.png" />
-        <resource-file src="www/icon-512.png" target="app/src/main/res/mipmap-xxhdpi/ic_launcher.png" />
-        <resource-file src="www/icon-512.png" target="app/src/main/res/mipmap-xxxhdpi/ic_launcher.png" />
-    </platform>
-
-    <allow-navigation href="*" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
-    <allow-intent href="tel:*" />
-    <allow-intent href="sms:*" />
-    <allow-intent href="mailto:*" />
-    <allow-intent href="geo:*" />
+    <allow-navigation href="*" />
+    
+    <preference name="StatusBarOverlaysWebView" value="false" />
+    <preference name="StatusBarStyle" value="lightcontent" />
+    <preference name="StatusBarBackgroundColor" value="#1e3a5f" />
+    <preference name="AndroidPersistentFileLocation" value="Internal" />
+    <preference name="AndroidInsecureFileModeEnabled" value="true" />
+    <preference name="android-minSdkVersion" value="24" />
+    <preference name="android-targetSdkVersion" value="34" />
+    <preference name="GradleVersion" value="8.7.3" />
+    <preference name="AndroidGradlePluginVersion" value="8.7.3" />
+    
+    <platform name="android">
+        <edit-config file="app/src/main/AndroidManifest.xml" mode="merge" target="/manifest/application">
+            <application android:usesCleartextTraffic="true" />
+            <application android:requestLegacyExternalStorage="true" />
+        </edit-config>
+    </platform>
+    
+    <plugin name="cordova-plugin-camera" spec="^8.0.0" />
+    <plugin name="cordova-plugin-file" spec="^8.1.2" />
+    <plugin name="cordova-plugin-device" spec="^3.0.0" />
+    <plugin name="cordova-plugin-dialogs" spec="^2.0.1" />
+    <plugin name="cordova-plugin-statusbar" spec="^4.0.0" />
+    <plugin name="cordova-plugin-android-permissions" spec="^1.1.1" />
+    <plugin name="cordova-plugin-x-socialsharing" spec="^6.0.4" />
+    <plugin name="com-darryncampbell-cordova-plugin-intent" spec="^2.2.0" />
 </widget>

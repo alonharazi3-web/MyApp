@@ -19,14 +19,14 @@
     <preference name="AndroidInsecureFileModeEnabled" value="true" />
     <preference name="android-minSdkVersion" value="24" />
     <preference name="android-targetSdkVersion" value="34" />
-    <preference name="GradleVersion" value="8.7.3" />
-    <preference name="AndroidGradlePluginVersion" value="8.7.3" />
     
     <platform name="android">
-        <edit-config file="app/src/main/AndroidManifest.xml" mode="merge" target="/manifest/application">
+        <config-file parent="/manifest/application" target="AndroidManifest.xml">
             <application android:usesCleartextTraffic="true" />
+        </config-file>
+        <config-file parent="/manifest/application" target="AndroidManifest.xml">
             <application android:requestLegacyExternalStorage="true" />
-        </edit-config>
+        </config-file>
     </platform>
     
     <plugin name="cordova-plugin-camera" spec="^8.0.0" />

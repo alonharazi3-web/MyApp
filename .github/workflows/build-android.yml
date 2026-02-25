@@ -23,6 +23,11 @@ jobs:
         with:
           node-version: '20'
       
+      - name: Setup Gradle 8.11.1
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.11.1'
+      
       - name: Install Cordova
         run: npm install -g cordova
 
@@ -38,41 +43,25 @@ jobs:
       
       - name: Add Android platform
         run: |
-          cordova platform add android@latest || true
-
-      - name: Patch cordova.gradle for Groovy 4
-        run: |
-          CORDOVA_GRADLE="platforms/android/CordovaLib/cordova.gradle"
-          if [ -f "$CORDOVA_GRADLE" ]; then
-            if ! grep -q "import groovy.xml.XmlParser" "$CORDOVA_GRADLE"; then
-              sed -i '1s/^/import groovy.xml.XmlParser\n/' "$CORDOVA_GRADLE"
-              echo "✅ Patched cordova.gradle"
-            fi
-          fi
-          APP_GRADLE="platforms/android/app/build.gradle"
-          if [ -f "$APP_GRADLE" ] && grep -q "XmlParser" "$APP_GRADLE"; then
-            if ! grep -q "import groovy.xml.XmlParser" "$APP_GRADLE"; then
-              sed -i '1s/^/import groovy.xml.XmlParser\n/' "$APP_GRADLE"
-              echo "✅ Patched app/build.gradle"
-            fi
-          fi
-
-      - name: Build debug APK
-        run: cordova build android --debug
+          cordova platform add android@latest
       
-      - name: Find and rename APK
-        id: apk
+      - name: Patch Groovy 4 imports
         run: |
-          APK=$(find platforms/android -name "*.apk" -type f | head -1)
-          echo "path=$APK" >> $GITHUB_OUTPUT
-          VERSION=$(grep 'version=' config.xml | head -1 | sed 's/.*version="\([^"]*\)".*/\1/')
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-          cp "$APK" "MyApp-v${VERSION}.apk"
-          echo "✅ APK: MyApp-v${VERSION}.apk"
+          # Fix XmlParser import for Groovy 4 (bundled with Gradle 8.x)
+          for f in platforms/android/CordovaLib/cordova.gradle platforms/android/app/build.gradle; do
+            if [ -f "$f" ] && grep -q "XmlParser" "$f" && ! grep -q "import groovy.xml.XmlParser" "$f"; then
+              sed -i '1s/^/import groovy.xml.XmlParser\n/' "$f"
+              echo "✅ Patched $f"
+            fi
+          done
+      
+      - name: Build debug APK
+        run: |
+          cordova build android --debug -- --no-daemon
       
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: MyApp-${{ steps.apk.outputs.version }}
-          path: MyApp-*.apk
+          name: MyApp-debug
+          path: platforms/android/app/build/outputs/apk/debug/*.apk
           retention-days: 90

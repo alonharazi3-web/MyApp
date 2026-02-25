@@ -21,12 +21,9 @@
     <preference name="android-targetSdkVersion" value="34" />
     
     <platform name="android">
-        <config-file parent="/manifest/application" target="AndroidManifest.xml">
-            <application android:usesCleartextTraffic="true" />
-        </config-file>
-        <config-file parent="/manifest/application" target="AndroidManifest.xml">
-            <application android:requestLegacyExternalStorage="true" />
-        </config-file>
+        <edit-config file="app/src/main/AndroidManifest.xml" mode="merge" target="/manifest/application">
+            <application android:usesCleartextTraffic="true" android:requestLegacyExternalStorage="true" />
+        </edit-config>
     </platform>
     
     <plugin name="cordova-plugin-camera" spec="^8.0.0" />

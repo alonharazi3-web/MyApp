@@ -1,7 +1,7 @@
 {
   "name": "myapp",
   "displayName": "Improv Workshop",
-  "version": "5.7.0",
+  "version": "5.9.0",
   "description": "Improvisation Workshop Feedback App",
   "main": "index.js",
   "scripts": {

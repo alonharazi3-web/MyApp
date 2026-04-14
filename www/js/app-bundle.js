@@ -1,4 +1,4 @@
-// MyApp v5.7.0 - Bundled for old WebView compatibility
+// MyApp v5.9.0 - Bundled for old WebView compatibility
 // Auto-generated - do not edit
 
 
@@ -117,6 +117,7 @@ class Storage {
                 if (!window.app.data.exerciseData) window.app.data.exerciseData = {};
                 if (!window.app.data.summaryData) window.app.data.summaryData = {};
                 if (!window.app.data.scannedDocs) window.app.data.scannedDocs = {};
+                if (!window.app.data.reviewData) window.app.data.reviewData = {};
 
                 // Populate form fields
                 const fields = [
@@ -190,6 +191,29 @@ class Storage {
             window.app.data.summaryData[key] = {};
         }
         window.app.data.summaryData[key][field] = value;
+        this.saveData();
+    }
+
+    /**
+     * Get review data for a trainee
+     */
+    getReviewData(traineeId, field) {
+        const t = String(traineeId);
+        if (window.app.data.reviewData[t] && window.app.data.reviewData[t][field] !== undefined) {
+            return window.app.data.reviewData[t][field];
+        }
+        return '';
+    }
+
+    /**
+     * Set review data for a trainee
+     */
+    setReviewData(traineeId, field, value) {
+        const t = String(traineeId);
+        if (!window.app.data.reviewData[t]) {
+            window.app.data.reviewData[t] = {};
+        }
+        window.app.data.reviewData[t][field] = value;
         this.saveData();
     }
 
@@ -1642,6 +1666,8 @@ class BalloonExercise {
         
         let html = `<h4 style="margin-bottom: 15px; font-size: 18px;">${this.name}</h4>`;
         
+        html += window.renderNotesBtn(key, 'notes_start');
+        
         html += `
             <div class="exercise-goals">
                 <h4>🎯 מטרות:</h4>
@@ -1750,6 +1776,7 @@ class TiachExercise {
         html += `</div>`;
 
         // טיח 1
+        html += window.renderNotesBtn(key, 'notes_before_tiach1');
         html += `<div class="section-title">טיח 1 - פרטי חנות</div>`;
         html += this.renderQuestion(key, 'שם חנות', 'tiach1_store_name_input', 'text');
         html += this.renderQuestion(key, 'כתובת חנות', 'tiach1_address_input', 'text');
@@ -1855,6 +1882,7 @@ class TiachExercise {
         html += this.renderQuestion(key, 'סיכום תרגיל - מלל חופשי', 'tiach1_summary', 'textarea');
 
         // טיח 2 - זמן בינוני + יומינט
+        html += window.renderNotesBtn(key, 'notes_before_tiach2');
         html += `<div class="section-title">טיח 2 - זמן בינוני + יומינט</div>`;
         
         html += `<div class="section-title">טיח 2 - פרטי חנות</div>`;
@@ -1933,6 +1961,7 @@ class TiachExercise {
         html += this.renderQuestion(key, 'סיכום תרגיל - מלל חופשי', 'tiach2_summary', 'textarea');
         
         // ציונים טיח 2
+        html += window.renderNotesBtn(key, 'notes_before_scores');
         html += '<div class="section-title">ציונים</div>';
         const scores2 = [
             'גמישות מחשבתית',
@@ -2065,6 +2094,7 @@ class DoliraExercise {
         `;
 
         // שלב הבהרת משימה
+        html += window.renderNotesBtn(key, 'notes_after_goals');
         html += `<div class="section-title">שלב הבהרת משימה</div>`;
         html += `<div style="margin-bottom: 10px; font-weight: bold;">האם המועמד שאל את השאלות הבאות:</div>`;
         
@@ -2083,6 +2113,7 @@ class DoliraExercise {
         `;
 
         // תחקיר לאחר סיוש
+        html += window.renderNotesBtn(key, 'notes_after_brief');
         html += `<div class="section-title">תחקיר לאחר סיוש</div>`;
         
         html += this.renderQuestion(key, 'חריגים/תקלות/חשדות', 'recon_incidents', 'textarea');
@@ -2095,6 +2126,7 @@ class DoliraExercise {
         html += this.renderQuestion(key, 'פירוט המל"מ שנאסף בדגש על עיקר וטפל, מיקוד, חשיבה מודיעינית', 'recon_intel', 'textarea');
         html += this.renderQuestion(key, 'האם סיור השטח והמל"מ שאספת שיאת את ביצוע המשימה? האם היית נוהג אחרת', 'recon_sufficient', 'textarea');
         
+        html += window.renderNotesBtn(key, 'notes_after_pre_debrief');
         html += this.renderQuestion(key, 'מה הדפא הראשונה', 'plan_a', 'textarea');
         html += this.renderQuestion(key, 'מה הדפא השניה', 'plan_b', 'textarea');
         html += this.renderQuestion(key, 'מה הדפא שאתה מעדיף, ומהם השיקולים', 'plan_preference', 'textarea');
@@ -2116,6 +2148,7 @@ class DoliraExercise {
         `;
 
         // הצגת דפא ואישור תוכניות
+        html += window.renderNotesBtn(key, 'notes_after_dafa');
         html += `<div class="section-title">הצגת דפא ואישור תוכניות (30 דק')</div>`;
         
         html += this.renderPlanQuestion(key, 'הצגת סיפור כיסוי', 'presentation_cover');
@@ -2152,6 +2185,7 @@ class DoliraExercise {
         `;
 
         // תחקיר אחרי ביצוע
+        html += window.renderNotesBtn(key, 'notes_after_plans');
         html += `<div class="section-title">תחקיר אחרי ביצוע (15 דק')</div>`;
         
         html += this.renderQuestion(key, 'חריגים/תקלות/חשדות', 'execution_incidents', 'textarea');
@@ -2430,6 +2464,7 @@ class DavidExercise {
         html += this.renderQuestion(key, 'תיאור התנהלות החניך ברחוב', 'follower_behavior', 'textarea');
 
         // משוב אוביקט
+        html += window.renderNotesBtn(key, 'notes_before_object');
         html += `<div class="section-title">משוב אוביקט</div>`;
         
         html += this.renderQuestion(key, 'איך היה לך?', 'object_feeling', 'textarea');
@@ -2441,6 +2476,7 @@ class DavidExercise {
         html += this.renderQuestion(key, 'סיכום תרגיל - מלל חופשי', 'summary', 'textarea');
 
         // ציונים
+        html += window.renderNotesBtn(key, 'notes_before_scores');
         html += '<div class="section-title">ציונים</div>';
         const scores = [
             'גמישות מחשבתית',
@@ -2562,6 +2598,7 @@ class LailaExercise {
         html += `<div class="info-box"><strong>סיפור המעשה לחניך:</strong><br>לוחמי היחידה ביצעו מעצר סמוי של מנהל החנות בו שהית בצהריים. בחקירתו סיפר כי העביר לפעיל הארד דיסק מוצפן ובו מידע חשוב לפעילות התשתית. השליח/פעיל אינו מודע למידע שנמצא על הכונן וציין בפניו כשנפגש עימו שידאג להעביר את הכונן לידי שאר הפעילים בתשתית לטובת תכנון הפעולה. הוא אינו מודע למהות הפעולה המתוכננת.<br>אנו מבינים שבנקודה האמורה עתיד להתקיים פגישה אשר עליה אנו מעוניינים לפקח מבלי לעורר את חשד הסביבה או הנפגשים.<br>עלייך לקיים תצפית רציפה, אפקטיבית, סטטית ולא בהסתר לעבר היעד שנמצא ב-_______ למשך פרק זמן של עד שעתיים.<br>בסיום התצפית עלייך לדווח בצורה מדוייקת ומפורטת את כל אשר ראית והתרחש סביבך ובנקודת המפגש האמורה.<br>לרשותך 70 דק מרגע סיום התדריך עמ לממש את סיור השטח ולהגיע חזרה למלון, לשרטט את האזור ולחשוב על 2 דפאות לביצוע. עלייך לאכול א. ערב בפרק הזמן הנל. שימוש במונית לחזרה למלון אפשרי באישור טלפוני מהמדריך.</div>`;
 
         html += `<div class="section-title">הבהרת משימה</div>`;
+        html += window.renderNotesBtn(key, 'notes_after_goals');
         html += `<div class="info-box">יש לתת למועמד 5 דק להתזהות על מפה ולשאלות הבהרה.</div>`;
         html += this.renderQuestion(key, 'שאלות הבהרה ששאל החניך', 'clarify_questions', 'textarea');
 
@@ -2579,6 +2616,7 @@ class LailaExercise {
         html += this.renderYesNoQuestion(key, 'האם היית עושה משהו אחרת?', 'recon_differently');
         html += this.renderQuestion(key, 'התרשמות חופשית', 'recon_impression', 'textarea');
 
+        html += window.renderNotesBtn(key, 'notes_after_brief');
         html += `<div class="section-title">לרשות המועמד 15 דק לחשיבה על 2 דפאות ופירוט יתרונות וחסרונות</div>`;
         html += `<div class="info-box">מטרת השלב לבחון יצירתיות ולכן יש לזרום עם הרעיונות במידה והן רלוונטיות - בסיום ההצגה יש להכווין לדפא המתבקשת בהתאם למאפיינים המודיעיניים של התרחיש.</div>`;
 
@@ -2601,6 +2639,7 @@ class LailaExercise {
 
         html += `<div class="section-title">לרשות המועמד 20 דק לכתיבת תוכנית פעולה</div>`;
 
+        html += window.renderNotesBtn(key, 'notes_after_planning');
         html += `<div class="section-title">הצגת דפא ואישור תוכניות (30 ד)</div>`;
         html += this.renderPlanQuestion(key, 'הצגת סיפור כיסוי', 'presentation_cover');
         html += this.renderPlanQuestion(key, 'צירי תנועה ונסיגה', 'presentation_movement');
@@ -2627,6 +2666,7 @@ class LailaExercise {
         html += this.renderQuestion(key, 'איך מרגיש עם הכיסוי?', 'simulation_cover_feeling', 'textarea');
         html += this.renderStressLevel(key, 'מה מידת הלחץ מ-1 עד 10', 'simulation_stress');
 
+        html += window.renderNotesBtn(key, 'notes_after_plans');
         html += `<div class="section-title">תחקיר לאחר ביצוע (10 ד)</div>`;
         html += this.renderQuestion(key, 'חריגים או תקלות או חשדות?', 'execution_incidents', 'textarea');
         html += this.renderQuestion(key, 'תאר לי בפירוט איך הייתה לך החוויה?', 'execution_experience', 'textarea');
@@ -2640,6 +2680,7 @@ class LailaExercise {
 
         html += this.renderQuestion(key, 'סיכום תרגיל - מלל חופשי', 'summary', 'textarea');
 
+        html += window.renderNotesBtn(key, 'notes_after_debrief');
         html += '<div class="section-title">ציונים</div>';
         const scores = ['יכולות למידה ויישום','גמישות מחשבתית','יכולות תכנון','בטחון מול יעילות','יכולת דיווח','התמודדות עם לחץ ועמימות','התמקמות כלומד','בטחון עצמי','ציון מסכם'];
         scores.forEach((score, i) => {
@@ -2767,6 +2808,7 @@ class MichtavExercise {
         `;
 
         // הבהרת משימה
+        html += window.renderNotesBtn(key, 'notes_after_goals');
         html += `<div class="section-title">הבהרת משימה (10 ד')</div>`;
         html += `
             <div class="info-box">
@@ -2798,6 +2840,7 @@ class MichtavExercise {
         `;
 
         // סיוש
+        html += window.renderNotesBtn(key, 'notes_after_brief');
         html += `<div class="section-title">יש לתת למועמד 20 דק' לטובת חשיבה על 2 דפ"אות</div>`;
         
         html += this.renderQuestion(key, 'חריגים או תקלות או חשדות?', 'recon_incidents', 'textarea');
@@ -2844,6 +2887,7 @@ class MichtavExercise {
         html += `<div class="info-box"><strong>הנחייה למועמד:</strong> לרשותך 15 דק' לכתיבת תוכנית פעולה.</div>`;
 
         // אישור תוכניות
+        html += window.renderNotesBtn(key, 'notes_after_planning');
         html += `<div class="section-title">אישור תוכניות (25 דק')</div>`;
         
         html += this.renderPlanQuestion(key, 'צירי תנועה וחזרה', 'approval_movement');
@@ -2874,6 +2918,7 @@ class MichtavExercise {
         `;
 
         // תחקיר מכתב
+        html += window.renderNotesBtn(key, 'notes_after_plans');
         html += `<div class="section-title">תחקיר מכתב</div>`;
         html += `<div class="section-title" style="font-size: 16px;">1. מידע על הפעולה</div>`;
         
@@ -2921,6 +2966,7 @@ class MichtavExercise {
         `;
 
         // תחקיר אחרי ביצוע
+        html += window.renderNotesBtn(key, 'notes_after_debrief_letter');
         html += `<div class="section-title">תחקיר אחרי ביצוע</div>`;
         
         html += this.renderYesNoQuestion(key, 'חריגים או תקלות או חשדות?', 'execution_incidents');
@@ -2934,6 +2980,7 @@ class MichtavExercise {
         html += this.renderQuestion(key, 'סיכום תרגיל', 'summary', 'textarea');
 
         // ציונים
+        html += window.renderNotesBtn(key, 'notes_after_debrief_post');
         html += '<div class="section-title">ציונים</div>';
         const scores = [
             'יכולות למידה ויישום',
@@ -3319,6 +3366,8 @@ class YominetExercise {
             <div class="section-title">בנק תרגילים</div>
         `;
         
+        html += window.renderNotesBtn(key, 'notes_after_goals');
+        
         // Render all challenges with status
         this.challenges.forEach((challenge, i) => {
             html += `
@@ -3341,10 +3390,12 @@ class YominetExercise {
                                 onchange="setExerciseData('${key}', 'task_${i}', this.value)">לא הועבר לחניך
                         </label>
                     </div>
+                    ${window.renderNotesBtn(key, `task_${i}_notes`)}
                 </div>
             `;
         });
-        
+
+        html += window.renderNotesBtn(key, 'notes_after_tasks');
         html += '<div class="section-title">בנק שאלות לתרגילים</div>';
         
         const taskQuestions = [
@@ -3365,6 +3416,7 @@ class YominetExercise {
             `;
         });
         
+        html += window.renderNotesBtn(key, 'notes_after_questions');
         html += `
             <div class="section-title">משימת מלון - סיפור מעשה</div>
             
@@ -3425,6 +3477,7 @@ class YominetExercise {
         html += this.renderQuestion(key, 'כתובת מלון', 'hotel_address_input', 'text');
         html += `<div class="question-block"><div class="question-title">תאריך</div><input type="text" value="${this.getData(key, 'hotel_date') || new Date().toLocaleDateString('he-IL')}" readonly style="background:#f0f0f0;"></div>`;
         
+        html += window.renderNotesBtn(key, 'notes_after_hotel');
         html += '<div class="section-title">הצגת דפאות ותכנון</div>';
         
         const planningQuestions = [
@@ -3449,6 +3502,7 @@ class YominetExercise {
         
         html += '<div class="info-box" style="background: #fef3c7; border-color: #f59e0b;">יש לתת זמן למועמד לתכנן, לאשר בע"פ ולצאת לביצוע</div>';
         
+        html += window.renderNotesBtn(key, 'notes_after_planning');
         html += '<div class="section-title">תחקיר אחרי ביצוע</div>';
         
         html += `
@@ -4509,6 +4563,8 @@ class SummaryPage {
                 
                 <button class="btn-pdf-summary" onclick="window.generatePDFSummary()">📄 סיכום PDF לחניך</button>
                 
+                <button class="btn-review-trainee" onclick="goToPage('review')">📝 סקירת חניך</button>
+                
                 <div style="margin-top: 10px; padding: 10px; background: #e3f2fd; border-radius: 8px; border: 2px dashed #2196f3;">
                     <p style="font-size: 12px; color: #1565c0; margin-bottom: 8px; font-weight: bold;">💾 שמירת גיבוי מקומי:</p>
                     <button class="btn" onclick="testFilePlugin()" style="width: 100%; background: #2196f3; color: white;">
@@ -4688,6 +4744,509 @@ class PreviewPage {
 }
 
 
+
+// ===== js/pages/review.js =====
+/**
+ * Review Page Module v2.0
+ * Per-trainee full data review + docx export + text summary
+ */
+
+const EXERCISE_NOTE_FIELDS = [
+    ['notes_start'],
+    ['notes_before_tiach1','notes_before_tiach2','notes_before_scores'],
+    ['notes_after_goals','notes_after_brief','notes_after_pre_debrief','notes_after_dafa','notes_after_plans'],
+    ['notes_before_object','notes_before_scores'],
+    ['notes_after_goals','notes_after_brief','notes_after_planning','notes_after_plans','notes_after_debrief'],
+    ['notes_after_goals','notes_after_brief','notes_after_planning','notes_after_plans','notes_after_debrief_letter','notes_after_debrief_post'],
+    ['notes_after_goals','task_0_notes','task_1_notes','task_2_notes','task_3_notes','task_4_notes','task_5_notes','task_6_notes','task_7_notes','task_8_notes','task_9_notes','task_10_notes','task_11_notes','notes_after_tasks','notes_after_questions','notes_after_hotel','notes_after_planning']
+];
+
+const YOMINET_CHALLENGES = ['עצירת אדם ל2 דק\'','עצירת בנאדם והוצאת פרטים אישיים','השאלת פריט לבוש מאדם','להצטלם עם אדם ברחוב','החזרת אדם אחורה מספר צעדים ברחוב','החזרת אדם אחורה במעבר חצייה','עלייה על מונית ונסיעה מספר מטרים','כניסה מאחורי דוכן אוכל','קבלת אוכל/שתיה ללא תשלום','קבלת שירות ללא תמורה','הקמת מגע','סיור שטח וצילום חדר מלון'];
+
+const EXERCISE_SCORE_FIELDS = [
+    {prefix:'score_', count:7,  labels:['גמישות מחשבתית','יכולת תכנון','תמודדות עם לחץ ועמימות','התמקמות כלומד','בטחון עצמי','עבודה בצוות','ציון מסכם']},
+    {prefix:'tiach2_score_', count:7, labels:['גמישות מחשבתית','יכולת תכנון','התמודדות עם לחץ ועמימות','התמקמות כלומד','בטחון עצמי','יכולת דיווח','ציון מסכם']},
+    {prefix:'score_', count:10, labels:['יכולת למידה ויישום','גמישות מחשבתית','יכולת תכנון','תמודדות עם לחץ ועמימות','התמקמות כלומד','בטחון עצמי','גמישות ביצועית','בטחון מול יעילות','יכולת דיווח','ציון מסכם']},
+    {prefix:'score_', count:8,  labels:['גמישות מחשבתית','מיומנות - התמצאות במרחב','זכרון','אמינות הדיווח','ריכוז וחלוקת קשב','יכולת דיווח','בטחון עצמי','ציון מסכם']},
+    {prefix:'score_', count:9,  labels:['יכולות למידה ויישום','גמישות מחשבתית','יכולות תכנון','בטחון מול יעילות','יכולת דיווח','התמודדות עם לחץ ועמימות','התמקמות כלומד','בטחון עצמי','ציון מסכם']},
+    {prefix:'score_', count:9,  labels:['יכולת למידה','גמישות מחשבתית','תכנון','בטחון מול יעילות','יכולת דיווח','התמודדות עם לחץ','מקתגים','כניסה לדמות','ציון מסכם']},
+    {prefix:'score_', count:7,  labels:['גמישות מחשבתית','תעוזה ובטחון עצמי','יציאה מאזור הנוחות','כישורי יומינטקטי','יכולת דיווח','ציון מלון','ציון מסכם']}
+];
+
+class ReviewPage {
+    getOrderedTrainees() {
+        const primary = window.app.primaryTrainees || [];
+        const all = [0, 1, 2, 3];
+        const ordered = [];
+        primary.forEach(p => { if (all.includes(p)) ordered.push(p); });
+        all.forEach(i => { if (!ordered.includes(i)) ordered.push(i); });
+        return ordered;
+    }
+
+    isPrimary(index) {
+        return (window.app.primaryTrainees || []).includes(index);
+    }
+
+    render() {
+        return `
+            <div class="quick-switch-bar" id="reviewSwitchBar"></div>
+            <div class="container" id="reviewContainer" style="padding-top:55px; padding-bottom:70px;">
+                <h2 style="text-align:center; margin-bottom:6px;">📝 סקירת חניך</h2>
+                <p id="reviewTraineeName" style="text-align:center; font-size:15px; color:#666; margin-bottom:12px;"></p>
+                <div class="review-export-bar">
+                    <button class="btn-review-export" onclick="window.exportTraineeDocx(window.app.currentReviewTrainee)">📄 ייצוא Word</button>
+                    <button class="btn-review-text" onclick="window.showTextOnlySummary(window.app.currentReviewTrainee)">📋 סיכום מילולי</button>
+                </div>
+                <div id="reviewContent"></div>
+            </div>
+            <div class="sticky-bottom-nav" id="reviewNav">
+                <button class="nav-btn nav-btn-back" onclick="goToPage('summary')">⬅ חזור לסיכום</button>
+                <button class="nav-btn-save" onclick="window.storage.saveData(); alert('נשמר ✅')" title="שמירה">💾</button>
+                <button class="scroll-top-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="למעלה">⬆</button>
+            </div>
+            <div id="textSummaryOverlay" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:#fff; z-index:9999; overflow-y:auto; padding:16px; direction:rtl;">
+                <button onclick="document.getElementById('textSummaryOverlay').style.display='none'" style="position:sticky; top:0; float:left; background:#e63946; color:#fff; border:none; padding:8px 14px; border-radius:8px; font-size:16px; cursor:pointer; margin-bottom:12px;">✕ סגור</button>
+                <div id="textSummaryContent" style="clear:both; padding-top:8px;"></div>
+            </div>
+        `;
+    }
+
+    onEnter() {
+        this.renderSwitchBar();
+        const first = this.getOrderedTrainees()[0];
+        this.selectTrainee(window.app.currentReviewTrainee !== undefined ? window.app.currentReviewTrainee : first);
+    }
+
+    renderSwitchBar() {
+        const bar = document.getElementById('reviewSwitchBar');
+        if (!bar) return;
+        bar.innerHTML = '';
+        this.getOrderedTrainees().forEach(i => {
+            const btn = document.createElement('button');
+            btn.className = 'quick-switch-btn';
+            btn.id = `rqs${i}`;
+            btn.textContent = window.getTraineeName(i);
+            if (this.isPrimary(i)) btn.classList.add('primary-badge');
+            btn.onclick = () => this.selectTrainee(i);
+            bar.appendChild(btn);
+        });
+    }
+
+    selectTrainee(index) {
+        window.app.currentReviewTrainee = index;
+
+        // Update switch bar highlights
+        for (let i = 0; i < 4; i++) {
+            const btn = document.getElementById(`rqs${i}`);
+            if (!btn) continue;
+            const color = window.app.traineeColors[i];
+            if (i === index) {
+                btn.classList.add('active');
+                btn.style.backgroundColor = color;
+                btn.style.borderColor = color;
+                btn.style.color = 'white';
+            } else {
+                btn.classList.remove('active');
+                btn.style.backgroundColor = '';
+                btn.style.borderColor = '';
+                btn.style.color = '';
+            }
+        }
+
+        // Tint container
+        const container = document.getElementById('reviewContainer');
+        if (container) {
+            container.style.backgroundColor = window.app.traineeColors[index] + '08';
+            container.style.transition = 'background-color 0.3s';
+        }
+
+        // Update name
+        const nameEl = document.getElementById('reviewTraineeName');
+        if (nameEl) nameEl.textContent = window.getTraineeName(index);
+
+        this.renderReviewContent(index);
+    }
+
+    renderReviewContent(traineeId) {
+        const content = document.getElementById('reviewContent');
+        if (!content) return;
+        const color = window.app.traineeColors[traineeId];
+        let html = '';
+
+        // ===== EXERCISES =====
+        window.app.exercises.forEach((exName, exIdx) => {
+            const impression = window.storage.getExerciseData(traineeId, exIdx, 'impression') || '';
+            const freeComment = window.storage.getExerciseData(traineeId, exIdx, 'free_comment') || '';
+            const reviewField = `ex_${exIdx}`;
+            const reviewText = window.storage.getReviewData(traineeId, reviewField);
+
+            // Collect all notes for this exercise
+            const noteFields = EXERCISE_NOTE_FIELDS[exIdx] || [];
+            const allNotes = noteFields.map(f => {
+                const v = window.storage.getExerciseData(traineeId, exIdx, f) || '';
+                return v ? {field: f, value: v} : null;
+            }).filter(Boolean);
+
+            // Collect scores
+            const scoreInfo = EXERCISE_SCORE_FIELDS[exIdx];
+            const scores = [];
+            for (let s = 0; s < scoreInfo.count; s++) {
+                const v = window.storage.getExerciseData(traineeId, exIdx, scoreInfo.prefix + s) || '';
+                if (v) scores.push({label: scoreInfo.labels[s] || `ציון ${s+1}`, value: v});
+            }
+
+            const hasAnyData = impression || freeComment || allNotes.length || scores.length;
+
+            html += `<div class="review-exercise-block" style="border-right:4px solid ${color};">
+                <div class="review-exercise-title">
+                    <span class="review-exercise-badge" style="background:${color};">${exIdx + 1}</span>
+                    ${window.escapeHtml(exName)}
+                </div>`;
+
+            if (!hasAnyData) {
+                html += `<div class="review-empty-notice">⚪ אין נתונים ממולאים עבור תרגיל זה</div>`;
+            } else {
+                if (scores.length) {
+                    html += `<div class="review-readonly-block"><div class="review-label-small">🎯 ציונים:</div><div class="review-scores-grid">`;
+                    scores.forEach(s => {
+                        html += `<div class="review-score-item"><span class="review-score-label">${window.escapeHtml(s.label)}</span><span class="review-score-value">${window.escapeHtml(s.value)}</span></div>`;
+                    });
+                    html += `</div></div>`;
+                }
+                if (impression) html += `<div class="review-readonly-block"><div class="review-label-small">📋 התרשמות חופשית:</div><div class="review-readonly-text">${window.escapeHtml(impression)}</div></div>`;
+                if (freeComment) html += `<div class="review-readonly-block"><div class="review-label-small">💬 התייחסות חופשית:</div><div class="review-readonly-text">${window.escapeHtml(freeComment)}</div></div>`;
+                if (allNotes.length) {
+                    html += `<div class="review-readonly-block"><div class="review-label-small">📝 הערות (${allNotes.length}):</div>`;
+                    allNotes.forEach((n, ni) => {
+                        html += `<div class="review-notes-item"><span class="review-notes-num">${ni+1}</span>${window.escapeHtml(n.value)}</div>`;
+                    });
+                    html += `</div>`;
+                }
+                // Yominet task statuses
+                if (exIdx === 6) {
+                    const taskStatuses = YOMINET_CHALLENGES.map((ch, i) => {
+                        const v = window.storage.getExerciseData(traineeId, exIdx, `task_${i}`) || '';
+                        return v ? {label: ch, value: v} : null;
+                    }).filter(Boolean);
+                    if (taskStatuses.length) {
+                        html += `<div class="review-readonly-block"><div class="review-label-small">✅ בנק תרגילים:</div>`;
+                        taskStatuses.forEach(t => {
+                            const icon = t.value === 'ביצע' ? '✅' : t.value === 'לא הצליח לבצע' ? '❌' : '⚪';
+                            html += `<div class="review-task-item">${icon} ${window.escapeHtml(t.label)}: <strong>${window.escapeHtml(t.value)}</strong></div>`;
+                        });
+                        html += `</div>`;
+                    }
+                }
+            }
+
+            html += `<div class="review-write-section">
+                <label class="review-label">✍️ סיכום מעריך לתרגיל זה:</label>
+                <textarea class="review-textarea" placeholder="כתוב סיכום נרטיבי חופשי על ביצועי החניך בתרגיל זה..." onchange="window.storage.setReviewData(${traineeId},'${reviewField}',this.value)">${window.escapeHtml(reviewText)}</textarea>
+            </div></div>`;
+        });
+
+        // ===== SUMMARY CRITERIA =====
+        let criteriaHtml = '';
+        window.app.criteria.forEach(criterion => {
+            const key = `${traineeId}-${criterion}`;
+            const score = window.storage.getSummaryData(key, 'score');
+            const text = window.storage.getSummaryData(key, 'text');
+            const examples = window.storage.getSummaryData(key, 'examples');
+            if (!score && !text && !examples) return;
+            criteriaHtml += `<div class="review-criterion-item">
+                <div class="review-criterion-name">${window.escapeHtml(criterion)}</div>
+                ${score ? `<div class="review-criterion-score">ציון: <strong>${score}</strong></div>` : ''}
+                ${text ? `<div class="review-criterion-text">${window.escapeHtml(text)}</div>` : ''}
+                ${examples ? `<div class="review-criterion-examples"><em>דוגמאות: ${window.escapeHtml(examples)}</em></div>` : ''}
+            </div>`;
+        });
+        if (criteriaHtml) {
+            html += `<div class="review-overall-block" style="border-right:4px solid ${color};">
+                <div class="review-overall-title" style="color:${color};">📊 קריטריוני הערכה</div>
+                ${criteriaHtml}
+            </div>`;
+        }
+
+        // ===== OVERALL NARRATIVE =====
+        const strengths = window.storage.getReviewData(traineeId, 'strengths');
+        const improvements = window.storage.getReviewData(traineeId, 'improvements');
+        const recommendation = window.storage.getReviewData(traineeId, 'recommendation');
+        html += `<div class="review-overall-block" style="border-right:4px solid ${color};">
+            <div class="review-overall-title" style="color:${color};">⭐ סיכום כללי — ${window.escapeHtml(window.getTraineeName(traineeId))}</div>
+            <label class="review-label">💪 נקודות חוזק:</label>
+            <textarea class="review-textarea review-textarea-tall" placeholder="מה הצטיין בו החניך? מה ייחד אותו חיובית?" onchange="window.storage.setReviewData(${traineeId},'strengths',this.value)">${window.escapeHtml(strengths)}</textarea>
+            <label class="review-label">📈 נקודות לשיפור:</label>
+            <textarea class="review-textarea review-textarea-tall" placeholder="מה צריך לחזק? באילו תחומים נחלש?" onchange="window.storage.setReviewData(${traineeId},'improvements',this.value)">${window.escapeHtml(improvements)}</textarea>
+            <label class="review-label">🎯 המלצה כללית:</label>
+            <textarea class="review-textarea review-textarea-tall" placeholder="סיכום כולל והמלצה..." onchange="window.storage.setReviewData(${traineeId},'recommendation',this.value)">${window.escapeHtml(recommendation)}</textarea>
+        </div>`;
+
+        content.innerHTML = html;
+        window.scrollTo({top: 0, behavior: 'smooth'});
+    }
+    onLeave() {
+        window.storage.saveData();
+        const bar = document.getElementById('reviewSwitchBar');
+        if (bar) bar.innerHTML = '';
+    }
+}
+
+// ===== Docx Export =====
+window.exportTraineeDocx = function(traineeId) {
+    const name = window.getTraineeName(traineeId);
+    const date = new Date().toLocaleDateString('he-IL');
+    const sections = [];
+
+    sections.push({h1: null, paras: [
+        `שם חניך: ${name}`,
+        `תאריך: ${date}`,
+        `הערכה: ${window.app.data.assessmentName || ''}`,
+        `מעריך: ${window.app.data.evaluatorName || ''}`
+    ]});
+
+    window.app.exercises.forEach((exName, exIdx) => {
+        const paras = [];
+        const scoreInfo = EXERCISE_SCORE_FIELDS[exIdx];
+        for (let s = 0; s < scoreInfo.count; s++) {
+            const v = window.storage.getExerciseData(traineeId, exIdx, scoreInfo.prefix + s) || '';
+            if (v) paras.push(`${scoreInfo.labels[s]}: ${v}`);
+        }
+        const impression = window.storage.getExerciseData(traineeId, exIdx, 'impression') || '';
+        const freeComment = window.storage.getExerciseData(traineeId, exIdx, 'free_comment') || '';
+        if (impression) paras.push(`התרשמות חופשית: ${impression}`);
+        if (freeComment) paras.push(`התייחסות חופשית: ${freeComment}`);
+
+        const noteFields = EXERCISE_NOTE_FIELDS[exIdx] || [];
+        noteFields.forEach((f, fi) => {
+            const v = window.storage.getExerciseData(traineeId, exIdx, f) || '';
+            if (v) paras.push(`הערות ${fi + 1}: ${v}`);
+        });
+
+        if (exIdx === 6) {
+            YOMINET_CHALLENGES.forEach((ch, i) => {
+                const v = window.storage.getExerciseData(traineeId, exIdx, `task_${i}`) || '';
+                if (v) paras.push(`${ch}: ${v}`);
+            });
+        }
+
+        const reviewText = window.storage.getReviewData(traineeId, `ex_${exIdx}`) || '';
+        if (reviewText) paras.push(`סיכום מעריך: ${reviewText}`);
+
+        if (paras.length) sections.push({h2: `${exIdx + 1}. ${exName}`, paras});
+    });
+
+    const criteriaParas = [];
+    window.app.criteria.forEach(criterion => {
+        const key = `${traineeId}-${criterion}`;
+        const score = window.storage.getSummaryData(key, 'score');
+        const text = window.storage.getSummaryData(key, 'text');
+        const examples = window.storage.getSummaryData(key, 'examples');
+        if (score || text || examples) {
+            criteriaParas.push(`[${criterion}]`);
+            if (score) criteriaParas.push(`  ציון: ${score}`);
+            if (text) criteriaParas.push(`  הערות: ${text}`);
+            if (examples) criteriaParas.push(`  דוגמאות: ${examples}`);
+        }
+    });
+    if (criteriaParas.length) sections.push({h2: 'קריטריוני הערכה', paras: criteriaParas});
+
+    const overallParas = [];
+    const strengths = window.storage.getReviewData(traineeId, 'strengths') || '';
+    const improvements = window.storage.getReviewData(traineeId, 'improvements') || '';
+    const recommendation = window.storage.getReviewData(traineeId, 'recommendation') || '';
+    if (strengths) overallParas.push(`נקודות חוזק:\n${strengths}`);
+    if (improvements) overallParas.push(`נקודות לשיפור:\n${improvements}`);
+    if (recommendation) overallParas.push(`המלצה כללית:\n${recommendation}`);
+    if (overallParas.length) sections.push({h2: 'סיכום כללי', paras: overallParas});
+
+    try {
+        const blob = window._buildDocxBlob(`סקירת חניך: ${name}`, sections);
+        const filename = `סקירה_${name}_${date.replace(/\//g, '-')}.docx`;
+        if (window.saveAs) {
+            window.saveAs(blob, filename);
+        } else {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = filename; a.click();
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
+        }
+    } catch(e) {
+        alert('שגיאה בייצוא Word: ' + e.message);
+        console.error(e);
+    }
+};
+
+// ===== Text-only summary overlay =====
+window.showTextOnlySummary = function(traineeId) {
+    const name = window.getTraineeName(traineeId);
+    const date = new Date().toLocaleDateString('he-IL');
+    let html = `<h2 style="color:#1e3a5f; margin-bottom:4px;">סיכום מילולי: ${window.escapeHtml(name)}</h2>
+    <p style="color:#666; font-size:13px; margin-bottom:20px;">${date}</p>`;
+
+    let hasAny = false;
+    window.app.exercises.forEach((exName, exIdx) => {
+        const lines = [];
+        const impression = window.storage.getExerciseData(traineeId, exIdx, 'impression') || '';
+        const freeComment = window.storage.getExerciseData(traineeId, exIdx, 'free_comment') || '';
+        if (impression) lines.push({label: 'התרשמות חופשית', text: impression});
+        if (freeComment) lines.push({label: 'התייחסות חופשית', text: freeComment});
+
+        const noteFields = EXERCISE_NOTE_FIELDS[exIdx] || [];
+        noteFields.forEach((f, fi) => {
+            const v = window.storage.getExerciseData(traineeId, exIdx, f) || '';
+            if (v) lines.push({label: `הערות ${fi + 1}`, text: v});
+        });
+
+        const reviewText = window.storage.getReviewData(traineeId, `ex_${exIdx}`) || '';
+        if (reviewText) lines.push({label: 'סיכום מעריך', text: reviewText});
+
+        if (!lines.length) return;
+        hasAny = true;
+        html += `<div style="margin-bottom:18px; border-right:3px solid #1e3a5f; padding-right:12px;">
+            <h3 style="color:#1e3a5f; margin-bottom:8px; font-size:16px;">📍 ${window.escapeHtml(exName)}</h3>`;
+        lines.forEach(l => {
+            html += `<div style="margin-bottom:10px;">
+                <div style="font-size:11px; font-weight:bold; color:#7c3aed; text-transform:uppercase; margin-bottom:3px;">${window.escapeHtml(l.label)}</div>
+                <div style="font-size:14px; color:#333; white-space:pre-wrap; line-height:1.5;">${window.escapeHtml(l.text)}</div>
+            </div>`;
+        });
+        html += `</div>`;
+    });
+
+    const strengths = window.storage.getReviewData(traineeId, 'strengths') || '';
+    const improvements = window.storage.getReviewData(traineeId, 'improvements') || '';
+    const recommendation = window.storage.getReviewData(traineeId, 'recommendation') || '';
+    const overallLines = [];
+    if (strengths) overallLines.push({label: 'נקודות חוזק', text: strengths});
+    if (improvements) overallLines.push({label: 'נקודות לשיפור', text: improvements});
+    if (recommendation) overallLines.push({label: 'המלצה כללית', text: recommendation});
+
+    if (overallLines.length) {
+        hasAny = true;
+        html += `<div style="margin-bottom:18px; border-right:3px solid #7c3aed; padding-right:12px;">
+            <h3 style="color:#7c3aed; margin-bottom:8px; font-size:16px;">⭐ סיכום כללי</h3>`;
+        overallLines.forEach(l => {
+            html += `<div style="margin-bottom:10px;">
+                <div style="font-size:11px; font-weight:bold; color:#7c3aed; text-transform:uppercase; margin-bottom:3px;">${window.escapeHtml(l.label)}</div>
+                <div style="font-size:14px; color:#333; white-space:pre-wrap; line-height:1.5;">${window.escapeHtml(l.text)}</div>
+            </div>`;
+        });
+        html += `</div>`;
+    }
+
+    if (!hasAny) html += `<p style="color:#999; text-align:center;">אין טקסט ממולא עבור חניך זה עדיין.</p>`;
+
+    const overlay = document.getElementById('textSummaryOverlay');
+    const overlayContent = document.getElementById('textSummaryContent');
+    if (overlay && overlayContent) {
+        overlayContent.innerHTML = html;
+        overlay.style.display = 'block';
+        overlay.scrollTop = 0;
+    }
+};
+
+// ===== Minimal DOCX Builder (pure JS, no dependencies) =====
+window._buildDocxBlob = function(docTitle, sections) {
+    function escXml(s) {
+        return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+    function makePara(text) {
+        return String(text || '').split('\n').map(line =>
+            `<w:p><w:pPr><w:bidi/><w:jc w:val="right"/></w:pPr><w:r><w:rPr><w:lang w:bidi="he-IL"/></w:rPr><w:t xml:space="preserve">${escXml(line)}</w:t></w:r></w:p>`
+        ).join('');
+    }
+    function makeHeading(text, sz) {
+        return `<w:p><w:pPr><w:bidi/><w:jc w:val="right"/></w:pPr><w:r><w:rPr><w:b/><w:sz w:val="${sz}"/><w:szCs w:val="${sz}"/><w:lang w:bidi="he-IL"/></w:rPr><w:t xml:space="preserve">${escXml(text)}</w:t></w:r></w:p>`;
+    }
+    function spacer() {
+        return `<w:p><w:pPr><w:bidi/></w:pPr></w:p>`;
+    }
+
+    let body = makeHeading(docTitle, 56) + spacer();
+    sections.forEach(sec => {
+        if (sec.h1) { body += makeHeading(sec.h1, 56) + spacer(); }
+        if (sec.h2) { body += makeHeading(sec.h2, 44) + spacer(); }
+        (sec.paras || []).forEach(p => { body += makePara(p); });
+        body += spacer();
+    });
+
+    const docXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>${body}<w:sectPr><w:bidi/><w:pgMar w:top="720" w:right="1440" w:bottom="720" w:left="720"/></w:sectPr></w:body></w:document>`;
+
+    const files = {
+        '[Content_Types].xml': `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>`,
+        '_rels/.rels': `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>`,
+        'word/document.xml': docXml,
+        'word/_rels/document.xml.rels': `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"></Relationships>`
+    };
+
+    return window._zipFiles(files);
+};
+
+function _crc32(data) {
+    if (!window._crcTable) {
+        window._crcTable = new Uint32Array(256);
+        for (let i = 0; i < 256; i++) {
+            let c = i;
+            for (let j = 0; j < 8; j++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+            window._crcTable[i] = c;
+        }
+    }
+    let crc = 0xFFFFFFFF;
+    for (let i = 0; i < data.length; i++) crc = (crc >>> 8) ^ window._crcTable[(crc ^ data[i]) & 0xFF];
+    return (crc ^ 0xFFFFFFFF) >>> 0;
+}
+
+window._zipFiles = function(files) {
+    const enc = new TextEncoder();
+    const localParts = [];
+    const centralParts = [];
+    let offset = 0;
+    const entries = Object.entries(files);
+
+    entries.forEach(([name, content]) => {
+        const nameB = enc.encode(name);
+        const dataB = enc.encode(content);
+        const crc = _crc32(dataB);
+        const now = new Date();
+        const dosDate = ((now.getFullYear()-1980)<<9)|((now.getMonth()+1)<<5)|now.getDate();
+        const dosTime = (now.getHours()<<11)|(now.getMinutes()<<5)|(now.getSeconds()>>1);
+
+        const local = new Uint8Array(30 + nameB.length + dataB.length);
+        const lv = new DataView(local.buffer);
+        lv.setUint32(0,0x04034b50,true); lv.setUint16(4,20,true); lv.setUint16(6,0,true);
+        lv.setUint16(8,0,true); lv.setUint16(10,dosTime,true); lv.setUint16(12,dosDate,true);
+        lv.setUint32(14,crc,true); lv.setUint32(18,dataB.length,true); lv.setUint32(22,dataB.length,true);
+        lv.setUint16(26,nameB.length,true); lv.setUint16(28,0,true);
+        local.set(nameB,30); local.set(dataB,30+nameB.length);
+        localParts.push(local);
+
+        const central = new Uint8Array(46 + nameB.length);
+        const cv = new DataView(central.buffer);
+        cv.setUint32(0,0x02014b50,true); cv.setUint16(4,20,true); cv.setUint16(6,20,true);
+        cv.setUint16(8,0,true); cv.setUint16(10,dosTime,true); cv.setUint16(12,dosDate,true);
+        cv.setUint32(14,crc,true); cv.setUint32(18,dataB.length,true); cv.setUint32(22,dataB.length,true);
+        cv.setUint16(26,nameB.length,true); cv.setUint16(28,0,true); cv.setUint16(30,0,true);
+        cv.setUint16(32,0,true); cv.setUint16(34,0,true); cv.setUint32(38,0,true);
+        cv.setUint32(42,offset,true); central.set(nameB,46);
+        centralParts.push(central);
+        offset += local.length;
+    });
+
+    const centralSize = centralParts.reduce((s,p) => s+p.length, 0);
+    const centralBuf = new Uint8Array(centralSize);
+    let pos = 0; centralParts.forEach(p => { centralBuf.set(p,pos); pos+=p.length; });
+
+    const eocd = new Uint8Array(22);
+    const ev = new DataView(eocd.buffer);
+    ev.setUint32(0,0x06054b50,true); ev.setUint16(4,0,true); ev.setUint16(6,0,true);
+    ev.setUint16(8,entries.length,true); ev.setUint16(10,entries.length,true);
+    ev.setUint32(12,centralSize,true); ev.setUint32(16,offset,true); ev.setUint16(20,0,true);
+
+    return new Blob([...localParts, centralBuf, eocd],
+        {type:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
+};
+
+
 // ===== js/app.js =====
 /**
  * Main Application Entry Point
@@ -4715,7 +5274,8 @@ window.app = {
         summaryData: {},
         storeHistory: [],
         hotelHistory: [],
-        scannedDocs: {}
+        scannedDocs: {},
+        reviewData: {}
     },
     traineeColors: ['#e63946', '#2a9d8f', '#457b9d', '#e9c46a'],
     exercises: ['בלון', 'טיח', 'דולירה', 'דויד', 'לילה', 'מכתב', 'יומינט'],
@@ -4754,6 +5314,7 @@ window.router.register('evaluator', new EvaluatorPage());
 window.router.register('assessment', new AssessmentPage());
 window.router.register('summary', new SummaryPage());
 window.router.register('preview', new PreviewPage());
+window.router.register('review', new ReviewPage());
 
 // Initialize app when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
@@ -4853,6 +5414,28 @@ window.getTraineeName = function(index) {
         window.app.data.trainee4
     ];
     return names[index] || 'חניך ' + (index + 1);
+};
+
+// ===== Notes helpers =====
+window.renderNotesBtn = function(key, field) {
+    const [tId, eId] = key.split('-');
+    const value = window.storage.getExerciseData(tId, eId, field) || '';
+    const boxId = `notesbox_${key}_${field}`;
+    const isOpen = value.length > 0;
+    return `<div class="notes-btn-wrap">
+        <button class="btn-notes-toggle" onclick="toggleNotesBox('${boxId}')">📝 הערות</button>
+        <div class="notes-inline-box" id="${boxId}" style="display:${isOpen ? 'block' : 'none'}">
+            <textarea class="notes-textarea" placeholder="הוסף הערות..." onchange="setExerciseData('${key}','${field}',this.value)">${window.escapeHtml ? window.escapeHtml(value) : value}</textarea>
+        </div>
+    </div>`;
+};
+
+window.toggleNotesBox = function(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const open = el.style.display !== 'none';
+    el.style.display = open ? 'none' : 'block';
+    if (!open) { const ta = el.querySelector('textarea'); if (ta) ta.focus(); }
 };
 
 window.escapeHtml = function(text) {

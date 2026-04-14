@@ -39,7 +39,7 @@ jobs:
         
       - name: Install Android SDK components
         run: |
-          sdkmanager "platforms;android-34" "build-tools;34.0.0"
+          sdkmanager "platforms;android-35" "build-tools;35.0.0"
       
       - name: Add Android platform
         run: |
@@ -51,6 +51,21 @@ jobs:
           for f in platforms/android/CordovaLib/cordova.gradle platforms/android/app/build.gradle; do
             if [ -f "$f" ] && grep -q "XmlParser" "$f" && ! grep -q "import groovy.xml.XmlParser" "$f"; then
               sed -i '1s/^/import groovy.xml.XmlParser\n/' "$f"
+              echo "✅ Patched $f"
+            fi
+          done
+
+      - name: Patch CordovaLib SDK version constants
+        run: |
+          # VANILLA_ICE_CREAM = API 35, BAKLAVA = API 36
+          # Not defined in older SDK build tools — replace with numeric literals
+          for f in \
+            platforms/android/CordovaLib/src/org/apache/cordova/CoreAndroid.java \
+            platforms/android/CordovaLib/src/org/apache/cordova/SystemBarPlugin.java \
+            platforms/android/CordovaLib/src/org/apache/cordova/CordovaActivity.java; do
+            if [ -f "$f" ]; then
+              sed -i 's/Build\.VERSION_CODES\.VANILLA_ICE_CREAM/35/g' "$f"
+              sed -i 's/Build\.VERSION_CODES\.BAKLAVA/36/g' "$f"
               echo "✅ Patched $f"
             fi
           done

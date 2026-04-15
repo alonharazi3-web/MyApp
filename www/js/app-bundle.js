@@ -5654,10 +5654,10 @@ window._zipFiles = function(files) {
         const central = new Uint8Array(46 + nameB.length);
         const cv = new DataView(central.buffer);
         cv.setUint32(0,0x02014b50,true); cv.setUint16(4,20,true); cv.setUint16(6,20,true);
-        cv.setUint16(8,0,true); cv.setUint16(10,dosTime,true); cv.setUint16(12,dosDate,true);
-        cv.setUint32(14,crc,true); cv.setUint32(18,dataB.length,true); cv.setUint32(22,dataB.length,true);
-        cv.setUint16(26,nameB.length,true); cv.setUint16(28,0,true); cv.setUint16(30,0,true);
-        cv.setUint16(32,0,true); cv.setUint16(34,0,true); cv.setUint32(38,0,true);
+        cv.setUint16(8,0,true); cv.setUint16(10,0,true); cv.setUint16(12,dosTime,true); cv.setUint16(14,dosDate,true);
+        cv.setUint32(16,crc,true); cv.setUint32(20,dataB.length,true); cv.setUint32(24,dataB.length,true);
+        cv.setUint16(28,nameB.length,true); cv.setUint16(30,0,true); cv.setUint16(32,0,true);
+        cv.setUint16(34,0,true); cv.setUint16(36,0,true); cv.setUint32(38,0,true);
         cv.setUint32(42,offset,true); central.set(nameB,46);
         centralParts.push(central);
         offset += local.length;

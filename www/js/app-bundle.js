@@ -4783,6 +4783,221 @@ const EXERCISE_NOTE_FIELDS = [
     ['notes_after_goals','task_0_notes','task_1_notes','task_2_notes','task_3_notes','task_4_notes','task_5_notes','task_6_notes','task_7_notes','task_8_notes','task_9_notes','task_10_notes','task_11_notes','notes_after_tasks','notes_after_questions','notes_after_hotel','notes_after_planning']
 ];
 
+// ALL exercise fields in chronological order for full review display
+// Each entry: [field, label, type] — type: 't'=textarea, 's'=score/select, 'r'=radio/yesno
+const EXERCISE_ALL_FIELDS = [
+  // 0: בלון
+  [
+    ['impression','התרשמות חופשית','t'],
+    ['score_0','גמישות מחשבתית','s'],['score_1','יכולת תכנון','s'],['score_2','תמודדות עם לחץ ועמימות','s'],
+    ['score_3','התמקמות כלומד','s'],['score_4','בטחון עצמי','s'],['score_5','עבודה בצוות','s'],['score_6','ציון מסכם','s'],
+    ['free_comment','התייחסות חופשית','t']
+  ],
+  // 1: טיח
+  [
+    ['tiach1_store_name_input','שם חנות 1','t'],['tiach1_address_input','כתובת חנות 1','t'],
+    ['tiach1_incidents','חריגים/תקלות','t'],['tiach1_feeling','איך היה לך (תחושות)','t'],
+    ['tiach1_cover_story','סיפור כיסוי','t'],['tiach1_interaction','אינטרקציה עם המוכר','t'],
+    ['tiach1_initiator','מי יזם את השיחה','t'],['tiach1_time','כמה זמן היית בחנות','t'],
+    ['tiach1_intel','פרטי המל"מ שנאסף','t'],
+    ['tiach1_seller_desc_yesno','תיאור מדויק מוכר','r'],['tiach1_seller_desc_text','פירוט תיאור מוכר','t'],
+    ['tiach1_store_name_yesno','שם החנות','r'],['tiach1_address_yesno','כתובת','r'],
+    ['tiach1_exits_yesno','יציאות נוספות','r'],['tiach1_door_yesno','כיוון פתיחת דלת','r'],
+    ['tiach1_bars_yesno','סורגים','r'],['tiach1_locks_yesno','מנעולים','r'],
+    ['tiach1_cameras_yesno','מצלמות','r'],['tiach1_alarm_yesno','אזעקה','r'],
+    ['tiach1_register_yesno','קופה/מחשב','r'],['tiach1_card_yesno','כרטיס ביקור','r'],
+    ['tiach1_return_option_yesno','פתח לחזרה','r'],
+    ['tiach1_exit_words','מה אמרת כשיצאת','t'],['tiach1_why_interesting','מדוע החנות מעניינת','t'],
+    ['tiach1_gaps','פערים מודיעיניים','t'],['tiach1_another_round','שיקולים לסיבוב נוסף','t'],
+    ['tiach1_2_incidents','כניסה שניה - חריגים','t'],['tiach1_2_feeling','כניסה שניה - איך היה','t'],
+    ['tiach1_2_return_presentation','הצגת החזרה לחנות','t'],['tiach1_2_entry','מה קרה כשנכנסת','t'],
+    ['tiach1_2_interaction','אינטרקציה כניסה שניה','t'],['tiach1_2_exit_words','מה אמרת כשחזרת','t'],
+    ['tiach1_2_sketch_update','עדכון שרטוט','t'],['tiach1_2_seller_details','פרטים נוספים על המוכר','t'],
+    ['tiach1_2_seller_desc_yesno','תיאור מוכר - כניסה שניה','r'],['tiach1_2_store_name_yesno','שם חנות - כניסה שניה','r'],
+    ['tiach1_2_address_yesno','כתובת - כניסה שניה','r'],['tiach1_2_cameras_yesno','מצלמות - כניסה שניה','r'],
+    ['tiach1_2_corrections_yesno','תיקן דיווחי טעות','r'],
+    ['tiach1_2_why_no_intel','מדוע לא הבאת מל"מ נוסף','t'],['tiach1_2_third_time','האם לחזור פעם שלישית','t'],
+    ['tiach1_summary','סיכום טיח 1','t'],
+    ['tiach2_store_name_input','שם חנות 2','t'],['tiach2_address_input','כתובת חנות 2','t'],
+    ['tiach2_incidents','חריגים טיח 2','t'],['tiach2_experience','תיאור חוויה','t'],
+    ['tiach2_interaction','אינטרקציה טיח 2','t'],['tiach2_cover_entry','סיפור כיסוי כניסה','t'],
+    ['tiach2_cover_observation','סיפור כיסוי תצפית','t'],['tiach2_other_covers','רעיונות נוספים לכיסויים','t'],
+    ['tiach2_intel','מל"מ שנאסף טיח 2','t'],
+    ['tiach2_folder_yesno','קיבל קלסר לשרטוט','r'],['tiach2_phone_yesno','מספר טלפון','r'],
+    ['tiach2_hours_yesno','שעות פתיחה','r'],['tiach2_sellers_count_yesno','כמה מוכרים','r'],
+    ['tiach2_camera_types_yesno','סוגי מצלמות','r'],['tiach2_exits_yesno','פתחי יציאה','r'],
+    ['tiach2_computer_yesno','מחשב/קופה','r'],['tiach2_return_option_yesno','השאיר פתח לחזרה','r'],
+    ['tiach2_observation_time','כמה זמן ציפית','t'],['tiach2_instructors_passes','חליפות מדריכים','t'],
+    ['tiach2_missed','האם יתכן שפיספסת','t'],['tiach2_observation_percent','% מהזמן ציפית','t'],
+    ['tiach2_removal','האם הוצאת את המוכר','t'],['tiach2_removal_cover','סיפור כיסוי להוצאה','t'],
+    ['tiach2_cover_planning','מתי תכננת סיפור כיסוי','t'],['tiach2_suspicions','האם עלו חשדות','t'],
+    ['tiach2_summary','סיכום טיח 2','t'],
+    ['tiach2_score_0','גמישות מחשבתית','s'],['tiach2_score_1','יכולת תכנון','s'],
+    ['tiach2_score_2','התמודדות עם לחץ','s'],['tiach2_score_3','התמקמות כלומד','s'],
+    ['tiach2_score_4','בטחון עצמי','s'],['tiach2_score_5','יכולת דיווח','s'],['tiach2_score_6','ציון מסכם','s'],
+    ['free_comment','התייחסות חופשית','t']
+  ],
+  // 2: דולירה
+  [
+    ['clarify_location','מיקום הקורקינט','t'],['clarify_scooter_type','סוג/תיאור הקורקינט','t'],
+    ['clarify_device','סוג האמצעי','t'],['clarify_object_desc','תיאור האוביקט','t'],
+    ['clarify_time_window','חלון זמן לביצוע','t'],['clarify_other','שאלות נוספות ששאל','t'],
+    ['recon_incidents','חריגים/תקלות סיוש','t'],
+    ['recon_sketch_yesno','שרטט נכון את סביבת היעד','r'],
+    ['recon_route','מסלול הליכה','t'],['recon_street_interaction','חיכוך מול בן אדם ברחוב','t'],
+    ['recon_building_interaction','חיכוך מול הבית','t'],['recon_considerations','שיקולים בבחירות','t'],
+    ['recon_cover_story','סיפור כיסוי בסיור שטח','t'],['recon_intel','פירוט המל"מ שנאסף','t'],
+    ['recon_sufficient','האם הסיוש שירת את המשימה','t'],
+    ['plan_a','דפא ראשונה','t'],['plan_b','דפא שניה','t'],['plan_preference','דפא מועדפת והשיקולים','t'],
+    ['plan_a_pros','יתרונות דפא 1','t'],['plan_a_cons','חסרונות דפא 1','t'],['plan_a_equipment','ציוד נדרש דפא 1','t'],
+    ['plan_b_pros','יתרונות דפא 2','t'],['plan_b_cons','חסרונות דפא 2','t'],['plan_b_equipment','ציוד נדרש דפא 2','t'],
+    ['presentation_cover','הצגת סיפור כיסוי','t'],['presentation_movement','צירי תנועה','t'],
+    ['presentation_observation','תצפית מרחוק','t'],['presentation_timing','תזמון ביצוע','t'],
+    ['presentation_conditions','תנאים ומגבלות','t'],
+    ['cont_unlocked','מקתג: קורקינט לא נעול','t'],['cont_people_nearby','מקתג: אנשים ליד','t'],
+    ['cont_location_change','מקתג: שינוי מקום','t'],['cont_acquaintance','מקתג: פגש מכר','t'],
+    ['cont_passerby','מקתג: עובר אורח','t'],['cont_dropped','מקתג: הפלת קורקינט','t'],
+    ['cont_security','מקתג: כוח בטחון','t'],['cont_additional','מקתגים נוספים','t'],
+    ['simulation_aids_yesno','ביקש עזרים','r'],['simulation_feeling','תחושה עם הכיסוי','t'],
+    ['simulation_stress','מידת הלחץ','t'],
+    ['execution_incidents','חריגים ביצוע','t'],['execution_description','תיאור הביצוע','t'],
+    ['execution_feeling','איך הרגשת בביצוע','t'],
+    ['execution_as_planned_yesno','פעל עפ"י תכנון','r'],['execution_interference_yesno','הייתה הפרעה','r'],
+    ['summary_general','סיכום כללי','t'],
+    ['score_0','יכולת למידה ויישום','s'],['score_1','גמישות מחשבתית','s'],['score_2','יכולת תכנון','s'],
+    ['score_3','תמודדות עם לחץ','s'],['score_4','התמקמות כלומד','s'],['score_5','בטחון עצמי','s'],
+    ['score_6','גמישות ביצועית','s'],['score_7','בטחון מול יעילות','s'],['score_8','יכולת דיווח','s'],
+    ['score_9','ציון מסכם','s'],
+    ['free_comment','התייחסות חופשית','t']
+  ],
+  // 3: דויד
+  [
+    ['follower_reports','דיווחי קריפטון (סהכ 6)','r'],['follower_stopped','עצירת בן אדם','r'],
+    ['follower_plates','העביר לוחיות זיהוי','r'],
+    ['follower_feeling','איך היה לך (עוקב)','t'],
+    ['follower_streets_memory','רחובות שהלכת','t'],['follower_directions_memory','כיווני שמיים','t'],
+    ['follower_address_memory','כתובת שנכנס אליה האוביקט','t'],
+    ['follower_sidewalk_memory','על איזה מדרכה הלך','t'],['follower_red_cars_memory','כלי רכב אדומים שלא סימנת','t'],
+    ['follower_differently','מה היית עושה אחרת (עוקב)','t'],['follower_behavior','תיאור התנהלות ברחוב','t'],
+    ['object_feeling','איך היה לך (אוביקט)','t'],
+    ['object_streets_memory','רחובות (אוביקט)','t'],['object_directions_memory','כיווני שמיים (אוביקט)','t'],
+    ['object_address_memory','כתובת הבית (אוביקט)','t'],
+    ['object_behavior','תיאור התנהלות אוביקט','t'],
+    ['summary','סיכום תרגיל','t'],
+    ['score_0','גמישות מחשבתית','s'],['score_1','מיומנות - התמצאות','s'],['score_2','זכרון','s'],
+    ['score_3','אמינות הדיווח','s'],['score_4','ריכוז וחלוקת קשב','s'],
+    ['score_5','יכולת דיווח','s'],['score_6','בטחון עצמי','s'],['score_7','ציון מסכם','s'],
+    ['free_comment','התייחסות חופשית','t']
+  ],
+  // 4: לילה
+  [
+    ['clarify_questions','שאלות הבהרה ששאל','t'],
+    ['recon_incidents','חריגים/תקלות','t'],
+    ['recon_sketch_yesno','שרטט נכון סביבת היעד','r'],['recon_orientation_yesno','ביצע סיוש עם אוריינטציה','r'],
+    ['recon_route','מסלול הליכה','t'],
+    ['recon_remote_observation','תצפית מרוחקת','r'],['recon_friction','חיכוך בנקודה','r'],
+    ['recon_considerations','שיקולים במימוש הסיוש','t'],
+    ['recon_cover_story_yesno','היה סיפור כיסוי','r'],
+    ['recon_intel','תיאור המל"מ שנאסף','t'],
+    ['recon_achieved_yesno','סיוש השיג מטרותיו','r'],['recon_differently_yesno','היית עושה אחרת','r'],
+    ['recon_impression','התרשמות חופשית','t'],
+    ['plan_a','דפא ראשונה','t'],['plan_b','דפא שניה','t'],
+    ['plan_relevant','דפא רלוונטית','r'],['plan_additional','דפאות נוספות','t'],
+    ['plan_a_cover','סיפור כיסוי דפא א','t'],['plan_a_pros','יתרונות דפא א','t'],['plan_a_cons','חסרונות דפא א','t'],
+    ['plan_b_cover','סיפור כיסוי דפא ב','t'],['plan_b_pros','יתרונות דפא ב','t'],['plan_b_cons','חסרונות דפא ב','t'],
+    ['presentation_cover','הצגת סיפור כיסוי','t'],['presentation_movement','צירי תנועה ונסיגה','t'],
+    ['presentation_entry','נק עליה על כיסוי','t'],['presentation_positioning','הגעה לעמדה','t'],
+    ['presentation_exit_timing','מתי מקפל','t'],
+    ['cont_occupied_resident','מקתג: נקודה תפוסה (דייר)','t'],['cont_occupied_event','מקתג: נקודה תפוסה (אירוע)','t'],
+    ['cont_concealment','מקתג: נדרש לשנות מקום','t'],['cont_acquaintance','מקתג: פגש מכר','t'],
+    ['cont_help_offered','מקתג: קבלת עזרה','t'],['cont_hostile_citizen','מקתג: אזרח עויין','t'],
+    ['cont_hostile_resident','מקתג: דייר עויין','t'],['cont_violence','מקתג: אלימות','t'],
+    ['cont_security','מקתג: כוח בטחון','t'],['cont_additional','מקתגים נוספים','t'],
+    ['simulation_impression','התרשמות מהסימולציה','t'],
+    ['simulation_aids_yesno','ביקש עזרים','r'],['simulation_cover_feeling','תחושה עם הכיסוי','t'],
+    ['simulation_stress','מידת הלחץ','t'],
+    ['execution_incidents','חריגים ביצוע','t'],['execution_experience','חוויית הביצוע','t'],
+    ['execution_feeling','איך הרגשת','t'],
+    ['execution_as_planned_yesno','פעל עפי תכנון','r'],['execution_meeting_yesno','הייתה פגישה','r'],
+    ['execution_interference_yesno','הייתה הפרעה','r'],
+    ['execution_intel_memory','מל"מ שנאסף על האוביקט','t'],
+    ['execution_exit_yesno','קיפול עפי תכנון','r'],['execution_observation_percent','% מהזמן ציפית','t'],
+    ['summary','סיכום תרגיל','t'],
+    ['score_0','יכולות למידה ויישום','s'],['score_1','גמישות מחשבתית','s'],['score_2','יכולות תכנון','s'],
+    ['score_3','בטחון מול יעילות','s'],['score_4','יכולת דיווח','s'],
+    ['score_5','התמודדות עם לחץ','s'],['score_6','התמקמות כלומד','s'],
+    ['score_7','בטחון עצמי','s'],['score_8','ציון מסכם','s'],
+    ['free_comment','התייחסות חופשית','t']
+  ],
+  // 5: מכתב
+  [
+    ['lessons_previous_day','לקחים מיום קודם','t'],
+    ['clarify_address_yesno','שאל כתובת','r'],['clarify_target_file_yesno','ביקש ת"ד','r'],
+    ['clarify_envelope_type_yesno','ביקש סוג מעטפה','r'],['clarify_apartment_owner_yesno','שאל על שם בעל דירה','r'],
+    ['clarify_map_yesno','ביקש מפה','r'],['clarify_additional','נקודות נוספות בהבהרה','t'],
+    ['recon_incidents','חריגים/תקלות סיוש','t'],['recon_route','מסלול הליכה','t'],
+    ['recon_remote_observation_yesno','תצפית מרוחקת','r'],['recon_proximity_yesno','חלף/עמד בסמיכות','r'],
+    ['recon_entered_yard_yesno','נכנס לחצר','r'],
+    ['recon_considerations','שיקולים במימוש','t'],['recon_cover_story_yesno','היה סיפור כיסוי','r'],
+    ['recon_intel','המל"מ שנאסף','t'],
+    ['recon_envelope_id_yesno','זיהוי המעטפה','r'],['recon_mailbox_count_yesno','כמות תיבות דואר','r'],
+    ['recon_access_path_yesno','שביל גישה','r'],['recon_obstacles_yesno','גורמים מפריעים','r'],
+    ['recon_cameras_yesno','מצלמות','r'],
+    ['recon_mission_support','סיוש שירת את המשימה','t'],['recon_timing','חישב זמנים','t'],
+    ['recon_reading_location','מקום לקריאה','t'],['recon_initial_plans','דפאות ראשוניות','t'],
+    ['plan_a','דפ"א א','t'],['plan_b','דפ"א ב','t'],['plan_choice','דפא שנבחרה והשיקולים','t'],
+    ['plan_additional','דפאות נוספות','t'],
+    ['plan_a_cover','סיפור כיסוי דפ"א א','t'],['plan_a_pros','יתרונות דפ"א א','t'],
+    ['plan_a_cons','חסרונות דפ"א א','t'],['plan_a_return','נק קריאה וחזרה לתיבה - א','t'],
+    ['plan_b_cover','סיפור כיסוי דפ"א ב','t'],['plan_b_pros','יתרונות דפ"א ב','t'],
+    ['plan_b_cons','חסרונות דפ"א ב','t'],['plan_b_return','נק קריאה וחזרה לתיבה - ב','t'],
+    ['approval_movement','צירי תנועה וחזרה','t'],['approval_cover_establish','ביסוס ס"כ','t'],
+    ['approval_reading_return','נק קריאה וכיסוי לחזרה','t'],['approval_computer','טיפול במחשב','t'],
+    ['cont_mailbox_closed','מקתג: תיבה סגורה','t'],['cont_neighbor_saw','מקתג: שכן ראה','t'],
+    ['cont_envelope_sealed','מקתג: מעטפה סגורה','t'],['cont_computer_broken','מקתג: מחשב לא עובד','t'],
+    ['cont_dok_encrypted','מקתג: DOK מוצפן','t'],['cont_dok_damaged','מקתג: DOK ניזוק','t'],
+    ['cont_forgot_password','מקתג: שכח סיסמא','t'],['cont_file_not_found','מקתג: קובץ לא נמצא','t'],
+    ['cont_envelope_damaged','מקתג: מעטפה נפגעה','t'],
+    ['letter_date','זכר: תאריך האירוע','t'],['letter_time','זכר: שעת פעילות','t'],
+    ['letter_participants','זכר: משתתפים ותפקידים','t'],['letter_vehicle','זכר: רכב','t'],
+    ['letter_direction','זכר: כיוון הגעה','t'],['letter_envelope_location','זכר: מיקום מעטפה','t'],
+    ['letter_email','זכר: מייל','t'],['letter_communication_time','זכר: מועד התקשרות','t'],
+    ['letter_bank','זכר: פרטי בנק','t'],['letter_account_owner','זכר: בעל חשבון','t'],
+    ['letter_mother_in_law_role','זכר: תפקידי חמות','t'],['letter_branches','זכר: מיקום סניפים','t'],
+    ['letter_mother_in_law_arrival','זכר: הגעת חמות','t'],['letter_mother_in_law_clothes','זכר: לבוש חמות','t'],
+    ['letter_meeting_code','זכר: פרטי פגישה וקידוד','t'],['letter_euro_rate','זכר: שער אירו','t'],
+    ['letter_previous_location','זכר: מיקום פגישה אחרונה','t'],
+    ['letter_critical_operation','העביר מידע קריטי על הפעולה','r'],
+    ['letter_critical_sender','העביר מידע קריטי על השולח','r'],
+    ['letter_critical_understanding','מבין מה המידע הקריטי','r'],
+    ['execution_incidents','חריגים ביצוע','t'],
+    ['execution_success_yesno','הצליח במשימה','r'],['execution_timing_yesno','עמד בזמנים','r'],
+    ['execution_time_measurement','איך נמדדו הזמנים','t'],
+    ['execution_envelope_returned_yesno','מעטפה חזרה כפי שהייתה','r'],
+    ['execution_lesson','לקח מרכזי מהתהליך','t'],
+    ['summary','סיכום תרגיל','t'],
+    ['score_0','יכולת למידה','s'],['score_1','גמישות מחשבתית','s'],['score_2','תכנון','s'],
+    ['score_3','בטחון מול יעילות','s'],['score_4','יכולת דיווח','s'],['score_5','התמודדות עם לחץ','s'],
+    ['score_6','מקתגים','s'],['score_7','כניסה לדמות','s'],['score_8','ציון מסכם','s'],
+    ['free_comment','התייחסות חופשית','t']
+  ],
+  // 6: יומינט
+  [
+    ['taskq_0','איך היה לך (בנק תרגילים)','t'],['taskq_1','סיפור כיסוי','t'],
+    ['taskq_2','האמינו לסיפור כיסוי','t'],['taskq_3','כמה זמן הצלחת','t'],
+    ['taskq_4','למה הצלחת/לא הצלחת','t'],['taskq_5','מה היית עושה אחרת','t'],
+    ['hotel_name_input','שם מלון','t'],['hotel_address_input','כתובת מלון','t'],
+    ['incidents','חריגים/תקלות ביצוע','t'],
+    ['reviewed','סקירת תוצרים מהנייד','r'],
+    ['asplanned','ביצע עפ"י תוכנית','r'],['asplanned_notes','פירוט תוכנית','t'],
+    ['success','הגיע לחדר','r'],['success_notes','מה עזר/הכשיל','t'],
+    ['intel','מל"מ שנאסף מהמלון','t'],['free_notes','התייחסות חופשית','t'],
+    ['score_0','גמישות מחשבתית','s'],['score_1','גמישות ביצועית','s'],
+    ['score_2','כישורי שטח בינאישיים','s'],['score_3','התמודדות עם מצבי לחץ','s'],
+    ['score_4','התמקמות כלומד','s'],['score_5','בטחון עצמי','s'],['score_6','ציון מסכם','s']
+  ]
+];
+
 const YOMINET_CHALLENGES = ['עצירת אדם ל2 דק\'','עצירת בנאדם והוצאת פרטים אישיים','השאלת פריט לבוש מאדם','להצטלם עם אדם ברחוב','החזרת אדם אחורה מספר צעדים ברחוב','החזרת אדם אחורה במעבר חצייה','עלייה על מונית ונסיעה מספר מטרים','כניסה מאחורי דוכן אוכל','קבלת אוכל/שתיה ללא תשלום','קבלת שירות ללא תמורה','הקמת מגע','סיור שטח וצילום חדר מלון'];
 
 const EXERCISE_SCORE_FIELDS = [
@@ -4896,126 +5111,183 @@ class ReviewPage {
         const color = window.app.traineeColors[traineeId];
         let html = '';
 
-        // ===== EXERCISES =====
         window.app.exercises.forEach((exName, exIdx) => {
-            const impression = window.storage.getExerciseData(traineeId, exIdx, 'impression') || '';
-            const freeComment = window.storage.getExerciseData(traineeId, exIdx, 'free_comment') || '';
-            const reviewField = `ex_${exIdx}`;
-            const reviewText = window.storage.getReviewData(traineeId, reviewField);
-
-            // Collect all notes for this exercise
+            const fields = EXERCISE_ALL_FIELDS[exIdx] || [];
             const noteFields = EXERCISE_NOTE_FIELDS[exIdx] || [];
-            const allNotes = noteFields.map(f => {
-                const v = window.storage.getExerciseData(traineeId, exIdx, f) || '';
-                return v ? {field: f, value: v} : null;
-            }).filter(Boolean);
+            const secId = `rev_sec_${exIdx}`;
 
-            // Collect scores
-            const scoreInfo = EXERCISE_SCORE_FIELDS[exIdx];
-            const scores = [];
-            for (let s = 0; s < scoreInfo.count; s++) {
-                const v = window.storage.getExerciseData(traineeId, exIdx, scoreInfo.prefix + s) || '';
-                if (v) scores.push({label: scoreInfo.labels[s] || `ציון ${s+1}`, value: v});
+            // Collect all filled data
+            const items = [];
+
+            // Add yominet task statuses inline at start
+            if (exIdx === 6) {
+                YOMINET_CHALLENGES.forEach((ch, i) => {
+                    const v = window.storage.getExerciseData(traineeId, exIdx, `task_${i}`) || '';
+                    const n = window.storage.getExerciseData(traineeId, exIdx, `task_${i}_notes`) || '';
+                    if (v) items.push({label: ch, value: v, type: 'r'});
+                    if (n) items.push({label: `הערה — ${ch}`, value: n, type: 't'});
+                });
             }
 
-            const hasAnyData = impression || freeComment || allNotes.length || scores.length;
+            // All defined fields
+            fields.forEach(([field, label, type]) => {
+                // For yesno fields, try _yesno and _text suffixes
+                if (type === 'r') {
+                    const baseField = field.endsWith('_yesno') ? field.slice(0,-6) : field;
+                    const yv = window.storage.getExerciseData(traineeId, exIdx, baseField + '_yesno') ||
+                               window.storage.getExerciseData(traineeId, exIdx, field) || '';
+                    const tv = window.storage.getExerciseData(traineeId, exIdx, baseField + '_text') || '';
+                    if (yv || tv) items.push({label, value: yv + (tv ? ` — ${tv}` : ''), type: 'r'});
+                } else if (type === 't') {
+                    const v = window.storage.getExerciseData(traineeId, exIdx, field) || '';
+                    if (v) items.push({label, value: v, type: 't'});
+                } else if (type === 's') {
+                    const v = window.storage.getExerciseData(traineeId, exIdx, field) || '';
+                    if (v) items.push({label, value: v, type: 's'});
+                }
+            });
 
-            html += `<div class="review-exercise-block" style="border-right:4px solid ${color};">
-                <div class="review-exercise-title">
-                    <span class="review-exercise-badge" style="background:${color};">${exIdx + 1}</span>
-                    ${window.escapeHtml(exName)}
-                </div>`;
+            // Memory questions (stored as field_memory and field_text)
+            const memFields = ['follower_streets','follower_directions','follower_address','follower_sidewalk','follower_red_cars',
+                               'object_streets','object_directions','object_address','execution_intel'];
+            if (exIdx === 3 || exIdx === 4) {
+                memFields.forEach(f => {
+                    const mv = window.storage.getExerciseData(traineeId, exIdx, f + '_memory') || '';
+                    const mt = window.storage.getExerciseData(traineeId, exIdx, f + '_text') || '';
+                    if (mv || mt) {
+                        const existing = items.findIndex(i => i.label.includes(f));
+                        if (existing === -1) {
+                            const labelMap = {
+                                'follower_streets': 'רחובות (עוקב)', 'follower_directions': 'כיווני שמיים (עוקב)',
+                                'follower_address': 'כתובת האוביקט', 'follower_sidewalk': 'מדרכה',
+                                'follower_red_cars': 'רכבים אדומים', 'object_streets': 'רחובות (אוביקט)',
+                                'object_directions': 'כיווני שמיים (אוביקט)', 'object_address': 'כתובת (אוביקט)',
+                                'execution_intel': 'מל"מ על האוביקט'
+                            };
+                            items.push({label: labelMap[f] || f, value: (mv ? mv : '') + (mt ? ` — ${mt}` : ''), type: 'r'});
+                        }
+                    }
+                });
+            }
 
-            if (!hasAnyData) {
+            // Notes
+            noteFields.forEach((f, fi) => {
+                const v = window.storage.getExerciseData(traineeId, exIdx, f) || '';
+                if (v) items.push({label: `📝 הערה ${fi + 1}`, value: v, type: 'note'});
+            });
+
+            // Notes from evaluator
+            const reviewText = window.storage.getReviewData(traineeId, `ex_${exIdx}`) || '';
+
+            const totalFilled = items.length + (reviewText ? 1 : 0);
+
+            html += `<div class="review-exercise-block" style="border-right:4px solid ${color}; padding:0;">
+                <div class="review-ex-header" onclick="toggleReviewSection('${secId}')" style="cursor:pointer; padding:14px; display:flex; align-items:center; gap:10px; background:${color}10;">
+                    <span class="review-exercise-badge" style="background:${color}; flex-shrink:0;">${exIdx + 1}</span>
+                    <span style="font-weight:bold; font-size:16px; flex:1;">${window.escapeHtml(exName)}</span>
+                    <span style="font-size:13px; color:${totalFilled > 0 ? color : '#aaa'}; font-weight:${totalFilled > 0 ? 'bold' : 'normal'};">${totalFilled > 0 ? `${totalFilled} שדות ✓` : 'ריק'}</span>
+                    <span id="${secId}_arrow" style="font-size:12px; color:#666;">▼</span>
+                </div>
+                <div id="${secId}" style="display:none; padding:12px;">`;
+
+            if (items.length === 0 && !reviewText) {
                 html += `<div class="review-empty-notice">⚪ אין נתונים ממולאים עבור תרגיל זה</div>`;
             } else {
-                if (scores.length) {
-                    html += `<div class="review-readonly-block"><div class="review-label-small">🎯 ציונים:</div><div class="review-scores-grid">`;
-                    scores.forEach(s => {
-                        html += `<div class="review-score-item"><span class="review-score-label">${window.escapeHtml(s.label)}</span><span class="review-score-value">${window.escapeHtml(s.value)}</span></div>`;
-                    });
-                    html += `</div></div>`;
-                }
-                if (impression) html += `<div class="review-readonly-block"><div class="review-label-small">📋 התרשמות חופשית:</div><div class="review-readonly-text">${window.escapeHtml(impression)}</div></div>`;
-                if (freeComment) html += `<div class="review-readonly-block"><div class="review-label-small">💬 התייחסות חופשית:</div><div class="review-readonly-text">${window.escapeHtml(freeComment)}</div></div>`;
-                if (allNotes.length) {
-                    html += `<div class="review-readonly-block"><div class="review-label-small">📝 הערות (${allNotes.length}):</div>`;
-                    allNotes.forEach((n, ni) => {
-                        html += `<div class="review-notes-item"><span class="review-notes-num">${ni+1}</span>${window.escapeHtml(n.value)}</div>`;
-                    });
-                    html += `</div>`;
-                }
-                // Yominet task statuses
-                if (exIdx === 6) {
-                    const taskStatuses = YOMINET_CHALLENGES.map((ch, i) => {
-                        const v = window.storage.getExerciseData(traineeId, exIdx, `task_${i}`) || '';
-                        return v ? {label: ch, value: v} : null;
-                    }).filter(Boolean);
-                    if (taskStatuses.length) {
-                        html += `<div class="review-readonly-block"><div class="review-label-small">✅ בנק תרגילים:</div>`;
-                        taskStatuses.forEach(t => {
-                            const icon = t.value === 'ביצע' ? '✅' : t.value === 'לא הצליח לבצע' ? '❌' : '⚪';
-                            html += `<div class="review-task-item">${icon} ${window.escapeHtml(t.label)}: <strong>${window.escapeHtml(t.value)}</strong></div>`;
-                        });
-                        // Task notes
-                        const taskNotes = YOMINET_CHALLENGES.map((ch, i) => {
-                            const v = window.storage.getExerciseData(traineeId, exIdx, `task_${i}_notes`) || '';
-                            return v ? {label: ch, value: v} : null;
-                        }).filter(Boolean);
-                        if (taskNotes.length) {
-                            html += `<div class="review-label-small" style="margin-top:8px;">📝 הערות לתרגילים:</div>`;
-                            taskNotes.forEach(n => {
-                                html += `<div class="review-notes-item"><span class="review-notes-num">💬</span><span><strong>${window.escapeHtml(n.label)}:</strong> ${window.escapeHtml(n.value)}</span></div>`;
-                            });
-                        }
-                        html += `</div>`;
+                items.forEach(item => {
+                    if (item.type === 's') {
+                        html += `<div class="review-field-row review-field-score">
+                            <span class="review-field-label">${window.escapeHtml(item.label)}</span>
+                            <span class="review-score-badge">${window.escapeHtml(item.value)}</span>
+                        </div>`;
+                    } else if (item.type === 'r') {
+                        html += `<div class="review-field-row review-field-radio">
+                            <span class="review-field-label">${window.escapeHtml(item.label)}</span>
+                            <span class="review-radio-value">${window.escapeHtml(item.value)}</span>
+                        </div>`;
+                    } else if (item.type === 'note') {
+                        html += `<div class="review-field-row review-field-note">
+                            <span class="review-field-label">${window.escapeHtml(item.label)}</span>
+                            <div class="review-field-text">${window.escapeHtml(item.value)}</div>
+                        </div>`;
+                    } else {
+                        html += `<div class="review-field-row">
+                            <span class="review-field-label">${window.escapeHtml(item.label)}</span>
+                            <div class="review-field-text">${window.escapeHtml(item.value)}</div>
+                        </div>`;
                     }
-                }
+                });
             }
 
-            html += `<div class="review-write-section">
-                <label class="review-label">✍️ סיכום מעריך לתרגיל זה:</label>
-                <textarea class="review-textarea" placeholder="כתוב סיכום נרטיבי חופשי על ביצועי החניך בתרגיל זה..." onchange="window.storage.setReviewData(${traineeId},'${reviewField}',this.value)">${window.escapeHtml(reviewText)}</textarea>
-            </div></div>`;
+            html += `<div class="review-write-section" style="margin-top:10px;">
+                <label class="review-label">✍️ סיכום מעריך:</label>
+                <textarea class="review-textarea" placeholder="כתוב סיכום נרטיבי..." onchange="window.storage.setReviewData(${traineeId},'ex_${exIdx}',this.value)">${window.escapeHtml(reviewText)}</textarea>
+            </div></div></div>`;
         });
 
-        // ===== SUMMARY CRITERIA =====
-        let criteriaHtml = '';
+        // Summary criteria — collapsible
+        const critId = 'rev_sec_criteria';
+        let criteriaItems = [];
         window.app.criteria.forEach(criterion => {
             const key = `${traineeId}-${criterion}`;
             const score = window.storage.getSummaryData(key, 'score');
             const text = window.storage.getSummaryData(key, 'text');
             const examples = window.storage.getSummaryData(key, 'examples');
-            if (!score && !text && !examples) return;
-            criteriaHtml += `<div class="review-criterion-item">
-                <div class="review-criterion-name">${window.escapeHtml(criterion)}</div>
-                ${score ? `<div class="review-criterion-score">ציון: <strong>${score}</strong></div>` : ''}
-                ${text ? `<div class="review-criterion-text">${window.escapeHtml(text)}</div>` : ''}
-                ${examples ? `<div class="review-criterion-examples"><em>דוגמאות: ${window.escapeHtml(examples)}</em></div>` : ''}
-            </div>`;
+            if (score || text || examples) criteriaItems.push({criterion, score, text, examples});
         });
-        if (criteriaHtml) {
-            html += `<div class="review-overall-block" style="border-right:4px solid ${color};">
-                <div class="review-overall-title" style="color:${color};">📊 קריטריוני הערכה</div>
-                ${criteriaHtml}
-            </div>`;
-        }
 
-        // ===== OVERALL NARRATIVE =====
+        html += `<div class="review-overall-block" style="border-right:4px solid ${color}; padding:0;">
+            <div class="review-ex-header" onclick="toggleReviewSection('${critId}')" style="cursor:pointer; padding:14px; display:flex; align-items:center; gap:10px; background:${color}10;">
+                <span style="font-size:18px;">📊</span>
+                <span style="font-weight:bold; font-size:16px; flex:1;">קריטריוני הערכה</span>
+                <span style="font-size:13px; color:${criteriaItems.length > 0 ? color : '#aaa'};">${criteriaItems.length} / ${window.app.criteria.length} ✓</span>
+                <span id="${critId}_arrow" style="font-size:12px; color:#666;">▼</span>
+            </div>
+            <div id="${critId}" style="display:none; padding:12px;">`;
+
+        if (criteriaItems.length === 0) {
+            html += `<div class="review-empty-notice">⚪ אין קריטריונים ממולאים</div>`;
+        } else {
+            criteriaItems.forEach(c => {
+                html += `<div class="review-criterion-item">
+                    <div class="review-criterion-name">${window.escapeHtml(c.criterion)}</div>
+                    ${c.score ? `<div class="review-criterion-score">ציון: <strong>${c.score}</strong></div>` : ''}
+                    ${c.text ? `<div class="review-criterion-text">${window.escapeHtml(c.text)}</div>` : ''}
+                    ${c.examples ? `<div class="review-criterion-examples"><em>דוגמאות: ${window.escapeHtml(c.examples)}</em></div>` : ''}
+                </div>`;
+            });
+        }
+        html += `</div></div>`;
+
+        // Overall narrative
         const strengths = window.storage.getReviewData(traineeId, 'strengths');
         const improvements = window.storage.getReviewData(traineeId, 'improvements');
         const recommendation = window.storage.getReviewData(traineeId, 'recommendation');
         html += `<div class="review-overall-block" style="border-right:4px solid ${color};">
             <div class="review-overall-title" style="color:${color};">⭐ סיכום כללי — ${window.escapeHtml(window.getTraineeName(traineeId))}</div>
             <label class="review-label">💪 נקודות חוזק:</label>
-            <textarea class="review-textarea review-textarea-tall" placeholder="מה הצטיין בו החניך? מה ייחד אותו חיובית?" onchange="window.storage.setReviewData(${traineeId},'strengths',this.value)">${window.escapeHtml(strengths)}</textarea>
+            <textarea class="review-textarea review-textarea-tall" placeholder="מה הצטיין בו החניך?" onchange="window.storage.setReviewData(${traineeId},'strengths',this.value)">${window.escapeHtml(strengths)}</textarea>
             <label class="review-label">📈 נקודות לשיפור:</label>
-            <textarea class="review-textarea review-textarea-tall" placeholder="מה צריך לחזק? באילו תחומים נחלש?" onchange="window.storage.setReviewData(${traineeId},'improvements',this.value)">${window.escapeHtml(improvements)}</textarea>
+            <textarea class="review-textarea review-textarea-tall" placeholder="מה צריך לחזק?" onchange="window.storage.setReviewData(${traineeId},'improvements',this.value)">${window.escapeHtml(improvements)}</textarea>
             <label class="review-label">🎯 המלצה כללית:</label>
             <textarea class="review-textarea review-textarea-tall" placeholder="סיכום כולל והמלצה..." onchange="window.storage.setReviewData(${traineeId},'recommendation',this.value)">${window.escapeHtml(recommendation)}</textarea>
         </div>`;
 
         content.innerHTML = html;
+
+        // Auto-expand sections that have data
+        window.app.exercises.forEach((_, exIdx) => {
+            const secId = `rev_sec_${exIdx}`;
+            const sec = document.getElementById(secId);
+            if (sec) {
+                const badge = sec.previousElementSibling && sec.previousElementSibling.querySelector('span:nth-child(3)');
+                if (badge && badge.textContent.includes('✓')) {
+                    sec.style.display = 'block';
+                    const arrow = document.getElementById(`${secId}_arrow`);
+                    if (arrow) arrow.textContent = '▲';
+                }
+            }
+        });
+
         window.scrollTo({top: 0, behavior: 'smooth'});
     }
     onLeave() {
@@ -5024,6 +5296,16 @@ class ReviewPage {
         if (bar) bar.innerHTML = '';
     }
 }
+
+// ===== Review section toggle =====
+window.toggleReviewSection = function(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const open = el.style.display !== 'none';
+    el.style.display = open ? 'none' : 'block';
+    const arrow = document.getElementById(id + '_arrow');
+    if (arrow) arrow.textContent = open ? '▼' : '▲';
+};
 
 // ===== Docx Export =====
 window.exportTraineeDocx = function(traineeId) {
@@ -5040,28 +5322,37 @@ window.exportTraineeDocx = function(traineeId) {
 
     window.app.exercises.forEach((exName, exIdx) => {
         const paras = [];
-        const scoreInfo = EXERCISE_SCORE_FIELDS[exIdx];
-        for (let s = 0; s < scoreInfo.count; s++) {
-            const v = window.storage.getExerciseData(traineeId, exIdx, scoreInfo.prefix + s) || '';
-            if (v) paras.push(`${scoreInfo.labels[s]}: ${v}`);
-        }
-        const impression = window.storage.getExerciseData(traineeId, exIdx, 'impression') || '';
-        const freeComment = window.storage.getExerciseData(traineeId, exIdx, 'free_comment') || '';
-        if (impression) paras.push(`התרשמות חופשית: ${impression}`);
-        if (freeComment) paras.push(`התייחסות חופשית: ${freeComment}`);
+        const fields = EXERCISE_ALL_FIELDS[exIdx] || [];
 
-        const noteFields = EXERCISE_NOTE_FIELDS[exIdx] || [];
-        noteFields.forEach((f, fi) => {
-            const v = window.storage.getExerciseData(traineeId, exIdx, f) || '';
-            if (v) paras.push(`הערות ${fi + 1}: ${v}`);
-        });
-
+        // Yominet task statuses
         if (exIdx === 6) {
             YOMINET_CHALLENGES.forEach((ch, i) => {
                 const v = window.storage.getExerciseData(traineeId, exIdx, `task_${i}`) || '';
+                const n = window.storage.getExerciseData(traineeId, exIdx, `task_${i}_notes`) || '';
                 if (v) paras.push(`${ch}: ${v}`);
+                if (n) paras.push(`  הערה: ${n}`);
             });
         }
+
+        fields.forEach(([field, label, type]) => {
+            if (type === 'r') {
+                const baseField = field.endsWith('_yesno') ? field.slice(0,-6) : field;
+                const yv = window.storage.getExerciseData(traineeId, exIdx, baseField + '_yesno') ||
+                           window.storage.getExerciseData(traineeId, exIdx, field) || '';
+                const tv = window.storage.getExerciseData(traineeId, exIdx, baseField + '_text') || '';
+                if (yv || tv) paras.push(`${label}: ${yv}${tv ? ' — ' + tv : ''}`);
+            } else {
+                const v = window.storage.getExerciseData(traineeId, exIdx, field) || '';
+                if (v) paras.push(`${label}: ${v}`);
+            }
+        });
+
+        // Notes
+        const noteFields = EXERCISE_NOTE_FIELDS[exIdx] || [];
+        noteFields.forEach((f, fi) => {
+            const v = window.storage.getExerciseData(traineeId, exIdx, f) || '';
+            if (v) paras.push(`הערה ${fi + 1}: ${v}`);
+        });
 
         const reviewText = window.storage.getReviewData(traineeId, `ex_${exIdx}`) || '';
         if (reviewText) paras.push(`סיכום מעריך: ${reviewText}`);
@@ -5145,15 +5436,34 @@ window.showTextOnlySummary = function(traineeId) {
     let hasAny = false;
     window.app.exercises.forEach((exName, exIdx) => {
         const lines = [];
-        const impression = window.storage.getExerciseData(traineeId, exIdx, 'impression') || '';
-        const freeComment = window.storage.getExerciseData(traineeId, exIdx, 'free_comment') || '';
-        if (impression) lines.push({label: 'התרשמות חופשית', text: impression});
-        if (freeComment) lines.push({label: 'התייחסות חופשית', text: freeComment});
+        const fields = EXERCISE_ALL_FIELDS[exIdx] || [];
+
+        if (exIdx === 6) {
+            YOMINET_CHALLENGES.forEach((ch, i) => {
+                const v = window.storage.getExerciseData(traineeId, exIdx, `task_${i}`) || '';
+                const n = window.storage.getExerciseData(traineeId, exIdx, `task_${i}_notes`) || '';
+                if (v) lines.push({label: ch, text: v});
+                if (n) lines.push({label: `הערה — ${ch}`, text: n});
+            });
+        }
+
+        fields.forEach(([field, label, type]) => {
+            if (type === 'r') {
+                const baseField = field.endsWith('_yesno') ? field.slice(0,-6) : field;
+                const yv = window.storage.getExerciseData(traineeId, exIdx, baseField + '_yesno') ||
+                           window.storage.getExerciseData(traineeId, exIdx, field) || '';
+                const tv = window.storage.getExerciseData(traineeId, exIdx, baseField + '_text') || '';
+                if (yv || tv) lines.push({label, text: yv + (tv ? ` — ${tv}` : '')});
+            } else {
+                const v = window.storage.getExerciseData(traineeId, exIdx, field) || '';
+                if (v) lines.push({label, text: v});
+            }
+        });
 
         const noteFields = EXERCISE_NOTE_FIELDS[exIdx] || [];
         noteFields.forEach((f, fi) => {
             const v = window.storage.getExerciseData(traineeId, exIdx, f) || '';
-            if (v) lines.push({label: `הערות ${fi + 1}`, text: v});
+            if (v) lines.push({label: `📝 הערה ${fi + 1}`, text: v});
         });
 
         const reviewText = window.storage.getReviewData(traineeId, `ex_${exIdx}`) || '';
@@ -5209,33 +5519,95 @@ window._buildDocxBlob = function(docTitle, sections) {
     function escXml(s) {
         return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
-    function makePara(text) {
+    function makePara(text, styleId) {
+        var style = styleId ? `<w:pStyle w:val="${styleId}"/>` : '';
         return String(text || '').split('\n').map(line =>
-            `<w:p><w:pPr><w:bidi/><w:jc w:val="right"/></w:pPr><w:r><w:rPr><w:lang w:bidi="he-IL"/></w:rPr><w:t xml:space="preserve">${escXml(line)}</w:t></w:r></w:p>`
+            `<w:p><w:pPr><w:bidi/>${style}<w:jc w:val="right"/></w:pPr><w:r><w:rPr><w:lang w:bidi="he-IL"/><w:rtl/></w:rPr><w:t xml:space="preserve">${escXml(line)}</w:t></w:r></w:p>`
         ).join('');
     }
-    function makeHeading(text, sz) {
-        return `<w:p><w:pPr><w:bidi/><w:jc w:val="right"/></w:pPr><w:r><w:rPr><w:b/><w:sz w:val="${sz}"/><w:szCs w:val="${sz}"/><w:lang w:bidi="he-IL"/></w:rPr><w:t xml:space="preserve">${escXml(text)}</w:t></w:r></w:p>`;
+    function makeH1(text) {
+        return `<w:p><w:pPr><w:bidi/><w:jc w:val="right"/><w:pStyle w:val="Heading1"/></w:pPr><w:r><w:rPr><w:lang w:bidi="he-IL"/><w:rtl/></w:rPr><w:t xml:space="preserve">${escXml(text)}</w:t></w:r></w:p>`;
     }
-    function spacer() {
-        return `<w:p><w:pPr><w:bidi/></w:pPr></w:p>`;
+    function makeH2(text) {
+        return `<w:p><w:pPr><w:bidi/><w:jc w:val="right"/><w:pStyle w:val="Heading2"/></w:pPr><w:r><w:rPr><w:lang w:bidi="he-IL"/><w:rtl/></w:rPr><w:t xml:space="preserve">${escXml(text)}</w:t></w:r></w:p>`;
     }
+    function spacer() { return `<w:p><w:pPr><w:bidi/></w:pPr></w:p>`; }
 
-    let body = makeHeading(docTitle, 56) + spacer();
-    sections.forEach(sec => {
-        if (sec.h1) { body += makeHeading(sec.h1, 56) + spacer(); }
-        if (sec.h2) { body += makeHeading(sec.h2, 44) + spacer(); }
-        (sec.paras || []).forEach(p => { body += makePara(p); });
+    var body = makeH1(docTitle) + spacer();
+    sections.forEach(function(sec) {
+        if (sec.h1) { body += makeH1(sec.h1) + spacer(); }
+        if (sec.h2) { body += makeH2(sec.h2) + spacer(); }
+        (sec.paras || []).forEach(function(p) { body += makePara(p); });
         body += spacer();
     });
 
-    const docXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>${body}<w:sectPr><w:bidi/><w:pgMar w:top="720" w:right="1440" w:bottom="720" w:left="720"/></w:sectPr></w:body></w:document>`;
+    var docXml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+        + '<w:document xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas"'
+        + ' xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"'
+        + ' xmlns:o="urn:schemas-microsoft-com:office:office"'
+        + ' xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"'
+        + ' xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math"'
+        + ' xmlns:v="urn:schemas-microsoft-com:vml"'
+        + ' xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"'
+        + ' xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"'
+        + ' xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml"'
+        + ' mc:Ignorable="w14 wp14">'
+        + '<w:body>' + body
+        + '<w:sectPr><w:bidi/>'
+        + '<w:pgMar w:top="720" w:right="1440" w:bottom="720" w:left="720" w:header="0" w:footer="0"/>'
+        + '</w:sectPr></w:body></w:document>';
 
-    const files = {
-        '[Content_Types].xml': `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>`,
-        '_rels/.rels': `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>`,
+    var stylesXml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+        + '<w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"'
+        + ' xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">'
+        + '<w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/>'
+        + '<w:pPr><w:bidi/><w:jc w:val="right"/></w:pPr>'
+        + '<w:rPr><w:lang w:val="he-IL" w:bidi="he-IL"/><w:rtl/></w:rPr></w:style>'
+        + '<w:style w:type="paragraph" w:styleId="Heading1"><w:name w:val="heading 1"/>'
+        + '<w:basedOn w:val="Normal"/>'
+        + '<w:pPr><w:bidi/><w:jc w:val="right"/><w:spacing w:before="240" w:after="120"/></w:pPr>'
+        + '<w:rPr><w:b/><w:bCs/><w:sz w:val="36"/><w:szCs w:val="36"/><w:color w:val="1E3A5F"/><w:lang w:val="he-IL" w:bidi="he-IL"/></w:rPr>'
+        + '</w:style>'
+        + '<w:style w:type="paragraph" w:styleId="Heading2"><w:name w:val="heading 2"/>'
+        + '<w:basedOn w:val="Normal"/>'
+        + '<w:pPr><w:bidi/><w:jc w:val="right"/><w:spacing w:before="160" w:after="80"/></w:pPr>'
+        + '<w:rPr><w:b/><w:bCs/><w:sz w:val="28"/><w:szCs w:val="28"/><w:color w:val="2D6A9F"/><w:lang w:val="he-IL" w:bidi="he-IL"/></w:rPr>'
+        + '</w:style>'
+        + '</w:styles>';
+
+    var settingsXml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+        + '<w:settings xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">'
+        + '<w:bidi/>'
+        + '<w:defaultTabStop w:val="720"/>'
+        + '</w:settings>';
+
+    var contentTypes = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+        + '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">'
+        + '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>'
+        + '<Default Extension="xml" ContentType="application/xml"/>'
+        + '<Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>'
+        + '<Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/>'
+        + '<Override PartName="/word/settings.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml"/>'
+        + '</Types>';
+
+    var rels = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+        + '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
+        + '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>'
+        + '</Relationships>';
+
+    var docRels = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+        + '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
+        + '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>'
+        + '<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings" Target="settings.xml"/>'
+        + '</Relationships>';
+
+    var files = {
+        '[Content_Types].xml': contentTypes,
+        '_rels/.rels': rels,
         'word/document.xml': docXml,
-        'word/_rels/document.xml.rels': `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"></Relationships>`
+        'word/styles.xml': stylesXml,
+        'word/settings.xml': settingsXml,
+        'word/_rels/document.xml.rels': docRels
     };
 
     return window._zipFiles(files);

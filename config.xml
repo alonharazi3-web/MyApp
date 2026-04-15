@@ -1,11 +1,13 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.feedback.app" version="5.9.0"
+<widget id="com.feedback.app" version="6.0.0"
     xmlns="http://www.w3.org/ns/widgets"
     xmlns:android="http://schemas.android.com/apk/res/android">
     <name>Improv Workshop</name>
     <description>Improvisation Workshop Feedback App</description>
     <author email="alonharazi3@gmail.com">Feedback Team</author>
     <content src="index.html" />
+    <icon src="www/icon-512.png" />
+    <icon src="www/icon-192.png" platform="android" />
     
     <access origin="*" />
     <allow-intent href="http://*/*" />

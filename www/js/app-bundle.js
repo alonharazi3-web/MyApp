@@ -1801,6 +1801,7 @@ class TiachExercise {
             </div>
         `;
 
+        html += window.renderNotesBtn(key, 'notes_after_dagesh');
         html += this.renderQuestion(key, 'איך היה לך (תחושות)', 'tiach1_feeling', 'textarea');
         html += this.renderQuestion(key, 'מה היה הסיפור כיסוי', 'tiach1_cover_story', 'textarea');
         html += this.renderQuestion(key, 'איך היה האינטרקציה עם המוכר', 'tiach1_interaction', 'textarea');
@@ -1835,6 +1836,7 @@ class TiachExercise {
         html += this.renderQuestion(key, 'יש לנו עדיין פערים מודיעיניים, מה אפשר לעשות?', 'tiach1_gaps', 'textarea');
         html += this.renderQuestion(key, 'אם הוצע סיבוב נוסף להשלמת הפערים, מה השיקולים', 'tiach1_another_round', 'textarea');
 
+        html += window.renderNotesBtn(key, 'notes_before_second_story');
         html += `
             <div class="info-box">
                 <strong>סיפור מעשה:</strong><br>
@@ -1881,6 +1883,7 @@ class TiachExercise {
 
         html += this.renderQuestion(key, 'סיכום תרגיל - מלל חופשי', 'tiach1_summary', 'textarea');
 
+        html += window.renderNotesBtn(key, 'notes_after_second_entry');
         // טיח 2 - זמן בינוני + יומינט
         html += window.renderNotesBtn(key, 'notes_before_tiach2');
         html += `<div class="section-title">טיח 2 - זמן בינוני + יומינט</div>`;
@@ -1925,6 +1928,7 @@ class TiachExercise {
             </div>
         `;
 
+        html += window.renderNotesBtn(key, 'notes_after_tiach2_instructor');
         html += this.renderQuestion(key, 'חריגים/תקלות/חשדות?', 'tiach2_incidents', 'textarea');
         html += this.renderYesNoQuestion(key, 'קיבל קלסר לשירטוט?', 'tiach2_folder');
         html += this.renderQuestion(key, 'תיאור החוויה (2-3 ד)', 'tiach2_experience', 'textarea');
@@ -1934,6 +1938,7 @@ class TiachExercise {
         html += this.renderQuestion(key, 'האם היו לך רעיונות נוספים לכיסויים?', 'tiach2_other_covers', 'textarea');
         html += this.renderQuestion(key, 'פרט את המל"מ שאספת (1-2 ד\' והאם ממוקד בפרטים מודיעיניים ובעיקר)', 'tiach2_intel', 'textarea');
 
+        html += window.renderNotesBtn(key, 'notes_after_tiach2_intel');
         html += this.renderYesNoQuestion(key, 'מספר טלפון של החנות', 'tiach2_phone');
         html += this.renderYesNoQuestion(key, 'כתובת מדוייקת', 'tiach2_address');
         html += this.renderYesNoQuestion(key, 'שעות פתיחה', 'tiach2_hours');
@@ -1949,6 +1954,7 @@ class TiachExercise {
         html += this.renderYesNoQuestion(key, 'פרטים על המוכר או בעלים', 'tiach2_seller_details');
         html += this.renderYesNoQuestion(key, 'האם השארת פתח לחזרה?', 'tiach2_return_option');
         
+        html += window.renderNotesBtn(key, 'notes_after_tiach2_questions');
         html += this.renderQuestion(key, 'כמה זמן ציפית?', 'tiach2_observation_time', 'textarea');
         html += this.renderQuestion(key, 'פרט את החליפות שבוצעו ע"י המדריכים', 'tiach2_instructors_passes', 'textarea');
         html += this.renderQuestion(key, 'האם יתכן שפיספסת?', 'tiach2_missed', 'textarea');
@@ -2135,11 +2141,14 @@ class DoliraExercise {
         html += this.renderQuestion(key, 'מה היתרונות', 'plan_a_pros', 'textarea');
         html += this.renderQuestion(key, 'מה החסרונות', 'plan_a_cons', 'textarea');
         html += this.renderQuestion(key, 'מה הציוד הנדרש', 'plan_a_equipment', 'textarea');
-        
+
+        html += window.renderNotesBtn(key, 'notes_after_dafa1');
         html += `<div class="section-title" style="font-size: 16px;">עבור דפא 2</div>`;
         html += this.renderQuestion(key, 'מה היתרונות', 'plan_b_pros', 'textarea');
         html += this.renderQuestion(key, 'מה החסרונות', 'plan_b_cons', 'textarea');
         html += this.renderQuestion(key, 'מה הציוד הנדרש', 'plan_b_equipment', 'textarea');
+
+        html += window.renderNotesBtn(key, 'notes_after_dafa2');
 
         html += `
             <div class="info-box">
@@ -2168,6 +2177,7 @@ class DoliraExercise {
         html += this.renderContingencyQuestion(key, 'כוח בטחון או משטרה', 'cont_security');
         html += this.renderQuestion(key, 'מקתגים נוספים', 'cont_additional', 'textarea');
 
+        html += window.renderNotesBtn(key, 'notes_after_katgim');
         html += `
             <div class="info-box">
                 <strong>הנחייה:</strong> יש לבצע עם המועמד סימולציות בחדר
@@ -2194,6 +2204,7 @@ class DoliraExercise {
         html += this.renderYesNoQuestion(key, 'האם פעלת עפ"י תכנון', 'execution_as_planned');
         html += this.renderYesNoQuestion(key, 'האם הייתה הפרעה', 'execution_interference');
 
+        html += window.renderNotesBtn(key, 'notes_after_execution');
         html += this.renderQuestion(key, 'סיכום תרגיל - התרשמות כללית', 'summary_general', 'textarea');
 
         // ציונים
@@ -2604,6 +2615,8 @@ class LailaExercise {
 
         html += `<div class="section-title">תחקיר סיור - יש להגיע עם שרטוט</div>`;
         html += this.renderQuestion(key, 'חריגים או תקלות או חשדות?', 'recon_incidents', 'textarea');
+
+        html += window.renderNotesBtn(key, 'notes_after_incidents');
         html += this.renderYesNoQuestion(key, 'האם המועמד זכר ושרטט נכון את סביבת היעד - רחובות, פריטים בולטים?', 'recon_sketch');
         html += this.renderYesNoQuestion(key, 'האם ניכר שהמועמד ביצע את הסיוש עם אוריינטציה למשימה? (התחשב בתאורה, הסתרות, נק כניסה לכיסוי, שימוש בסביבה)', 'recon_orientation');
         html += this.renderQuestion(key, 'מה עשית מרגע שעזבת ועד החזרה למלון - תאר במדוייק את מסלול ההליכה', 'recon_route', 'textarea');
@@ -2616,6 +2629,7 @@ class LailaExercise {
         html += this.renderYesNoQuestion(key, 'האם היית עושה משהו אחרת?', 'recon_differently');
         html += this.renderQuestion(key, 'התרשמות חופשית', 'recon_impression', 'textarea');
 
+        html += window.renderNotesBtn(key, 'notes_after_intel');
         html += window.renderNotesBtn(key, 'notes_after_brief');
         html += `<div class="section-title">לרשות המועמד 15 דק לחשיבה על 2 דפאות ופירוט יתרונות וחסרונות</div>`;
         html += `<div class="info-box">מטרת השלב לבחון יצירתיות ולכן יש לזרום עם הרעיונות במידה והן רלוונטיות - בסיום ההצגה יש להכווין לדפא המתבקשת בהתאם למאפיינים המודיעיניים של התרחיש.</div>`;
@@ -2629,11 +2643,14 @@ class LailaExercise {
         html += this.renderQuestion(key, 'מה הסיפור כיסוי?', 'plan_a_cover', 'textarea');
         html += this.renderQuestion(key, 'מה היתרונות?', 'plan_a_pros', 'textarea');
         html += this.renderQuestion(key, 'מה החסרונות?', 'plan_a_cons', 'textarea');
-        
+
+        html += window.renderNotesBtn(key, 'notes_after_dafa_a');
         html += `<div class="section-title" style="font-size: 16px;">עבור דפא ב</div>`;
         html += this.renderQuestion(key, 'מה הסיפור כיסוי?', 'plan_b_cover', 'textarea');
         html += this.renderQuestion(key, 'מה היתרונות?', 'plan_b_pros', 'textarea');
         html += this.renderQuestion(key, 'מה החסרונות?', 'plan_b_cons', 'textarea');
+
+        html += window.renderNotesBtn(key, 'notes_after_dafa_b');
 
         html += `<div class="info-box"><strong>הנחייה למדריך:</strong> יש לוודא שהמועמד מציג דפאות ריאליות שיכול לממש בפרק הזמן ועומדות להגדרת המשימה ולאיום המודיעיני ולהישג הנדרש. בשלב זה יש להדגיש למועמד שאסור שהסביבה כולל המלון תחשוד או תחשוף את התרגיל ולכן יש לתכנן גם עליה/ירידה מכיסוי.</div>`;
 
@@ -2647,6 +2664,7 @@ class LailaExercise {
         html += this.renderPlanQuestion(key, 'הגעה לעמדה והתמקמות', 'presentation_positioning');
         html += this.renderPlanQuestion(key, 'מתי מקפל מהעמדה?', 'presentation_exit_timing');
 
+        html += window.renderNotesBtn(key, 'notes_after_presentation');
         html += `<div class="section-title">מקתגים</div>`;
         html += this.renderContingencyQuestion(key, 'הנקודה תפוסה עי דר בית אחר', 'cont_occupied_resident');
         html += this.renderContingencyQuestion(key, 'הנקודה תפוסה עי אירוע תמים', 'cont_occupied_event');
@@ -2659,6 +2677,7 @@ class LailaExercise {
         html += this.renderContingencyQuestion(key, 'כוח בטחון', 'cont_security');
         html += this.renderQuestion(key, 'מקתגים נוספים', 'cont_additional', 'textarea');
 
+        html += window.renderNotesBtn(key, 'notes_after_katgim');
         html += `<div class="info-box"><strong>הנחייה למדריך:</strong> יש לבצע עם המועמד סימולציה תוך תשומת לב לאופן ההתמקמות ביחס לנקודה ומידול 2-3 מקתגים שכולל פגש מכר וכוח בטחון.</div>`;
 
         html += this.renderQuestion(key, 'התרשמות כללית', 'simulation_impression', 'textarea');
@@ -2852,6 +2871,7 @@ class MichtavExercise {
         html += this.renderYesNoQuestion(key, 'האם למועמד היה סיפור כיסוי?', 'recon_cover_story');
         html += this.renderQuestion(key, 'מה המל"מ שאספת? (ללא הכוונה ותשומת לב לחשיבה מודיעינית, עיקר וטפל, ביטחון מול יעילות)', 'recon_intel', 'textarea');
 
+        html += window.renderNotesBtn(key, 'notes_after_intel');
         html += `<div class="section-title" style="font-size: 16px;">נקודות נוספות להתייחסות</div>`;
         
         html += this.renderYesNoQuestion(key, 'זיהוי המעטפה?', 'recon_envelope_id');
@@ -2864,9 +2884,11 @@ class MichtavExercise {
         html += this.renderQuestion(key, 'האם חשב על מקום לקריאה?', 'recon_reading_location', 'textarea');
         html += this.renderQuestion(key, 'האם חשב על דפאות ראשוניות? (הצפייה שבשלב זה יחזור עם כיווני פעולה)', 'recon_initial_plans', 'textarea');
 
+        html += window.renderNotesBtn(key, 'notes_after_nekudot');
         // דפאות
         html += `<div class="section-title">לרשותך 10 דק' לפיתוח ופירוט 2 דפ"אות שהצגת (במידה ולא הציג לאפשר לו מספר דק' לחשוב על כאלו)</div>`;
         
+        html += window.renderNotesBtn(key, 'notes_before_dafaot');
         html += this.renderQuestion(key, 'מה דפ"א א\'?', 'plan_a', 'textarea');
         html += this.renderQuestion(key, 'מהי דפ"א ב\'?', 'plan_b', 'textarea');
         html += this.renderQuestion(key, 'מה הדפא שאתה בוחר ומהן השיקולים?', 'plan_choice', 'textarea');
@@ -2878,12 +2900,14 @@ class MichtavExercise {
         html += this.renderQuestion(key, 'מה החסרונות?', 'plan_a_cons', 'textarea');
         html += this.renderQuestion(key, 'התייחסות לנקודת קריאה וס"כ לחזרה לתיבה?', 'plan_a_return', 'textarea');
 
+        html += window.renderNotesBtn(key, 'notes_after_dafa_a');
         html += `<div class="section-title" style="font-size: 16px;">עבור דפ"א ב'</div>`;
         html += this.renderQuestion(key, 'מה הסיפור כיסוי?', 'plan_b_cover', 'textarea');
         html += this.renderQuestion(key, 'מה היתרונות?', 'plan_b_pros', 'textarea');
         html += this.renderQuestion(key, 'מה החסרונות?', 'plan_b_cons', 'textarea');
         html += this.renderQuestion(key, 'התייחסות לנקודת קריאה וס"כ לחזרה לתיבה?', 'plan_b_return', 'textarea');
 
+        html += window.renderNotesBtn(key, 'notes_after_dafa_b');
         html += `<div class="info-box"><strong>הנחייה למועמד:</strong> לרשותך 15 דק' לכתיבת תוכנית פעולה.</div>`;
 
         // אישור תוכניות
@@ -2895,6 +2919,7 @@ class MichtavExercise {
         html += this.renderQuestion(key, 'נק\' קריאה וכיסוי לחזרה לתיבה', 'approval_reading_return', 'textarea');
         html += this.renderQuestion(key, 'טיפול במחשב', 'approval_computer', 'textarea');
 
+        html += window.renderNotesBtn(key, 'notes_after_approval');
         // מקתגים
         html += `<div class="section-title">מקתגים</div>`;
         
@@ -4558,10 +4583,7 @@ class SummaryPage {
                 
                 <div class="export-buttons">
                     <button class="btn btn-excel" onclick="testSocialSharing()">📊 ייצוא Excel</button>
-                    <button class="btn btn-print" onclick="openExcelPreview()">👁️ תצוגה מקדימה</button>
                 </div>
-                
-                <button class="btn-pdf-summary" onclick="window.generatePDFSummary()">📄 סיכום PDF לחניך</button>
                 
                 <button class="btn-review-trainee" onclick="goToPage('review')">📝 סקירת חניך</button>
                 
@@ -4753,11 +4775,11 @@ class PreviewPage {
 
 const EXERCISE_NOTE_FIELDS = [
     ['notes_start'],
-    ['notes_before_tiach1','notes_before_tiach2','notes_before_scores'],
-    ['notes_after_goals','notes_after_brief','notes_after_pre_debrief','notes_after_dafa','notes_after_plans'],
+    ['notes_before_tiach1','notes_after_dagesh','notes_before_second_story','notes_after_second_entry','notes_before_tiach2','notes_after_tiach2_instructor','notes_after_tiach2_intel','notes_after_tiach2_questions','notes_before_scores'],
+    ['notes_after_goals','notes_after_brief','notes_after_pre_debrief','notes_after_dafa1','notes_after_dafa2','notes_after_dafa','notes_after_katgim','notes_after_plans','notes_after_execution'],
     ['notes_before_object','notes_before_scores'],
-    ['notes_after_goals','notes_after_brief','notes_after_planning','notes_after_plans','notes_after_debrief'],
-    ['notes_after_goals','notes_after_brief','notes_after_planning','notes_after_plans','notes_after_debrief_letter','notes_after_debrief_post'],
+    ['notes_after_goals','notes_after_incidents','notes_after_intel','notes_after_brief','notes_after_dafa_a','notes_after_dafa_b','notes_after_planning','notes_after_presentation','notes_after_katgim','notes_after_plans','notes_after_debrief'],
+    ['notes_after_goals','notes_after_brief','notes_after_intel','notes_after_nekudot','notes_before_dafaot','notes_after_dafa_a','notes_after_dafa_b','notes_after_planning','notes_after_approval','notes_after_plans','notes_after_debrief_letter','notes_after_debrief_post'],
     ['notes_after_goals','task_0_notes','task_1_notes','task_2_notes','task_3_notes','task_4_notes','task_5_notes','task_6_notes','task_7_notes','task_8_notes','task_9_notes','task_10_notes','task_11_notes','notes_after_tasks','notes_after_questions','notes_after_hotel','notes_after_planning']
 ];
 
@@ -4795,7 +4817,8 @@ class ReviewPage {
                 <p id="reviewTraineeName" style="text-align:center; font-size:15px; color:#666; margin-bottom:12px;"></p>
                 <div class="review-export-bar">
                     <button class="btn-review-export" onclick="window.exportTraineeDocx(window.app.currentReviewTrainee)">📄 ייצוא Word</button>
-                    <button class="btn-review-text" onclick="window.showTextOnlySummary(window.app.currentReviewTrainee)">📋 סיכום מילולי</button>
+                    <button class="btn-review-pdf" onclick="window.generatePDFSummary()">📋 סיכום PDF</button>
+                    <button class="btn-review-text" onclick="window.showTextOnlySummary(window.app.currentReviewTrainee)">📝 סיכום מילולי</button>
                 </div>
                 <div id="reviewContent"></div>
             </div>
@@ -4934,6 +4957,17 @@ class ReviewPage {
                             const icon = t.value === 'ביצע' ? '✅' : t.value === 'לא הצליח לבצע' ? '❌' : '⚪';
                             html += `<div class="review-task-item">${icon} ${window.escapeHtml(t.label)}: <strong>${window.escapeHtml(t.value)}</strong></div>`;
                         });
+                        // Task notes
+                        const taskNotes = YOMINET_CHALLENGES.map((ch, i) => {
+                            const v = window.storage.getExerciseData(traineeId, exIdx, `task_${i}_notes`) || '';
+                            return v ? {label: ch, value: v} : null;
+                        }).filter(Boolean);
+                        if (taskNotes.length) {
+                            html += `<div class="review-label-small" style="margin-top:8px;">📝 הערות לתרגילים:</div>`;
+                            taskNotes.forEach(n => {
+                                html += `<div class="review-notes-item"><span class="review-notes-num">💬</span><span><strong>${window.escapeHtml(n.label)}:</strong> ${window.escapeHtml(n.value)}</span></div>`;
+                            });
+                        }
                         html += `</div>`;
                     }
                 }
@@ -5062,7 +5096,32 @@ window.exportTraineeDocx = function(traineeId) {
     try {
         const blob = window._buildDocxBlob(`סקירת חניך: ${name}`, sections);
         const filename = `סקירה_${name}_${date.replace(/\//g, '-')}.docx`;
-        if (window.saveAs) {
+
+        // Cordova (Android): write to cache then share
+        if (window.cordova && window.cordova.file && window.plugins && window.plugins.socialsharing) {
+            window.resolveLocalFileSystemURL(window.cordova.file.cacheDirectory, function(dirEntry) {
+                dirEntry.getFile(filename, {create: true, exclusive: false}, function(fileEntry) {
+                    fileEntry.createWriter(function(fileWriter) {
+                        fileWriter.onwriteend = function() {
+                            window.plugins.socialsharing.shareWithOptions({
+                                message: `סקירת חניך: ${name}`,
+                                files: [fileEntry.nativeURL],
+                                chooserTitle: 'שתף קובץ Word'
+                            }, function() {
+                                console.log('✅ Word shared');
+                            }, function(err) {
+                                alert('❌ שיתוף נכשל: ' + err);
+                            });
+                        };
+                        fileWriter.onerror = function(e) {
+                            alert('❌ כתיבת קובץ נכשלה: ' + e);
+                        };
+                        fileWriter.write(blob);
+                    });
+                }, function(e) { alert('❌ יצירת קובץ נכשלה: ' + e); });
+            }, function(e) { alert('❌ גישה ל-cache נכשלה: ' + e); });
+        } else if (window.saveAs) {
+            // Browser / Electron fallback
             window.saveAs(blob, filename);
         } else {
             const url = URL.createObjectURL(blob);

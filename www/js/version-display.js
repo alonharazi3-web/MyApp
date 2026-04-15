@@ -13,7 +13,7 @@ versionDiv.style.cssText = `
     z-index: 99998;
     pointer-events: none;
 `;
-versionDiv.textContent = 'v5.7.0c';
+versionDiv.textContent = 'v6.0.0';
 
 window.addEventListener('load', () => {
     document.body.appendChild(versionDiv);

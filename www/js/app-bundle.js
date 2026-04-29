@@ -118,6 +118,7 @@ class Storage {
                 if (!window.app.data.summaryData) window.app.data.summaryData = {};
                 if (!window.app.data.scannedDocs) window.app.data.scannedDocs = {};
                 if (!window.app.data.reviewData) window.app.data.reviewData = {};
+                if (!window.app.data.interviewData) window.app.data.interviewData = {};
 
                 // Populate form fields
                 const fields = [
@@ -753,12 +754,17 @@ class ExportManager {
                     }
                     
                     // Update histories
-                    if (data.storeHistory) {
-                        window.app.data.storeHistory = data.storeHistory;
-                    }
-                    if (data.hotelHistory) {
-                        window.app.data.hotelHistory = data.hotelHistory;
-                    }
+                    if (data.storeHistory) window.app.data.storeHistory = data.storeHistory;
+                    if (data.hotelHistory) window.app.data.hotelHistory = data.hotelHistory;
+
+                    // Restore full assessment data if present
+                    if (data.exerciseData) window.app.data.exerciseData = data.exerciseData;
+                    if (data.summaryData)  window.app.data.summaryData  = data.summaryData;
+                    if (data.reviewData)   window.app.data.reviewData   = data.reviewData;
+                    if (data.interviewData) window.app.data.interviewData = data.interviewData;
+                    if (data.globalNotes)  window.app.data.globalNotes  = data.globalNotes;
+                    if (data.scannedDocs)  window.app.data.scannedDocs  = data.scannedDocs;
+                    if (data.primaryTrainees) window.app.data.primaryTrainees = data.primaryTrainees;
                     
                     window.storage.saveData(true); // skipDomSync=true: don't read stale DOM values
                     resolve(data);
@@ -2013,7 +2019,7 @@ class TiachExercise {
         return `
             <div class="question-block">
                 <div class="question-title">${title}</div>
-                <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                <div style="display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
                     <label style="display: flex; align-items: center; gap: 5px;">
                         <input type="radio" name="${field}_yesno_${key}" value="יש" 
                             ${yesNo === 'יש' ? 'checked' : ''} 
@@ -2025,6 +2031,12 @@ class TiachExercise {
                             ${yesNo === 'אין' ? 'checked' : ''} 
                             onchange="setExerciseData('${key}', '${field}_yesno', this.value)">
                         אין
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 5px;">
+                        <input type="radio" name="${field}_yesno_${key}" value="לא יודע" 
+                            ${yesNo === 'לא יודע' ? 'checked' : ''} 
+                            onchange="setExerciseData('${key}', '${field}_yesno', this.value)">
+                        לא יודע
                     </label>
                 </div>
                 <input type="text" placeholder="פירוט..." value="${text}" 
@@ -4581,6 +4593,24 @@ class SummaryPage {
                 
                 <div class="criteria-list" id="criteriaList"></div>
                 
+                <div class="interview-section" id="interviewSection">
+                    <div class="interview-header" onclick="toggleInterviewSection()">
+                        <span>🎤 טופס ראיון מסכם</span>
+                        <span id="interviewArrow">▼</span>
+                    </div>
+                    <div id="interviewBody" style="display:none; padding:12px;">
+                        <div class="interview-opener">
+                            <label class="interview-label">דברי פתיחה למועמד:</label>
+                            <textarea class="interview-textarea" id="interview_opener" placeholder="כתוב דברי פתיחה..." onchange="saveInterviewField('opener', this.value)"></textarea>
+                        </div>
+                        <div id="interviewQuestions"></div>
+                        <div style="margin-top:14px;">
+                            <label class="interview-label" style="font-weight:bold; color:#1e3a5f;">סיכום התרשמות המאבחנת:</label>
+                            <textarea class="interview-textarea" style="min-height:100px;" id="interview_summary" placeholder="סיכום כללי..." onchange="saveInterviewField('summary', this.value)"></textarea>
+                        </div>
+                    </div>
+                </div>
+                
                 <div class="export-buttons">
                     <button class="btn btn-excel" onclick="testSocialSharing()">📊 ייצוא Excel</button>
                 </div>
@@ -4662,12 +4692,42 @@ class SummaryPage {
         const list = document.getElementById('criteriaList');
         if (!list) return;
         list.innerHTML = '';
+
+        const GOLD_CRITERIA = new Set([
+            'כישורי חשיבה - יכולת למידה',
+            'כישורי חשיבה - גמישות מחשבתית',
+            'כישורי חשיבה - תכנון',
+            'טקטי - גמישות ביצועית',
+            'טקטי - שטח/בינאישי',
+            'אישיות - חוסן, עמימות ולחץ',
+            'אישיות - עבודה בצוות'
+        ]);
+
+        const CRITERIA_DESC = {
+            'כישורי חשיבה - יכולת למידה': 'פתיחות ללמידה, הבנת הוראות, יכולת למידה עצמאית, הבנת עקרונות, תחקור הפקת לקחים ויישומם, הבחנה בין עיקר לטפל',
+            'כישורי חשיבה - גמישות מחשבתית': 'יצירתיות, גיבוש מגוון פתרונות המתאימים לשטח ולמשימה, פתיחות לרעיונות חדשים, יכולת משיכת קצה חוט',
+            'כישורי חשיבה - תכנון': 'ראייה כוללת, אינטגרציה בין נתונים, תוכנית פעולה מפורטת וסדורה, יסודיות, חשיבה על מקתגים, איזון יעילות מול בטחון',
+            'טקטי - גמישות ביצועית': 'יכולת אלתור, ניצול הזדמנויות, הסתגלות למצבים משתנים',
+            'טקטי - בטחון מול יעילות': 'ויתור על מהלכים מועילים לאור הסיכון הכרוך בהם',
+            'טקטי - מיומנויות': 'התמצאות במרחב, זיכרון, חלוקת קשב',
+            'טקטי - יכולות דיווח': 'פירוט וארגון, דיוק, הבחנה בין עיקר לטפל, הבחנה בין עובדות להערכות',
+            'טקטי - שטח/בינאישי': 'הקמת מגע ואינטראקציה, יכולת שכנוע, היטמעות בסביבה, יכולת משחק וכניסה לדמות',
+            'אישיות - חוסן, עמימות ולחץ': 'יציבות רגשית ושליטה עצמית, עמידה בקושי, שיקול דעת וקור רוח, תעוזה ונכונות ליטול סיכונים, ערנות וריכוז לאורך זמן',
+            'אישיות - גמישות מחשבתית': 'בגרות ובשלות, מודעות עצמית, פתיחות לביקורת, מוטיבציה, עצמאות, ביטחון עצמי, משמעת. לשים לב: יהירות, חשדות, הססנות, וכחנות, תלותיות',
+            'אישיות - עבודה בצוות': 'מעורבות ושיתוף פעולה, נכונות לסיוע וגיבוי הדדי, פתיחות לדעת האחר, פתיחות לביקורת, העברת ביקורת בונה',
+            'סיכום כללי': ''
+        };
+
         window.app.criteria.forEach(criterion => {
             const key = `${window.app.currentSummaryTrainee}-${criterion}`;
+            const isGold = GOLD_CRITERIA.has(criterion);
+            const desc = CRITERIA_DESC[criterion] || '';
             const div = document.createElement('div');
             div.className = 'criterion-item';
+            if (isGold) div.style.cssText = 'background:#fffbeb; border:1.5px solid #f59e0b; border-radius:12px; margin-bottom:14px; padding:12px;';
             div.innerHTML = `
-                <h4>${criterion}</h4>
+                <h4 style="margin-bottom:4px;">${isGold ? '⭐ ' : ''}${criterion}</h4>
+                ${desc ? `<div style="font-size:12px; color:#2563eb; margin-bottom:10px; line-height:1.4;">${desc}</div>` : ''}
                 <div>
                     <label>ציון (1-7)</label>
                     <select onchange="updateSummaryScore('${key}', this.value)" style="width:100%;padding:8px;font-size:16px;border-radius:8px;border:1px solid #ddd;">
@@ -4700,6 +4760,59 @@ class SummaryPage {
         window.updateSummaryExamples = (key, value) => {
             window.storage.setSummaryData(key, 'examples', value);
         };
+
+        const INTERVIEW_QUESTIONS = [
+            'ספר לי על עצמך — מי אתה, מה הביא אותך לכאן?',
+            'מה הניסיון שלך בתחום הפעילות שדרשנו ממך היום?',
+            'מה חשבת על התרגילים? מה הכי אתגר אותך?',
+            'תאר מצב שבו נאלצת לקבל החלטה מהירה תחת לחץ — מה עשית?',
+            'איך אתה מתנהל כשדברים לא הולכים לפי התכנון?',
+            'מה נקודות החוזק שלך? מה אתה מביא שאחרים לא?',
+            'מה אתה רוצה לשפר בעצמך? מה הקושי שלך?',
+            'ספר על עבודת צוות — מה תפקידך בדרך כלל?',
+            'למה אתה מתאים לתפקיד הזה?',
+            'יש שאלות לנו?'
+        ];
+
+        window.toggleInterviewSection = () => {
+            const body = document.getElementById('interviewBody');
+            const arrow = document.getElementById('interviewArrow');
+            if (!body) return;
+            const open = body.style.display !== 'none';
+            body.style.display = open ? 'none' : 'block';
+            if (arrow) arrow.textContent = open ? '▼' : '▲';
+            if (!open) this.renderInterviewQuestions(INTERVIEW_QUESTIONS);
+        };
+
+        window.saveInterviewField = (field, value) => {
+            const tid = window.app.currentSummaryTrainee;
+            if (!window.app.data.interviewData) window.app.data.interviewData = {};
+            if (!window.app.data.interviewData[tid]) window.app.data.interviewData[tid] = {};
+            window.app.data.interviewData[tid][field] = value;
+            window.storage.saveData();
+        };
+    }
+
+    renderInterviewQuestions(questions) {
+        const container = document.getElementById('interviewQuestions');
+        if (!container || container.dataset.rendered) return;
+        container.dataset.rendered = '1';
+        const tid = window.app.currentSummaryTrainee;
+        const interviewData = (window.app.data.interviewData && window.app.data.interviewData[tid]) || {};
+        let html = '';
+        questions.forEach((q, i) => {
+            const val = window.escapeHtml(interviewData[`q${i}`] || '');
+            html += `<div style="margin-bottom:12px;">
+                <label class="interview-label">${i + 1}. ${q}</label>
+                <textarea class="interview-textarea" placeholder="תשובה / הערות..." onchange="saveInterviewField('q${i}', this.value)">${val}</textarea>
+            </div>`;
+        });
+        container.innerHTML = html;
+        // Restore opener and summary
+        const opener = document.getElementById('interview_opener');
+        if (opener) opener.value = interviewData['opener'] || '';
+        const summary = document.getElementById('interview_summary');
+        if (summary) summary.value = interviewData['summary'] || '';
     }
 
     onLeave() {
@@ -5028,8 +5141,10 @@ class ReviewPage {
         return `
             <div class="quick-switch-bar" id="reviewSwitchBar"></div>
             <div class="container" id="reviewContainer" style="padding-top:55px; padding-bottom:70px;">
-                <h2 style="text-align:center; margin-bottom:6px;">📝 סקירת חניך</h2>
-                <p id="reviewTraineeName" style="text-align:center; font-size:15px; color:#666; margin-bottom:12px;"></p>
+                <div class="assessment-header" style="margin-bottom:12px;">
+                    <h2 style="color:white !important; margin:0 0 6px 0; font-size:20px;">📝 סקירת חניך</h2>
+                    <p id="reviewTraineeName" style="color:rgba(255,255,255,0.95) !important; font-size:17px; font-weight:bold; margin:0;"></p>
+                </div>
                 <div class="review-export-bar">
                     <button class="btn-review-export" onclick="window.exportTraineeDocx(window.app.currentReviewTrainee)">📄 ייצוא Word</button>
                     <button class="btn-review-pdf" onclick="window.generatePDFSummary()">📋 סיכום PDF</button>
@@ -5560,24 +5675,28 @@ window._buildDocxBlob = function(docTitle, sections) {
     var stylesXml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
         + '<w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"'
         + ' xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">'
+        + '<w:docDefaults>'
+        + '<w:rPrDefault><w:rPr><w:lang w:val="he-IL" w:bidi="he-IL"/><w:rtl/></w:rPr></w:rPrDefault>'
+        + '<w:pPrDefault><w:pPr><w:bidi/><w:jc w:val="right"/></w:pPr></w:pPrDefault>'
+        + '</w:docDefaults>'
         + '<w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/>'
         + '<w:pPr><w:bidi/><w:jc w:val="right"/></w:pPr>'
         + '<w:rPr><w:lang w:val="he-IL" w:bidi="he-IL"/><w:rtl/></w:rPr></w:style>'
         + '<w:style w:type="paragraph" w:styleId="Heading1"><w:name w:val="heading 1"/>'
         + '<w:basedOn w:val="Normal"/>'
         + '<w:pPr><w:bidi/><w:jc w:val="right"/><w:spacing w:before="240" w:after="120"/></w:pPr>'
-        + '<w:rPr><w:b/><w:bCs/><w:sz w:val="36"/><w:szCs w:val="36"/><w:color w:val="1E3A5F"/><w:lang w:val="he-IL" w:bidi="he-IL"/></w:rPr>'
+        + '<w:rPr><w:b/><w:bCs/><w:sz w:val="36"/><w:szCs w:val="36"/><w:color w:val="1E3A5F"/><w:lang w:val="he-IL" w:bidi="he-IL"/><w:rtl/></w:rPr>'
         + '</w:style>'
         + '<w:style w:type="paragraph" w:styleId="Heading2"><w:name w:val="heading 2"/>'
         + '<w:basedOn w:val="Normal"/>'
         + '<w:pPr><w:bidi/><w:jc w:val="right"/><w:spacing w:before="160" w:after="80"/></w:pPr>'
-        + '<w:rPr><w:b/><w:bCs/><w:sz w:val="28"/><w:szCs w:val="28"/><w:color w:val="2D6A9F"/><w:lang w:val="he-IL" w:bidi="he-IL"/></w:rPr>'
+        + '<w:rPr><w:b/><w:bCs/><w:sz w:val="28"/><w:szCs w:val="28"/><w:color w:val="2D6A9F"/><w:lang w:val="he-IL" w:bidi="he-IL"/><w:rtl/></w:rPr>'
         + '</w:style>'
         + '</w:styles>';
 
     var settingsXml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
         + '<w:settings xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">'
-        + '<w:bidi/>'
+        + '<w:themeFontLang w:bidi="he-IL"/>'
         + '<w:defaultTabStop w:val="720"/>'
         + '</w:settings>';
 
@@ -5706,7 +5825,8 @@ window.app = {
         storeHistory: [],
         hotelHistory: [],
         scannedDocs: {},
-        reviewData: {}
+        reviewData: {},
+        interviewData: {}
     },
     traineeColors: ['#e63946', '#2a9d8f', '#457b9d', '#e9c46a'],
     exercises: ['בלון', 'טיח', 'דולירה', 'דויד', 'לילה', 'מכתב', 'יומינט'],
@@ -5972,59 +6092,40 @@ window.openExcelPreview = function() {
 window.testSocialSharing = function() {
     console.log('🧪 Testing Social Sharing Plugin...');
     
-    if (!window.plugins || !window.plugins.socialsharing) {
-        alert('❌ Social Sharing Plugin לא זמין!');
-        return;
-    }
-    
-    if (!window.cordova || !window.cordova.file) {
-        alert('❌ File Plugin לא זמין!');
-        return;
-    }
-    
     try {
         const data = window.app.data;
         const evaluator = data.evaluatorName || 'מעריך';
         const dateStr = new Date().toLocaleDateString('he-IL').replace(/\//g, '-');
         const filename = `${evaluator}_${dateStr}.xlsx`;
-        
-        // יצירת Excel
         const excelBuffer = window.generateTabularExcel(data);
-        if (!excelBuffer) {
-            alert('❌ שגיאה ביצירת Excel');
+        if (!excelBuffer) { alert('❌ שגיאה ביצירת Excel'); return; }
+        const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+
+        // Browser fallback
+        if (!window.cordova || !window.cordova.file || !window.plugins || !window.plugins.socialsharing) {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = filename; a.click();
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
             return;
         }
-        
-        const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-        
-        // כתיבה ל-cache
+
         window.resolveLocalFileSystemURL(window.cordova.file.cacheDirectory, function(dirEntry) {
             dirEntry.getFile(filename, { create: true, exclusive: false }, function(fileEntry) {
                 fileEntry.createWriter(function(fileWriter) {
                     fileWriter.onwriteend = function() {
-                        // שתף את הקובץ
                         window.plugins.socialsharing.shareWithOptions({
                             message: 'משוב סדנת אימפרוביזציה',
                             files: [fileEntry.nativeURL],
                             chooserTitle: 'שתף Excel'
-                        }, function() {
-                            console.log('✅ Share success');
-                        }, function(error) {
-                            console.error('❌ Share failed:', error);
-                            alert('❌ שיתוף נכשל');
-                        });
+                        }, function() { console.log('✅ Share success'); },
+                        function(error) { console.error('❌ Share failed:', error); alert('❌ שיתוף נכשל'); });
                     };
-                    
-                    fileWriter.onerror = function(e) {
-                        alert('❌ כתיבה נכשלה');
-                    };
-                    
+                    fileWriter.onerror = function(e) { alert('❌ כתיבה נכשלה'); };
                     fileWriter.write(blob);
                 });
             });
-        }, function(error) {
-            alert('❌ גישה למערכת קבצים נכשלה');
-        });
+        }, function(error) { alert('❌ גישה למערכת קבצים נכשלה'); });
         
     } catch (error) {
         alert('❌ שגיאה: ' + error.message);
@@ -6035,48 +6136,34 @@ window.testSocialSharing = function() {
 window.testFilePlugin = function() {
     console.log('🧪 Testing File Plugin...');
     
-    if (!window.cordova || !window.cordova.file) {
-        alert('❌ File Plugin לא זמין!');
-        return;
-    }
-    
     try {
         const data = window.app.data;
         const evaluator = data.evaluatorName || 'מעריך';
         const dateStr = new Date().toLocaleDateString('he-IL').replace(/\//g, '-');
         const filename = `${evaluator}_${dateStr}.xlsx`;
-        
-        // יצירת Excel בפורמט טבלאי
         const excelBuffer = window.generateTabularExcel(data);
-        
-        if (!excelBuffer) {
-            alert('❌ שגיאה ביצירת קובץ Excel');
+        if (!excelBuffer) { alert('❌ שגיאה ביצירת קובץ Excel'); return; }
+        const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+
+        // Browser fallback
+        if (!window.cordova || !window.cordova.file) {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = filename; a.click();
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
+            alert('✅ הקובץ יוצא!');
             return;
         }
-        
-        const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-        
-        // שמור לתיקיית Downloads
+
         window.resolveLocalFileSystemURL(cordova.file.externalRootDirectory + 'Download/', function(dir) {
             dir.getFile(filename, { create: true }, function(file) {
                 file.createWriter(function(fileWriter) {
-                    fileWriter.onwriteend = function() {
-                        alert('✅ הקובץ נשמר ב-Downloads!\n\n' + filename);
-                    };
-                    fileWriter.onerror = function(e) {
-                        alert('❌ שגיאת כתיבה:\n' + e.toString());
-                    };
-                    
+                    fileWriter.onwriteend = function() { alert('✅ הקובץ נשמר ב-Downloads!\n\n' + filename); };
+                    fileWriter.onerror = function(e) { alert('❌ שגיאת כתיבה:\n' + e.toString()); };
                     fileWriter.write(blob);
-                }, function(error) {
-                    alert('❌ שגיאה ביצירת writer:\n' + error);
-                });
-            }, function(error) {
-                alert('❌ שגיאה ביצירת קובץ:\n' + error);
-            });
-        }, function(error) {
-            alert('❌ לא ניתן לגשת ל-Downloads:\n' + error);
-        });
+                }, function(error) { alert('❌ שגיאה ביצירת writer:\n' + error); });
+            }, function(error) { alert('❌ שגיאה ביצירת קובץ:\n' + error); });
+        }, function(error) { alert('❌ לא ניתן לגשת ל-Downloads:\n' + error); });
         
     } catch (error) {
         alert('❌ שגיאה:\n' + error.message);
@@ -6098,39 +6185,50 @@ window.exportAdminJSON = function() {
     if (highlightsInput) window.app.data.highlights = highlightsInput.value;
     window.storage.saveData();
     
-    // Build structured export (same format as loadFromJSON expects)
+    // Build full export including all assessment data
+    const assessmentName = window.app.data.assessmentName || '';
+    const dateStr = new Date().toISOString().slice(0, 10);
     const exportData = {
         metadata: {
-            assessmentName: window.app.data.assessmentName,
+            assessmentName,
             evaluatorName: window.app.data.evaluatorName,
             exportDate: new Date().toISOString(),
-            appVersion: '5.4'
+            appVersion: '6.3.0'
         },
         trainees: [],
         highlights: window.app.data.highlights,
-        storeHistory: window.app.data.storeHistory,
-        hotelHistory: window.app.data.hotelHistory
+        primaryTrainees: window.app.data.primaryTrainees || [],
+        storeHistory: window.app.data.storeHistory || [],
+        hotelHistory: window.app.data.hotelHistory || [],
+        exerciseData: window.app.data.exerciseData || {},
+        summaryData: window.app.data.summaryData || {},
+        reviewData: window.app.data.reviewData || {},
+        interviewData: window.app.data.interviewData || {},
+        globalNotes: window.app.data.globalNotes || {},
+        scannedDocs: window.app.data.scannedDocs || {}
     };
-    
+
     for (let t = 0; t < 4; t++) {
         exportData.trainees.push({
             id: t,
             name: window.app.data[`trainee${t + 1}`] || `חניך ${t + 1}`
         });
     }
+
+    const safeName = assessmentName.replace(/[^א-תa-zA-Z0-9]/g, '_') || 'backup';
+    const filename = `improvSTAGE_${safeName}_${dateStr}.json`;
     
     if (!window.cordova || !window.cordova.file || !window.plugins || !window.plugins.socialsharing) {
-        // Fallback: download via blob
         try {
             const jsonStr = JSON.stringify(exportData, null, 2);
             const blob = new Blob([jsonStr], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `settings_${new Date().toISOString().slice(0, 10)}.json`;
+            a.download = filename;
             a.click();
             URL.revokeObjectURL(url);
-            alert('✅ קובץ הגדרות יוצא!');
+            alert('✅ קובץ גיבוי יוצא!');
         } catch (e) {
             alert('❌ שגיאה: ' + e.message);
         }
@@ -6139,8 +6237,6 @@ window.exportAdminJSON = function() {
     
     try {
         const jsonStr = JSON.stringify(exportData, null, 2);
-        const dateStr = new Date().toISOString().slice(0, 10);
-        const filename = `settings_${dateStr}.json`;
         const blob = new Blob([jsonStr], { type: 'application/json' });
         
         window.resolveLocalFileSystemURL(window.cordova.file.cacheDirectory, function(dirEntry) {
@@ -6149,26 +6245,18 @@ window.exportAdminJSON = function() {
                     fileWriter.onwriteend = function() {
                         window.plugins.socialsharing.shareWithOptions({
                             files: [fileEntry.nativeURL],
-                            chooserTitle: 'שתף קובץ הגדרות'
+                            chooserTitle: 'שתף קובץ גיבוי מלא'
                         }, function() {
                             console.log('✅ Share success');
                         }, function(error) {
                             console.error('❌ Share failed:', error);
                         });
                     };
-                    
-                    fileWriter.onerror = function(e) {
-                        console.error('❌ Write failed:', e);
-                    };
-                    
+                    fileWriter.onerror = function(e) { console.error('❌ Write failed:', e); };
                     fileWriter.write(blob);
                 });
-            }, function(error) {
-                console.error('❌ getFile failed:', error);
-            });
-        }, function(error) {
-            console.error('❌ File system access failed:', error);
-        });
+            }, function(error) { console.error('❌ getFile failed:', error); });
+        }, function(error) { console.error('❌ File system access failed:', error); });
         
     } catch (error) {
         console.error('❌ Error:', error);

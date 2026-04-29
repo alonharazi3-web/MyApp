@@ -1602,3 +1602,46 @@ select {
 .review-field-note { background: #f0fdf4; border-radius: 6px; padding: 7px 8px; margin: 3px 0; }
 .review-field-note .review-field-label { color: #16a34a; }
 .review-field-note .review-field-text { color: #166534; }
+
+/* ===== Interview Section ===== */
+.interview-section {
+    background: white;
+    border-radius: 12px;
+    margin-top: 14px;
+    margin-bottom: 14px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    overflow: hidden;
+    border: 1.5px solid #e2e8f0;
+}
+.interview-header {
+    background: linear-gradient(135deg, #1e3a5f, #2d6a9f);
+    color: white;
+    padding: 14px 16px;
+    font-size: 16px;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+}
+.interview-header:active { opacity: 0.9; }
+.interview-label {
+    display: block;
+    font-size: 13px;
+    font-weight: bold;
+    color: #4a5568;
+    margin-bottom: 5px;
+}
+.interview-textarea {
+    width: 100%;
+    min-height: 75px;
+    padding: 10px;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    resize: vertical;
+    box-sizing: border-box;
+    direction: rtl;
+}
+.interview-textarea:focus { outline: none; border-color: #2d6a9f; }

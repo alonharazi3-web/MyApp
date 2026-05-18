@@ -102,6 +102,8 @@
   }
 
   function hookExports(){
+    if (window._exportsHooked) return;
+    window._exportsHooked = true;
     var origDocx=window.exportTraineeDocx;
     if(origDocx) window.exportTraineeDocx=function(tid){
       injectNotes(tid); origDocx.call(this,tid);
@@ -321,6 +323,8 @@
     }
   }
   function hookEmailButtons() {
+    if (window._emailBtnObserverActive) { addEmailBtn(); return; }
+    window._emailBtnObserverActive = true;
     var target = document.getElementById('app') || document.body;
     new MutationObserver(addEmailBtn).observe(target, {childList: true, subtree: true});
     addEmailBtn();
@@ -331,6 +335,8 @@
   // Without this interval, imported documents don't appear in review/exercise
   // ═══════════════════════════════════════════════════════════════════
   function startDocLinksDriver() {
+    if (window._docLinksDriverActive) return;
+    window._docLinksDriverActive = true;
     setInterval(function() {
       if (!window.app || !window.supabaseSync) return;
       var page = window.app.currentPage;
@@ -349,6 +355,8 @@
   // ANDROID BACK BUTTON — close image viewer / overlays instead of nav back
   // ═══════════════════════════════════════════════════════════════════
   function hookBackButton() {
+    if (window._backbuttonHooked) return;
+    window._backbuttonHooked = true;
     document.addEventListener('backbutton', function(e) {
       // Priority order — close topmost overlay
       var candidates = [
@@ -536,16 +544,44 @@
     console.log('📋 generatePDFSummary wrapped for Android (forced browser path)');
   }
 
-  // ═══ Bootstrap on deviceready ════════════════════════════════════════
-  document.addEventListener('deviceready', function() {
-    try { ensureGlobalNotes(); }  catch(e) { console.warn('ensureGlobalNotes failed:', e); }
-    try { hookPageChanges(); }    catch(e) { console.warn('hookPageChanges failed:', e); }
-    try { hookExports(); }        catch(e) { console.warn('hookExports failed:', e); }
-    try { overrideWordExport(); } catch(e) { console.warn('overrideWordExport failed:', e); }
-    try { overridePDFExport(); }  catch(e) { console.warn('overridePDFExport failed:', e); }
-    try { hookEmailButtons(); }   catch(e) { console.warn('hookEmailButtons failed:', e); }
-    try { startDocLinksDriver();} catch(e) { console.warn('docLinks driver failed:', e); }
-    try { hookBackButton(); }     catch(e) { console.warn('backbutton hook failed:', e); }
-    console.log('📱 Android features ready (v7.9.1)');
-  }, false);
+  // ═══ ROBUST Bootstrap — runs regardless of deviceready ════════════════
+  // (deviceready may never fire on Cordova WebView if a plugin is missing/broken;
+  //  we fall back to DOMContentLoaded + multiple setTimeouts to ensure setup.)
+  var _bootstrapped = false;
+  function runBootstrap(trigger) {
+    if (_bootstrapped) return;
+    _bootstrapped = true;
+    console.log('📱 Android bootstrap STARTING via:', trigger);
+    var ok = 0, fail = 0;
+    function step(name, fn) {
+      try { fn(); console.log('  ✓', name); ok++; }
+      catch(e) { console.error('  ✗', name, ':', e.message); fail++; }
+    }
+    step('ensureGlobalNotes',  function(){ ensureGlobalNotes(); });
+    step('hookPageChanges',    function(){ hookPageChanges(); });
+    step('hookExports',        function(){ hookExports(); });
+    step('overrideWordExport', function(){ overrideWordExport(); });
+    step('overridePDFExport',  function(){ overridePDFExport(); });
+    step('hookEmailButtons',   function(){ hookEmailButtons(); });
+    step('startDocLinksDriver',function(){ startDocLinksDriver(); });
+    step('hookBackButton',     function(){ hookBackButton(); });
+    console.log('📱 Bootstrap DONE: ' + ok + ' ok, ' + fail + ' failed');
+  }
+  // Expose for manual debug from console: window.runAndroidBootstrap()
+  window.runAndroidBootstrap = function(){ _bootstrapped = false; runBootstrap('manual'); };
+
+  // Trigger 1: deviceready (preferred if Cordova works)
+  document.addEventListener('deviceready', function(){ runBootstrap('deviceready'); }, false);
+
+  // Trigger 2: DOMContentLoaded (always fires in WebView)
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function(){
+      setTimeout(function(){ runBootstrap('DOMContentLoaded'); }, 300);
+    });
+  } else {
+    setTimeout(function(){ runBootstrap('immediate-ready'); }, 300);
+  }
+
+  // Trigger 3: last-resort timeout (in case both above silently fail)
+  setTimeout(function(){ runBootstrap('timeout-2s'); }, 2000);
 })();

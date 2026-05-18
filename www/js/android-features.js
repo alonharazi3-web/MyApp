@@ -360,12 +360,14 @@
     document.addEventListener('backbutton', function(e) {
       // Priority order — close topmost overlay
       var candidates = [
-        '#letterImageModal',
-        '#imgViewerOverlay',
-        '[id^="av_"]',     // viewAssessmentData overlays
-        '[id^="sb_"]',     // supabase admin/history overlays
-        '#pcEmailDialog',  // email dialog (id is reused from PC)
-        '#textSummaryOverlay'
+        '#letterImageModal',     // Letter image (exercise 4)
+        '#imgViewerOverlay',     // Fullscreen image viewer
+        '[id^="av_"]',           // assessment view overlay (history → צפה)
+        '[id^="sb"]',            // ALL supabase overlays (sb_, sbView_)
+        '[id^="fsTest_"]',       // diagnostic test overlays
+        '#pcEmailDialog',        // email send dialog
+        '#textSummaryOverlay',   // text-only summary
+        '#sb_admin_panel'        // main admin panel (defensive)
       ];
       for (var i = 0; i < candidates.length; i++) {
         var el = document.querySelector(candidates[i]);

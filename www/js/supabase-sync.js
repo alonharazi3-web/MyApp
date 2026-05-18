@@ -2249,6 +2249,7 @@ window.supabaseSync._sendEmail = function(toEmail, subject, body, onSuccess, onE
   // ════════════════════════════════════════════════════════
   window._openImageViewer = function(src, caption) {
     var ov = document.createElement('div');
+    ov.id = 'imgViewerOverlay';
     ov.style.cssText = 'position:fixed;inset:0;z-index:50000;background:rgba(0,0,0,.92);display:flex;flex-direction:column;direction:rtl;font-family:Assistant,sans-serif;';
 
     // Toolbar

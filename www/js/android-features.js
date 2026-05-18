@@ -304,11 +304,248 @@
     return lines.join(String.fromCharCode(10));
   }
 
+  // ═══════════════════════════════════════════════════════════════════
+  // EMAIL BUTTON INJECTION — adds 📧 שלח מייל to review page
+  // ═══════════════════════════════════════════════════════════════════
+  function addEmailBtn() {
+    var bar = document.querySelector('.review-export-bar');
+    if (bar && !bar.dataset.em) {
+      bar.dataset.em = '1';
+      var btn = document.createElement('button');
+      btn.className = 'btn-review-export';
+      btn.style.cssText = 'background:linear-gradient(135deg,#0284c7,#0ea5e9);color:white;border:none;padding:10px 16px;border-radius:8px;font-weight:700;cursor:pointer;font-family:Rubik,sans-serif;margin:4px;';
+      btn.textContent = '📧 שלח מייל';
+      btn.onclick = showEmailDialog;
+      bar.appendChild(btn);
+      console.log('📧 Email button injected into review page');
+    }
+  }
+  function hookEmailButtons() {
+    var target = document.getElementById('app') || document.body;
+    new MutationObserver(addEmailBtn).observe(target, {childList: true, subtree: true});
+    addEmailBtn();
+  }
+
+  // ═══════════════════════════════════════════════════════════════════
+  // DOC LINKS DISPLAY — drives renderDocLinksInReview + injectDocLinksIntoExercise
+  // Without this interval, imported documents don't appear in review/exercise
+  // ═══════════════════════════════════════════════════════════════════
+  function startDocLinksDriver() {
+    setInterval(function() {
+      if (!window.app || !window.supabaseSync) return;
+      var page = window.app.currentPage;
+      var tid  = (typeof window.app.currentReviewTrainee !== 'undefined') ? window.app.currentReviewTrainee : currentTraineeIdx();
+      try {
+        if (page === 'review' && window.supabaseSync.renderDocLinksInReview)
+          window.supabaseSync.renderDocLinksInReview(tid);
+        if (page === 'assessment' && window.supabaseSync.injectDocLinksIntoExercise)
+          window.supabaseSync.injectDocLinksIntoExercise();
+      } catch(e) { /* silent */ }
+    }, 1000);
+    console.log('📎 DocLinks driver started (interval 1s)');
+  }
+
+  // ═══════════════════════════════════════════════════════════════════
+  // ANDROID BACK BUTTON — close image viewer / overlays instead of nav back
+  // ═══════════════════════════════════════════════════════════════════
+  function hookBackButton() {
+    document.addEventListener('backbutton', function(e) {
+      // Priority order — close topmost overlay
+      var candidates = [
+        '#letterImageModal',
+        '#imgViewerOverlay',
+        '[id^="av_"]',     // viewAssessmentData overlays
+        '[id^="sb_"]',     // supabase admin/history overlays
+        '#pcEmailDialog',  // email dialog (id is reused from PC)
+        '#textSummaryOverlay'
+      ];
+      for (var i = 0; i < candidates.length; i++) {
+        var el = document.querySelector(candidates[i]);
+        if (el && el.offsetParent !== null) {  // visible
+          e.preventDefault();
+          el.remove();
+          console.log('🔙 backbutton: closed', candidates[i]);
+          return;
+        }
+      }
+      // No overlay open — let default back behavior happen (Cordova navigates)
+    }, false);
+    console.log('🔙 Backbutton handler hooked');
+  }
+
+  // ═══════════════════════════════════════════════════════════════════
+  // CORDOVA FILE SAVE — robust save to user's Downloads folder
+  // Falls back: externalRoot/Download → externalData → cache → alert
+  // ═══════════════════════════════════════════════════════════════════
+  window.saveBlobToDownload = function(blob, filename, mimeType) {
+    return new Promise(function(resolve, reject) {
+      if (!window.cordova || !window.cordova.file || !window.resolveLocalFileSystemURL) {
+        // Web/Electron fallback: FileSaver or anchor download
+        try {
+          if (window.saveAs) { window.saveAs(blob, filename); resolve('saveAs'); return; }
+          var url = URL.createObjectURL(blob);
+          var a = document.createElement('a');
+          a.href = url; a.download = filename; a.click();
+          setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+          resolve('anchor'); return;
+        } catch(e) { reject(e); return; }
+      }
+      var tried = [];
+      function tryDir(label, dirUrl, next) {
+        if (!dirUrl) { next(); return; }
+        tried.push(label);
+        window.resolveLocalFileSystemURL(dirUrl, function(dir) {
+          dir.getFile(filename, {create: true, exclusive: false}, function(fe) {
+            fe.createWriter(function(w) {
+              w.onwriteend = function() {
+                console.log('💾 Saved to', label, ':', fe.nativeURL);
+                resolve({ label: label, url: fe.nativeURL, path: dirUrl + filename });
+              };
+              w.onerror = function(e) {
+                console.warn('write failed at', label, e);
+                next();
+              };
+              w.write(blob);
+            }, next);
+          }, next);
+        }, next);
+      }
+      var cf = window.cordova.file;
+      // Order: externalRoot/Download/ (user-visible) → externalData → cache
+      var downloadDir = cf.externalRootDirectory ? cf.externalRootDirectory + 'Download/' : null;
+      tryDir('Downloads', downloadDir, function() {
+        tryDir('externalData', cf.externalDataDirectory, function() {
+          tryDir('cache', cf.cacheDirectory, function() {
+            reject(new Error('All save paths failed: ' + tried.join(', ')));
+          });
+        });
+      });
+    });
+  };
+
+  // Override exportTraineeDocx to use saveBlobToDownload (with user-visible alert)
+  function overrideWordExport() {
+    var orig = window.exportTraineeDocx;
+    if (!orig || orig.__androidWrapped) return;
+    window.exportTraineeDocx = function(traineeId) {
+      // Inject notes (same as original wrapper from hookExports)
+      try { injectNotes(traineeId); } catch(e){}
+
+      try {
+        var data = window.app.data;
+        var name = window.getTraineeName(traineeId);
+        var date = new Date().toLocaleDateString('he-IL');
+
+        // Build sections same as original (we hijack BEFORE calling original)
+        // Easier: call original then intercept the blob via overriding window.saveAs
+        var capturedBlob = null, capturedFilename = null;
+        var originalSaveAs = window.saveAs;
+        window.saveAs = function(blob, fn) { capturedBlob = blob; capturedFilename = fn; };
+        // Also disable Cordova path in original by temporarily nulling plugins
+        var savedPlugins = window.plugins;
+        window.plugins = undefined;
+        try {
+          orig.call(this, traineeId);
+        } finally {
+          window.saveAs = originalSaveAs;
+          window.plugins = savedPlugins;
+        }
+
+        if (!capturedBlob) {
+          alert('❌ לא הצליח להפיק קובץ Word. נסה הורדה כטקסט פשוט.');
+          return;
+        }
+        window.saveBlobToDownload(capturedBlob, capturedFilename || ('סקירה_' + name + '.docx'),
+          'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+          .then(function(r) {
+            alert('✅ קובץ Word נשמר ב-' + r.label + ':\n' + capturedFilename + '\n\nניתן למצוא אותו בתיקיית Download של המכשיר.');
+          })
+          .catch(function(err) {
+            // Final fallback — save as plain text
+            console.error('Word save failed, falling back to text:', err);
+            saveAsPlainText(traineeId);
+          })
+          .then(function(){ setTimeout(function(){ try{ cleanNotes(traineeId); }catch(e){} }, 1000); });
+      } catch(e) {
+        alert('❌ שגיאה: ' + e.message);
+      }
+    };
+    window.exportTraineeDocx.__androidWrapped = true;
+    console.log('📄 exportTraineeDocx wrapped for Android (Downloads/ + text fallback)');
+  }
+
+  // Plain text fallback — uses the existing comprehensive buildEmailBody output
+  function saveAsPlainText(traineeId) {
+    var name = window.getTraineeName(traineeId);
+    var body = buildEmailBody(traineeId, name);
+    var blob = new Blob([body], { type: 'text/plain;charset=utf-8' });
+    var date = new Date().toISOString().substring(0,10);
+    var fn = 'סקירה_' + name + '_' + date + '.txt';
+    window.saveBlobToDownload(blob, fn, 'text/plain').then(function(r){
+      alert('💾 נשמר כקובץ טקסט (Word נכשל):\n' + fn + '\nמיקום: ' + r.label);
+    }).catch(function(e){
+      alert('❌ שמירה נכשלה לחלוטין: ' + e.message);
+    });
+  }
+
+  // Override generatePDFSummary similarly (PDF — write HTML, alert user)
+  function overridePDFExport() {
+    var orig = window.generatePDFSummary;
+    if (!orig || orig.__androidWrapped) return;
+    window.generatePDFSummary = function() {
+      var capturedBlob = null;
+
+      // Force browser path inside original by hiding cordova temporarily
+      var savedCordova = window.cordova;
+      var savedOpen    = window.open;
+      window.cordova = undefined;
+      window.open = function(url) {
+        if (typeof url === 'string' && url.indexOf('blob:') === 0) {
+          fetch(url).then(function(r){ return r.blob(); }).then(function(b){
+            capturedBlob = b;
+            saveCaptured();
+          }).catch(function(e){
+            alert('❌ קבלת blob נכשלה: ' + e.message);
+          });
+          // Return null — original code does `if (win)` guard
+          return null;
+        }
+        return savedOpen.apply(window, arguments);
+      };
+
+      try {
+        orig.call(this);
+      } finally {
+        // Restore (Promise-style fetch above resolves later but we restored already — that's fine)
+        window.cordova = savedCordova;
+        window.open    = savedOpen;
+      }
+
+      function saveCaptured() {
+        if (!capturedBlob) { alert('❌ לא נוצר קובץ PDF'); return; }
+        var date = new Date().toISOString().substring(0,10);
+        var fn = 'סיכום_' + date + '.html';
+        window.saveBlobToDownload(capturedBlob, fn, 'text/html').then(function(r){
+          alert('✅ סיכום נשמר:\n' + fn + '\n\n📁 ' + r.label + '\n\nפתח ב-Chrome → תפריט → "הדפס" → "שמור כ-PDF"');
+        }).catch(function(e){
+          alert('❌ שמירה נכשלה: ' + e.message);
+        });
+      }
+    };
+    window.generatePDFSummary.__androidWrapped = true;
+    console.log('📋 generatePDFSummary wrapped for Android (forced browser path)');
+  }
+
   // ═══ Bootstrap on deviceready ════════════════════════════════════════
   document.addEventListener('deviceready', function() {
-    try { ensureGlobalNotes(); } catch(e) { console.warn('ensureGlobalNotes failed:', e); }
-    try { hookPageChanges(); }  catch(e) { console.warn('hookPageChanges failed:', e); }
-    try { hookExports(); }      catch(e) { console.warn('hookExports failed:', e); }
-    console.log('📱 Android features ready');
+    try { ensureGlobalNotes(); }  catch(e) { console.warn('ensureGlobalNotes failed:', e); }
+    try { hookPageChanges(); }    catch(e) { console.warn('hookPageChanges failed:', e); }
+    try { hookExports(); }        catch(e) { console.warn('hookExports failed:', e); }
+    try { overrideWordExport(); } catch(e) { console.warn('overrideWordExport failed:', e); }
+    try { overridePDFExport(); }  catch(e) { console.warn('overridePDFExport failed:', e); }
+    try { hookEmailButtons(); }   catch(e) { console.warn('hookEmailButtons failed:', e); }
+    try { startDocLinksDriver();} catch(e) { console.warn('docLinks driver failed:', e); }
+    try { hookBackButton(); }     catch(e) { console.warn('backbutton hook failed:', e); }
+    console.log('📱 Android features ready (v7.9.1)');
   }, false);
 })();

@@ -382,7 +382,11 @@
             cont.innerHTML = '<p style="color:#94a3b8;text-align:center;padding:30px;">אין הגשות</p>';
             return;
           }
-          var html = '<table style="width:100%;border-collapse:collapse;font-size:.87em;">';
+          var isNarrow = window.innerWidth < 600;
+          var pad = isNarrow ? '6px 8px' : '8px 12px';
+          var fs  = isNarrow ? '.78em' : '.87em';
+          var html = '<div style="overflow:auto;-webkit-overflow-scrolling:touch;max-height:60vh;">' +
+                     '<table style="min-width:560px;border-collapse:collapse;font-size:' + fs + ';">';
           html += '<thead><tr style="background:#f1f5f9;">';
           ['חניך','מעריך','הערכה','תאריך','📷','תפוגה','פעולות'].forEach(function(h){
             html += '<th style="padding:8px 12px;text-align:right;border:1px solid #e2e6ed;font-family:Rubik,sans-serif;">'+h+'</th>';
@@ -390,18 +394,18 @@
           html += '</tr></thead><tbody>';
           rows.forEach(function(r, idx){
             html += '<tr style="'+(idx%2===0?'':'background:#f8fafc')+'">';
-            html += '<td style="padding:8px 12px;border:1px solid #e2e6ed;font-weight:600;">'+esc(r.trainee)+'</td>';
-            html += '<td style="padding:8px 12px;border:1px solid #e2e6ed;color:#64748b;">'+esc(r.evaluator)+'</td>';
-            html += '<td style="padding:8px 12px;border:1px solid #e2e6ed;color:#64748b;">'+esc(r.assessment_name)+'</td>';
-            html += '<td style="padding:8px 12px;border:1px solid #e2e6ed;color:#64748b;white-space:nowrap;">'+esc(r.assessment_date)+'</td>';
-            html += '<td style="padding:8px 12px;border:1px solid #e2e6ed;text-align:center;color:'+(r.image_count>0?'#2563eb':'#94a3b8')+';">'+esc(String(r.image_count||0))+'</td>';
-            html += '<td style="padding:8px 12px;border:1px solid #e2e6ed;white-space:nowrap;">';
+            html += '<td style="padding:'+pad+';border:1px solid #e2e6ed;font-weight:600;">'+esc(r.trainee)+'</td>';
+            html += '<td style="padding:'+pad+';border:1px solid #e2e6ed;color:#64748b;">'+esc(r.evaluator)+'</td>';
+            html += '<td style="padding:'+pad+';border:1px solid #e2e6ed;color:#64748b;">'+esc(r.assessment_name)+'</td>';
+            html += '<td style="padding:'+pad+';border:1px solid #e2e6ed;color:#64748b;white-space:nowrap;">'+esc(r.assessment_date)+'</td>';
+            html += '<td style="padding:'+pad+';border:1px solid #e2e6ed;text-align:center;color:'+(r.image_count>0?'#2563eb':'#94a3b8')+';">'+esc(String(r.image_count||0))+'</td>';
+            html += '<td style="padding:'+pad+';border:1px solid #e2e6ed;white-space:nowrap;">';
             html += '<button data-action="view"   data-sid="'+esc(r.submission_id)+'" style="background:#0284c7;color:white;border:none;padding:5px 10px;border-radius:5px;font-size:.8em;cursor:pointer;margin-left:4px;">👁 צפה</button>';
             html += '<button data-action="import" data-sid="'+esc(r.submission_id)+'" style="background:#7c3aed;color:white;border:none;padding:5px 10px;border-radius:5px;font-size:.8em;cursor:pointer;margin-left:4px;">📥 ייבא</button>';
             html += '<button data-action="del"    data-rid="'+esc(r.id)+'" data-tname="'+esc(r.trainee||'')+'" style="background:#dc2626;color:white;border:none;padding:5px 10px;border-radius:5px;font-size:.8em;cursor:pointer;">🗑 מחק</button>';
             html += '</td></tr>';
           });
-          html += '</tbody></table>';
+          html += '</tbody></table></div>';
           cont.innerHTML = html;
           // Event delegation — attach ONCE only (previously piled up on each _load() call)
           if (!cont._delegationAttached) {
@@ -1822,7 +1826,7 @@ window.supabaseSync._sendEmail = function(toEmail, subject, body, onSuccess, onE
         html += '<button data-del-file="'+esc(name)+'" style="background:#ef4444;color:white;border:none;padding:4px 8px;border-radius:4px;font-size:.78em;cursor:pointer;">🗑 מחק</button>';
         html += '</td></tr>';
       });
-      html += '</tbody></table>';
+      html += '</tbody></table></div>';
       html += '<div id="'+ovId+'_preview" style="margin-top:20px;"></div>';
       listEl.innerHTML = html;
 

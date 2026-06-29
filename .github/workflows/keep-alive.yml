@@ -1,0 +1,40 @@
+name: Supabase Keep-Alive
+
+# Pings the Supabase database daily to prevent the free-tier project
+# from being paused after 7 days of inactivity.
+# improvSTAGE — project: tuijkzboadjtmlorknla (ImprovStage)
+
+on:
+  schedule:
+    # Runs every day at 06:00 UTC (09:00 Israel time in summer / 08:00 in winter)
+    - cron: '0 6 * * *'
+  # Allows manual triggering from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  keep-alive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Supabase database
+        run: |
+          echo "Pinging Supabase at $(date -u)"
+
+          SUPABASE_URL="https://tuijkzboadjtmlorknla.supabase.co"
+          SUPABASE_KEY="sb_publishable_ESjEVl_DtyjHjx8g04gllw_tdsLvfCS"
+
+          # Lightweight query against the assessments table — counts as DB activity
+          HTTP_CODE=$(curl -s -o /tmp/response.txt -w "%{http_code}" \
+            "${SUPABASE_URL}/rest/v1/assessments?select=count&limit=1" \
+            -H "apikey: ${SUPABASE_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_KEY}")
+
+          echo "HTTP status: ${HTTP_CODE}"
+          echo "Response: $(cat /tmp/response.txt)"
+
+          # Success = 200 or 206 (partial content). Anything else fails the job.
+          if [ "${HTTP_CODE}" = "200" ] || [ "${HTTP_CODE}" = "206" ]; then
+            echo "✅ Keep-alive ping successful — project is active"
+          else
+            echo "❌ Keep-alive ping failed with status ${HTTP_CODE}"
+            exit 1
+          fi

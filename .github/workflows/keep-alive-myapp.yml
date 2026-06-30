@@ -1,0 +1,40 @@
+name: Supabase Keep-Alive — MyApp
+
+# מונע הקפאה אוטומטית של פרויקט Supabase בתוכנית החינמית
+# (הקפאה מתרחשת אחרי 7 ימים ללא פעילות במסד הנתונים)
+# פרויקט: llfkghronuirufdfctop
+
+on:
+  schedule:
+    # רץ כל יום ב-06:00 UTC (09:00 שעון ישראל בקיץ)
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+
+jobs:
+  keep-alive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Supabase database
+        run: |
+          echo "Pinging Supabase at $(date -u)"
+
+          SUPABASE_URL="https://llfkghronuirufdfctop.supabase.co"
+          SUPABASE_KEY="sb_publishable_xeDwlCZxoKKyxUSJbOVbiQ_YA-FEJz5"
+
+          # שאילתה קלה ל-Storage — נחשבת כפעילות ומאפסת את טיימר ההקפאה
+          HTTP_CODE=$(curl -s -o /tmp/response.txt -w "%{http_code}" \
+            -X POST "${SUPABASE_URL}/storage/v1/object/list/files" \
+            -H "apikey: ${SUPABASE_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_KEY}" \
+            -H "Content-Type: application/json" \
+            -d '{"prefix": "", "limit": 1}')
+
+          echo "HTTP status: ${HTTP_CODE}"
+          echo "Response: $(cat /tmp/response.txt)"
+
+          if [ "${HTTP_CODE}" = "200" ]; then
+            echo "✅ Keep-alive ping successful — project is active"
+          else
+            echo "❌ Keep-alive ping failed with status ${HTTP_CODE}"
+            exit 1
+          fi
